@@ -21,8 +21,9 @@
 new_BEM <- function(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED) {
 	result <- c(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED)
 	names(result) <- c('CP', 'CA', 'CB', 'CTM', 'CTO', 'CQ', 'ACT', 'RA', 'RB', 'RTM', 'RTO', 'RQ', 'FA', 'UA', 'SDA', 'ED')
-	class(result) <- c('BEM', 'numeric')
-	return(result)
+	result_df <- data.frame(t(as.matrix(result)))
+	class(result_df) <- c('BEM', 'data.frame')
+	return(result_df)
 }
 
 #' Consumption of energy
@@ -39,7 +40,7 @@ consumption2 <- function(T, W, BEM) {
 	V <- (BEM$CTM-T)/(BEM$CTM-BEM$CTO)
 	fT_C <- V^X*exp(X*(1-V))
 	Cmax <- BEM$CA*W^BEM$CB
-	C <- Cmax*p*fT_C
+	C <- Cmax*BEM$CP*fT_C
 	return(C)	
 }
 
@@ -65,6 +66,7 @@ respiration1 <- function(T, W, BEM)
 #' @export
 compute_single_station <- function(T_vector, BEM, starting_weight=6.382417, prey_ED=3698.0, oxycal_coeff=13560.0) {
 	results <- data.frame(julian=sequence(365), temp=T_vector, C1_ins=NA, C2_ins=NA, R1_ins=NA, R2_ins=NA, F1_ins=NA, F2_ins=NA, U1_ins=NA, U2_ins=NA, SDA1_ins=NA, SDA2_ins=NA, W1_ins=NA, W2_ins=NA, W1_cum=NA, W2_cum=NA)
+	results[1,] <- 0
 	results$W2_cum[1] <- starting_weight
 	for (day in 2:nrow(results)) {
 		# simulate consumption --> grams of prey
@@ -116,5 +118,6 @@ compute_single_station <- function(T_vector, BEM, starting_weight=6.382417, prey
 		results$W2_cum[day] <- results$W2_cum[day-1] + results$W2_ins[day]
 		
 	}
+	results$W1_cum <- cumsum(results$W1_ins)
 	return(results)
 }
