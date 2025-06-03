@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">fishyenergy</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2025.6.02</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,9 @@
 
     
     
+<p>The model here is adopted from <a href="https://github.com/troiamj/GB_BEM_v01" class="external-link uri">https://github.com/troiamj/GB_BEM_v01</a>, which is based on
+<a href="https://doi.org/10.1093/conphys/coac035" class="external-link">Troia and Perkin
+(2022)</a>. Datasets come from there, as well.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">fishyenergy</span><span class="op">)</span></span></code></pre></div>
 <p>First, let’s load in our parameters for our model. For the vignette,
@@ -82,7 +85,7 @@ from your computer instead</p>
 expect</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">364</span>, origin<span class="op">=</span><span class="st">"2020-01-01"</span><span class="op">)</span>, y<span class="op">=</span><span class="va">temp_vec</span>, xlab<span class="op">=</span><span class="st">"Day"</span>, ylab<span class="op">=</span><span class="st">"Temperature"</span>, type<span class="op">=</span><span class="st">'l'</span>, bty<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Getting_Started_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-4-1.png" alt="Line plot showing temperature over a year" width="700"></p>
 <p>Yay, looks good. Now let’s compute the weight gain per day of our
 fishy:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -90,14 +93,14 @@ fishy:</p>
 <p>And look at how its weight changes over the year at that station:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">364</span>, origin<span class="op">=</span><span class="st">"2020-01-01"</span><span class="op">)</span>, y<span class="op">=</span><span class="va">station_result</span><span class="op">$</span><span class="va">W2_cum</span>, xlab<span class="op">=</span><span class="st">"Day"</span>, ylab<span class="op">=</span><span class="st">"Mass (g)"</span>, type<span class="op">=</span><span class="st">'l'</span>, bty<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Getting_Started_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-6-1.png" alt="Line plot showing mass over a year" width="700"></p>
   </main>
 </div>
 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by First Last.</p>
+  <p>Developed by Brian O’Meara.</p>
 </div>
 
 <div class="pkgdown-footer-right">

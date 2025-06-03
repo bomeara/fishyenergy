@@ -7,6 +7,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+The model here is adopted from https://github.com/troiamj/GB_BEM_v01, which is based on [Troia and Perkin (2022)](https://doi.org/10.1093/conphys/coac035). Datasets come from there, as well. 
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -37,7 +39,7 @@ temp_vec <- temp_raw[,chosen_col]
 
 Let's plot the temperature data to make sure they look like what we'd expect
 
-```{r}
+```{r fig.alt = "Line plot showing temperature over a year"}
 plot(x=as.Date(0:364, origin="2020-01-01"), y=temp_vec, xlab="Day", ylab="Temperature", type='l', bty="n")
 ```
 
@@ -49,6 +51,6 @@ station_result <- compute_single_station(T_vector=temp_vec, BEM=BEM)
 
 And look at how its weight changes over the year at that station:
 
-```{r}
+```{r fig.alt="Line plot showing mass over a year"}
 plot(x=as.Date(0:364, origin="2020-01-01"), y=station_result$W2_cum, xlab="Day", ylab="Mass (g)", type='l', bty="n")
 ```
