@@ -14,7 +14,7 @@
 
 #' Create a BEM object from FB4 data
 #' @param species Scientific name of the species (e.g. "Micropterus salmoides")
-#' @param lifestage Life stage of the species (e.g. "Adult"). If NULL, uses the first life stage found for the species.
+#' @param lifestage Life stage of the species (e.g. "Adult"). If NA, uses the first life stage found for the species.
 #' @param CP proportion of maximum consumption (default is 0.5)
 #' @param FA fish body mass (grams) (default is 0.1018428)
 #' @param UA activity (mg/kg-day) (default is 0.08743042)
@@ -22,16 +22,16 @@
 #' @param ED energy density (J/kg) (default is 3983.646)
 #' @return BEM object with parameters for the specified species and life stage
 #' @export
-BEM_from_FB4 <- function(species, lifestage=NULL, CP=0.5, FA=0.1018428, UA=0.08743042, SDA=0.150819, ED=3983.646) {
+bem_from_fb4 <- function(species, lifestage=NULL, CP=0.5, FA=0.1018428, UA=0.08743042, SDA=0.150819, ED=3983.646) {
 	focal_info <- fb4_data[fb4_data$Sci_Name == gsub("_", " ", species),]
-	if(lifestage != NULL) {
-  		focal_info <- focal_info[focal_info$Life_Stage == lifestage,]
+	if(!is.null(lifestage)) {
+  		focal_info <- focal_info[focal_info$LifeStage == lifestage,]
 	}
 	if(nrow(focal_info) == 0) {
    		stop(paste("No BEM data found for", species, "with life stage", lifestage))
  	}
 	if(nrow(focal_info) > 1) {
-	 warning(paste("Multiple BEM data rows found for", species, "with life stage", lifestage, ". Using the first row."))
+	 warning(paste("Multiple BEM data rows found for", species, "with life stage", lifestage, ". Using the first row, but look at all the life stages and specify next time: ", paste(lifestages_from_fb4(species), collapse=", ")))
 	 focal_info <- focal_info[1,]
  	}
 	bem_object <- data.frame(CP=CP,
@@ -59,12 +59,12 @@ BEM_from_FB4 <- function(species, lifestage=NULL, CP=0.5, FA=0.1018428, UA=0.087
 #' @param species Scientific name of the species (e.g. "Micropterus salmoides")
 #' @return A vector of unique life stages for the species
 #' @export
-LifeStages_from_FB4 <- function(species) {
+lifestages_from_fb4 <- function(species) {
  focal_info <- fb4_data[fb4_data$Sci_Name == gsub("_", " ", species),]
  if(nrow(focal_info) == 0) {
 	 stop(paste("No BEM data found for", species))
   }
- return(unique(focal_info$Life_Stage))
+ return(unique(focal_info$LifeStage))
 }
 
 
@@ -74,7 +74,7 @@ LifeStages_from_FB4 <- function(species) {
 #' @export
 #' 
 #' @description This uses the Open Tree of Life to find relatives of a species.
-Find_Closest_FB4_Species <- function(species) {
+fb4_closest_species <- function(species) {
   species <- gsub("_", " ", species)
   if(species %in% fb4_data$Sci_Name) {
 	return(species) # If the species is already in the dataset, return it directly
@@ -86,7 +86,7 @@ Find_Closest_FB4_Species <- function(species) {
   fb4_names <- fb4_names[!fb4_names %in% "Zander zander"] # Remove "Zander zander" as it is not in Open Tree
 
   resolved_names <- rotl::tnrs_match_names(c(fb4_names, species), context_name = "Animals")
-  phy <- suppressWarnings(tol_induced_subtree(ott_ids = ott_id(resolved_names), label_format="name")) # suppress because I really don't care about singleton node suppression
+  phy <- suppressWarnings(rotl::tol_induced_subtree(ott_ids = rotl::ott_id(resolved_names), label_format="name")) # suppress because I really don't care about singleton node suppression
   phy$tip.label <- gsub("_\\(species_in_domain_Eukaryota\\)", "", phy$tip.label)
   phy$tip.label <- gsub("_", " ", phy$tip.label) # Replace underscores with spaces
   parent <- phangorn::Ancestors(phy, species, type="parent")
@@ -101,6 +101,8 @@ Find_Closest_FB4_Species <- function(species) {
 	adist(relative, fb4_names_unique))]) #to match spp etc
 	}
   }
+  sources <- fb4_data$Source[match(final_names, fb4_data$Sci_Name)]
+  print(paste("Sources for", paste(final_names, collapse=", "), "are:", paste(sources, collapse=", ")))
   return(final_names) 
 }
 
@@ -124,13 +126,93 @@ Find_Closest_FB4_Species <- function(species) {
 #' @return BEM object
 #' @export
 
-new_BEM <- function(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED) {
+bem_new <- function(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED) {
 	result <- c(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED)
 	names(result) <- c('CP', 'CA', 'CB', 'CTM', 'CTO', 'CQ', 'ACT', 'RA', 'RB', 'RTM', 'RTO', 'RQ', 'FA', 'UA', 'SDA', 'ED')
 	result_df <- data.frame(t(as.matrix(result)))
 	class(result_df) <- c('BEM', 'data.frame')
 	return(result_df)
 }
+
+#' Get daily temperature data from monitoring stations
+#' 
+#' @description This uses the dataRetrieval package to fetch daily temperature data 
+#' @param site_code WQP site code (e.g. "USGS-12345678")
+#' @param start_date Start date for the data retrieval (e.g. "2020-01-01")
+#' @param end_date End date for the data retrieval (e.g. "2020-12-31")
+#' @return A data frame with daily temperature data
+#' @export
+daily_temperature_raw <- function(site_code, start_date, end_date) {
+	results <- dataRetrieval::readWQPqw(siteNumbers=site_code, startDate=start_date, endDate=end_date, parameterCd="00010")	
+	return(results)
+}
+
+#' Interpolate daily temperature data
+#' 
+#' @description From a raw set of daily temperature data from daily_temperature_raw, this interpolates the temperature data to fill in missing dates. You may want to have raw data before and after the period of interest so that dates within can be interpolated. If the start and end dates are not provided, it will use the min and max dates from the temperature data.
+#' @param temperature_data Data frame with daily temperature data from daily_temperature_raw()
+#' @param start_date Start date for the interpolation (e.g. "2020-01-01")
+#' @param end_date End date for the interpolation (e.g. "2020-12-31")
+#'  @param minimum_fraction_missing Minimum fraction of data that must be present to do the interpolation; otherwise, it will return NA for all temperatures. Default is 0.8, meaning at least 80% of the data must be present.
+#' @return A data frame with interpolated daily temperature data, including date, julian day, and temperature
+#' @export
+#' 
+daily_temperature_interpolate <- function(temperature_data, start_date=NULL, end_date=NULL, minimum_fraction_missing=0.8) {
+  # Ensure the date column is in Date format
+  temperature_data$ActivityStartDate <- as.Date(temperature_data$ActivityStartDateTime)
+  
+  # Create a sequence of dates from start_date to end_date
+  all_dates <- seq(min(c(temperature_data$ActivityStartDate, as.Date(start_date))), max(c(temperature_data$ActivityStartDate, as.Date(end_date))), by="day")
+  
+  number_observed_days <- length(unique(temperature_data$ActivityStartDate))
+  number_total_days <- length(all_dates)
+  fraction_observed <- number_observed_days / number_total_days
+  if(fraction_observed < minimum_fraction_missing) {
+	warning(paste("Only", round(fraction_observed * 100, 2), "% of the data is present. Returning NA for all temperatures."))
+	return(data.frame(date=all_dates, julian=as.numeric(format(all_dates, "%j")), temp=NA))
+  }
+  
+  # Interpolate the temperature data to fill in missing dates
+  interpolated_temps <- zoo::na.approx(zoo::zoo(temperature_data$ResultMeasureValue, temperature_data$ActivityStartDate), xout=all_dates, na.rm=FALSE)
+  
+  # Create a data frame with the interpolated temperatures
+  result_df <- data.frame(date=all_dates, julian=as.numeric(format(all_dates, "%j")), temp=as.numeric(interpolated_temps))
+  if(!is.null(start_date)) {
+	result_df <- result_df[result_df$date >= as.Date(start_date), ]
+  }
+  if(!is.null(end_date)) {
+	 result_df <- result_df[result_df$date <= as.Date(end_date), ]
+  }
+  return(result_df)
+}
+
+
+#' Get water quality monitoring stations
+#' 
+#' @description This can  retrieve water quality monitoring stations based on state or bounding box coordinates. It uses the dataRetrieval package to fetch the data.
+#' @param state State code (e.g. "CA" for California) to filter stations by state
+#' @param min_lon Minimum longitude for bounding box (optional)
+#' @param max_lon Maximum longitude for bounding box (optional)
+#' @param min_lat Minimum latitude for bounding box (optional)
+#' @param max_lat Maximum latitude for bounding box (optional)
+#' #' @return A data frame with water quality monitoring stations, including site number, site name, latitude, longitude, and other relevant information
+#' @export
+water_stations_find <- function(state=NULL, min_lon=NULL, max_lon=NULL, min_lat=NULL, max_lat=NULL) {
+  # Get all water quality monitoring stations
+  if (!is.null(state)) {
+	siteList <- dataRetrieval::whatNWISsites(stateCd = state, parameterCd = "00010", hasDataTypeCd=c('iv',"dv"))  
+  } else { # tile lat and long if needed
+   width <- abs(max_lon - min_lon)
+   height <- abs(max_lat - min_lat)
+   if(width*height <=25) {
+	siteList <- dataRetrieval::whatNWISsites(bBox = c(min_lon, min_lat, max_lon, max_lat), parameterCd = "00010", hasDataTypeCd=c('iv',"dv"))
+   } else {
+		stop("The bounding box is too large -- it must have an area of less than 25 square degrees (yes, this is a weird restriction, from the underlying data provider)")
+   }	
+  }
+  return(siteList)
+}
+
 
 #' Consumption of energy
 #' @param T temperature (degrees C) at which consumption is calculated
@@ -170,7 +252,7 @@ respiration <- function(T, W, BEM)
 #' @param oxycal_coeff joules per gram of oxygen
 #' @return data.frame with growth over year
 #' @export
-compute_single_station <- function(T_vector, BEM, starting_weight=6.382417, prey_ED=3698.0, oxycal_coeff=13560.0) {
+single_station_compute <- function(T_vector, BEM, starting_weight=6.382417, prey_ED=3698.0, oxycal_coeff=13560.0) {
 	results <- data.frame(julian=sequence(365), temp=T_vector, C1_ins=NA, C2_ins=NA, R1_ins=NA, R2_ins=NA, F1_ins=NA, F2_ins=NA, U1_ins=NA, U2_ins=NA, SDA1_ins=NA, SDA2_ins=NA, W1_ins=NA, W2_ins=NA, W1_cum=NA, W2_cum=NA)
 	results[1,] <- 0
 	results$W2_cum[1] <- starting_weight
@@ -225,5 +307,37 @@ compute_single_station <- function(T_vector, BEM, starting_weight=6.382417, prey
 		
 	}
 	results$W1_cum <- cumsum(results$W1_ins)
+	results$ProportionStartingWeight <- results$W2_cum / starting_weight
 	return(results)
+}
+
+#' Loop through species across a station
+#' @param T_vector Temperatures (degrees C), starting at Julian day 1
+#' @param species Scientific name of the species (e.g. "Micropterus salmoides")
+#' @param starting_weight Starting weight (grams) for the species; can be a single value or a vector with one value per organism
+#' @param prey_ED joules per gram of wet mass for the species' prey; can be a single value or a vector with one value per organism
+#' @param oxycal_coeff joules per gram of oxygen for the species; can be a single value or a vector with one value per organism
+#' @return A data.frame with growth results for each species and life stage, including species name, life stage, and cumulative weight over the year
+#' @export
+loop_species_across_station <- function(T_vector, starting_weight=6.382417, prey_ED=3698.0, oxycal_coeff=13560.0) {
+  n_organisms <- nrow(fb4_data)
+  results_list <- list()
+
+  for (organism_index in sequence(n_organisms)) {
+	focal_species <- fb4_data$Sci_Name[organism_index]
+	focal_lifestage <- fb4_data$LifeStage[organism_index]
+	focal_common <- fb4_data$Species[organism_index]
+	BEM <- bem_from_fb4(focal_species, focal_lifestage)
+	actual_starting_weight <- ifelse(length(starting_weight) == 1, starting_weight, starting_weight[organism_index])
+	actual_prey_ED <- ifelse(length(prey_ED) == 1, prey_ED, prey_ED[organism_index])
+	actual_oxycal_coeff <- ifelse(length(oxycal_coeff) == 1, oxycal_coeff, oxycal_coeff[organism_index])
+	weight_result <- single_station_compute(T_vector, BEM, actual_starting_weight, actual_prey_ED, actual_oxycal_coeff)
+	weight_result$species <- focal_species
+	weight_result$life_stage <- focal_lifestage
+	weight_result$organism_index <- organism_index
+	weight_result$common_name <- focal_common
+	results_list[[organism_index]] <- weight_result
+  }
+  weight_results_df <- do.call(rbind, results_list)
+  return(weight_results_df)
 }

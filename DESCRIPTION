@@ -4,15 +4,23 @@ Version: 0.2025.6.02
 Authors@R: 
     person("Brian", "O'Meara", , "omeara.brian@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-0337-5997"))
-Description: This uses functions from Troia and Perkin (2022) to predict gain of fish mass using a model originally from Hanson et al. (1997).
+Description: This uses functions from Troia and Perkin (2022) to predict
+    gain of fish mass using a model originally from Hanson et al. (1997).
 License: GPL (>= 3)
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+URL: https://bomeara.github.io/fishyenergy/
+Depends: 
+    R (>= 3.5)
+Imports: 
+    dataRetrieval,
+    phangorn,
+    rotl,
+    zoo
 Suggests: 
     knitr,
     rmarkdown
-VignetteBuilder: knitr
-Depends: 
-    R (>= 3.5)
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
 LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2

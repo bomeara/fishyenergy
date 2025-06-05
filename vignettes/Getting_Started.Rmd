@@ -1,5 +1,5 @@
 ---
-title: "Getting_Started"
+title: "Getting Started"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Getting_Started}
@@ -7,12 +7,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The model here is adopted from https://github.com/troiamj/GB_BEM_v01, which is based on [Troia and Perkin (2022)](https://doi.org/10.1093/conphys/coac035). Datasets come from there, as well. 
+The model here is adopted from https://github.com/troiamj/GB_BEM_v01, which is based on [Troia and Perkin (2022)](https://doi.org/10.1093/conphys/coac035). 
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
 )
 ```
 
@@ -26,7 +29,7 @@ First, let's load in our parameters for our model. For the vignette, we're loadi
 bem_raw <- read.csv(system.file("extdata","BEM_parameters_v01.csv", package="fishyenergy"))
 chosen_row <- 1
 bem_vector <- bem_raw[chosen_row,]
-BEM <- new_BEM(bem_vector$CP, bem_vector$CA, bem_vector$CB, bem_vector$CTM, bem_vector$CTO, bem_vector$CQ, bem_vector$ACT, bem_vector$RA, bem_vector$RB, bem_vector$RTM, bem_vector$RTO, bem_vector$RQ, bem_vector$FA, bem_vector$UA, bem_vector$SDA, bem_vector$ED)
+BEM <- bem_new(bem_vector$CP, bem_vector$CA, bem_vector$CB, bem_vector$CTM, bem_vector$CTO, bem_vector$CQ, bem_vector$ACT, bem_vector$RA, bem_vector$RB, bem_vector$RTM, bem_vector$RTO, bem_vector$RQ, bem_vector$FA, bem_vector$UA, bem_vector$SDA, bem_vector$ED)
 ```
 
 And then load in the temperatures for a year at a site:
@@ -46,7 +49,7 @@ plot(x=as.Date(0:364, origin="2020-01-01"), y=temp_vec, xlab="Day", ylab="Temper
 Yay, looks good. Now let's compute the weight gain per day of our fishy:
 
 ```{r}
-station_result <- compute_single_station(T_vector=temp_vec, BEM=BEM)
+station_result <- single_station_compute(T_vector=temp_vec, BEM=BEM)
 ```
 
 And look at how its weight changes over the year at that station:
