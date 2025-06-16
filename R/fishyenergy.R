@@ -1,3 +1,16 @@
+### TODO
+
+# Fish Bioenergetics PDF from 1997 from version 3 has appendices with info on prey energy. 
+# Check FB4 for egestion, etc. parameters.
+# Some params can be vectors
+# New work has condition factor: weight to body mass. FishBase has length/weight relationships, can use that to convert weight to length up to a point. Fish can have a minimum viable body condition (length can go up, weight can go up or down). Could be for an individual based model
+# Check for fish tree of life: Jonathan Chang. Fish Tree of Life. Fish Phylomaker can insert species that aren't in the phylogeny -- could be better than OToL. https://cran.r-project.org/web/packages/fishtree/fishtree.pdf
+# Punzet 2012 -- for converting air temp to water temperature for different climate zones. Could add that to this package. Punzet, M., Voß, F., Voß, A., Kynast, E., & Bärlund, I. (2012). A global approach to assess the potential impact of climate change on stream water temperatures and related in-stream first-order decay rates. Journal of Hydrometeorology, 13(3), 1052-1065.
+# Put in error checking for the temperature, also handling missing data, especially stuff like sensor removed when there's going to be ice. Maybe figure out way to determine these sorts of error, maybe compare with air. 
+# More consumption functions possible, could put in. 
+# https://cran.r-project.org/web/packages/FishPhyloMaker/readme/README.html
+# Add matt as collaborator. 
+
 # Fork from https://github.com/troiamj/GB_BEM_v01, making into full package
 
 #' Parameters for Bioenergetics Model (BEM) from FB4
@@ -16,9 +29,9 @@
 #' @param species Scientific name of the species (e.g. "Micropterus salmoides")
 #' @param lifestage Life stage of the species (e.g. "Adult"). If NA, uses the first life stage found for the species.
 #' @param CP proportion of maximum consumption (default is 0.5)
-#' @param FA fish body mass (grams) (default is 0.1018428)
-#' @param UA activity (mg/kg-day) (default is 0.08743042)
-#' @param SDA salinity (psu) (default is 0.150819)
+#' @param FA egestion proportion (what proportion of food gets passed through) (default is 0.1018428)
+#' @param UA excretion proportion (what proportion is assimilated but not allocated towards metabolism or gonad growth) (default is 0.08743042)
+#' @param SDA specific dynamic action, proportion of energy going to digestion (default is 0.150819)
 #' @param ED energy density (J/kg) (default is 3983.646)
 #' @return BEM object with parameters for the specified species and life stage
 #' @export
@@ -195,7 +208,7 @@ daily_temperature_interpolate <- function(temperature_data, start_date=NULL, end
 #' @param max_lon Maximum longitude for bounding box (optional)
 #' @param min_lat Minimum latitude for bounding box (optional)
 #' @param max_lat Maximum latitude for bounding box (optional)
-#' #' @return A data frame with water quality monitoring stations, including site number, site name, latitude, longitude, and other relevant information
+#' @return A data frame with water quality monitoring stations, including site number, site name, latitude, longitude, and other relevant information
 #' @export
 water_stations_find <- function(state=NULL, min_lon=NULL, max_lon=NULL, min_lat=NULL, max_lat=NULL) {
   # Get all water quality monitoring stations

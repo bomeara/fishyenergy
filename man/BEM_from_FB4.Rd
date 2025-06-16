@@ -21,11 +21,11 @@ bem_from_fb4(
 
 \item{CP}{proportion of maximum consumption (default is 0.5)}
 
-\item{FA}{fish body mass (grams) (default is 0.1018428)}
+\item{FA}{egestion proportion (what proportion of food gets passed through) (default is 0.1018428)}
 
-\item{UA}{activity (mg/kg-day) (default is 0.08743042)}
+\item{UA}{excretion proportion (what proportion is assimilated but not allocated towards metabolism or gonad growth) (default is 0.08743042)}
 
-\item{SDA}{salinity (psu) (default is 0.150819)}
+\item{SDA}{specific dynamic action, proportion of energy going to digestion (default is 0.150819)}
 
 \item{ED}{energy density (J/kg) (default is 3983.646)}
 }

@@ -21,8 +21,10 @@ water_stations_find(
 
 \item{min_lat}{Minimum latitude for bounding box (optional)}
 
-\item{max_lat}{Maximum latitude for bounding box (optional)
-#' @return A data frame with water quality monitoring stations, including site number, site name, latitude, longitude, and other relevant information}
+\item{max_lat}{Maximum latitude for bounding box (optional)}
+}
+\value{
+A data frame with water quality monitoring stations, including site number, site name, latitude, longitude, and other relevant information
 }
 \description{
 This can  retrieve water quality monitoring stations based on state or bounding box coordinates. It uses the dataRetrieval package to fetch the data.
