@@ -24,7 +24,6 @@
 "fb4_data"
 
 
-
 #' Create a BEM object from FB4 data
 #' @param species Scientific name of the species (e.g. "Micropterus salmoides")
 #' @param lifestage Life stage of the species (e.g. "Adult"). If NA, uses the first life stage found for the species.
@@ -124,8 +123,11 @@ fb4_closest_species <- function(species) {
 #' @param CA intercept of allometric mass function
 #' @param CB slope of allometric mass function; should be negative bc bigger fish consume less per gram of body mass than smaller fish
 #' @param CTM critical thermal maximum (degrees C)
-#' @param CTO laboratory temperature preferendum (degrees C)=
+#' @param CTO laboratory temperature preferendum (degrees C)
 #' @param CQ approximates a Q10; the rate at which the function increases over relatively low water temperatures
+#' @param CTL temperature at which consumption is XXXX (degrees C)
+#' @param CK1 temperature at which consumption is XXXX (degrees C)
+#' @param CK4 temperature at which consumption is XXXX (degrees C)
 #' @param ACT activity coefficient
 #' @param RA intercept of allometric activity function
 #' @param RB slope of allometric activity function
@@ -134,14 +136,13 @@ fb4_closest_species <- function(species) {
 #' @param RQ approximates a Q10; the rate at which the function increases over relatively low water temperatures
 #' @param FA fish body mass (grams)
 #' @param UA activity (mg/kg-day)
-#' @param SDA salinity (psu)
+#' @param SDA specific dynamic action (proportion)
 #' @param ED energy density (J/kg)
 #' @return BEM object
 #' @export
-
-bem_new <- function(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED) {
-	result <- c(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED)
-	names(result) <- c('CP', 'CA', 'CB', 'CTM', 'CTO', 'CQ', 'ACT', 'RA', 'RB', 'RTM', 'RTO', 'RQ', 'FA', 'UA', 'SDA', 'ED')
+bem_new <- function(CP, CA, CB, CTM, CTO, CQ, CTL, CK1, CK4, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED) {
+	result <- c(CP, CA, CB, CTM, CTO, CQ, CTL, CK1, CK4, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED)
+	names(result) <- c('CP', 'CA', 'CB', 'CTM', 'CTO', 'CQ', 'CTL', 'CK1', 'CK4', 'ACT', 'RA', 'RB', 'RTM', 'RTO', 'RQ', 'FA', 'UA', 'SDA', 'ED')
 	result_df <- data.frame(t(as.matrix(result)))
 	class(result_df) <- c('BEM', 'data.frame')
 	return(result_df)
@@ -166,7 +167,7 @@ daily_temperature_raw <- function(site_code, start_date, end_date) {
 #' @param temperature_data Data frame with daily temperature data from daily_temperature_raw()
 #' @param start_date Start date for the interpolation (e.g. "2020-01-01")
 #' @param end_date End date for the interpolation (e.g. "2020-12-31")
-#'  @param minimum_fraction_missing Minimum fraction of data that must be present to do the interpolation; otherwise, it will return NA for all temperatures. Default is 0.8, meaning at least 80% of the data must be present.
+#' @param minimum_fraction_missing Minimum fraction of data that must be present to do the interpolation; otherwise, it will return NA for all temperatures. Default is 0.8, meaning at least 80% of the data must be present.
 #' @return A data frame with interpolated daily temperature data, including date, julian day, and temperature
 #' @export
 #' 
@@ -226,15 +227,15 @@ water_stations_find <- function(state=NULL, min_lon=NULL, max_lon=NULL, min_lat=
   return(siteList)
 }
 
-
-#' Consumption of energy
+#' Consumption equation 2
+#' 
+#' @description ADD LATER
 #' @param T temperature (degrees C) at which consumption is calculated
 #' @param W weight (grams) of fish
 #' @param BEM object
 #' @return specific consumption rate (grams of food consumed per gram of fish mass per day)
 #' @export
-
-consumption <- function(T, W, BEM) {
+consumption2 <- function(T, W, BEM) {
 	Y <- log(BEM$CQ)*(BEM$CTM-BEM$CTO+2)
 	Z <- log(BEM$CQ)*(BEM$CTM-BEM$CTO)
 	X <- (Z^2*(1+(1+40/Y)^0.5)^2)/400
@@ -245,11 +246,35 @@ consumption <- function(T, W, BEM) {
 	return(C)	
 }
 
-#' Respiration 1 equation
+#' Consumption equation 3
+#' 
+#' @description ADD LATER
+#' @param T temperature (degrees C) at which consumption is calculated
+#' @param W weight (grams) of fish
+#' @param BEM object
+#' @return specific consumption rate (grams of food consumed per gram of fish mass per day)
+#' @export
+consumption3 <- function(T, W, BEM)
+{
+  G2 = (1/(BEM$CTL-BEM$CTM))*log((0.98*(1-BEM$CK4))/(BEM$CK4*0.02))
+  L2 = exp(G2*(BEM$CTL-T))
+  KB = (BEM$CK4*L2)/(1+BEM$CK4*(L2-1))
+  G1 = (1/(BEM$CTO-BEM$CQ))* log((0.98*(1-BEM$CK1))/(BEM$CK1*0.02))
+  L1 = exp(G1)*(T-BEM$CQ)
+  KA = (BEM$CK1*L1)/(1+BEM$CK1*(L1-1))
+  fT_C = KA*KB
+  Cmax = CA*M^CB
+  C = Cmax*BEM$CP*fT_C                         
+  return(C)
+}
+
+#' Respiration equation 1
+#' 
+#' @description ADD LATER
 #' @param T temperature (degrees C) at which consumption is calculated
 #' @param W weight (grams) of fish
 #' @param BEM BEM object
-respiration <- function(T, W, BEM)
+respiration1 <- function(T, W, BEM)
 {
   fT <- exp(BEM$RQ*T)
   ACTIVITY <- BEM$ACT
@@ -257,7 +282,27 @@ respiration <- function(T, W, BEM)
   return(R)
 }
 
+#' Respiration equation 2
+#' 
+#' @description ADD LATER
+#' @param T temperature (degrees C) at which consumption is calculated
+#' @param W weight (grams) of fish
+#' @param BEM BEM object
+respiration2 <- function(T, W, BEM)
+{
+  Y=log(BEM$RQ)*(BEM$RTM-BEM$RTO+2)
+  Z=log(BEM$RQ)*(BEM$RTM-BEM$RTO)
+  X=(Z^2*(1+(1+40/Y)^0.5)^2)/400
+  V=(BEM$RTM-T)/(BEM$RTM-BEM$RTO)
+  ACTIVITY=BEM$ACT
+  fT=V^X*exp(X*(1-V))
+  R=BEM$RA*BEM$W^BEM$RB*fT*ACTIVITY
+  return(R)
+}
+
 #' Compute growth for a year at a station
+#' 
+#' @description ADD LATER
 #' @param T_vector Temperatures (degrees C), starting at Julian day 1
 #' @param BEM BEM object
 #' @param starting_weight Starting weight (grams) from Groeschel-Taylor et al
@@ -325,6 +370,8 @@ single_station_compute <- function(T_vector, BEM, starting_weight=6.382417, prey
 }
 
 #' Loop through species across a station
+#' 
+#' @description ADD LATER
 #' @param T_vector Temperatures (degrees C), starting at Julian day 1
 #' @param species Scientific name of the species (e.g. "Micropterus salmoides")
 #' @param starting_weight Starting weight (grams) for the species; can be a single value or a vector with one value per organism
