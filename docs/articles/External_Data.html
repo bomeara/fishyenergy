@@ -190,7 +190,7 @@ data:</p>
 Let’s plot the data to see what it looks like:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">raw_temps</span><span class="op">$</span><span class="va">ActivityStartDate</span>, <span class="va">raw_temps</span><span class="op">$</span><span class="va">ResultMeasureValue</span>, pch<span class="op">=</span><span class="fl">19</span>, xlab<span class="op">=</span><span class="st">"Date"</span>, ylab<span class="op">=</span><span class="st">"Temperature (C)"</span>, main<span class="op">=</span><span class="st">"Little River Temperature Data"</span>, bty<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="External_Data_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="External_Data_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="700"></p>
 <p>We need points for every day, so let’s interpolate the data. By
 default, it will give us an error if there are a lot of missing data: by
 default, if it is over 80% missing. But we can manually change that
@@ -204,7 +204,7 @@ is missing. We can also focus on just 2023 by setting the
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">raw_temps</span><span class="op">$</span><span class="va">ActivityStartDate</span>, <span class="va">raw_temps</span><span class="op">$</span><span class="va">ResultMeasureValue</span>, pch<span class="op">=</span><span class="fl">19</span>, xlab<span class="op">=</span><span class="st">"Date"</span>, ylab<span class="op">=</span><span class="st">"Temperature (C)"</span>, main<span class="op">=</span><span class="st">"Little River Temperature Data"</span>, bty<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">interpolated_temps</span><span class="op">$</span><span class="va">date</span>, <span class="va">interpolated_temps</span><span class="op">$</span><span class="va">temp</span>, col<span class="op">=</span><span class="st">"red"</span>, pch<span class="op">=</span><span class="st">'.'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="External_Data_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p><img src="External_Data_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="700"></p>
 <p>It’s not a smoothed plot: we keep the actual temperatures the fish
 experienced, and just linearly interpolate between them. Now we can
 compute the weight gain for the fish at this site:</p>
@@ -213,7 +213,7 @@ compute the weight gain for the fish at this site:</p>
 <p>We can plot the weight gain over the year:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">interpolated_temps</span><span class="op">$</span><span class="va">date</span>, <span class="va">station_result</span><span class="op">$</span><span class="va">W2_cum</span>, xlab<span class="op">=</span><span class="st">"Date"</span>, ylab<span class="op">=</span><span class="st">"Mass (g)"</span>, type<span class="op">=</span><span class="st">'l'</span>, bty<span class="op">=</span><span class="st">"n"</span>, main<span class="op">=</span><span class="st">"Weight Gain in Little River"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="External_Data_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="External_Data_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="700"></p>
 <p>We can look at every species in the database and see how they would
 have done in the Little River in TN. For this, we will make very, very
 bad assumptions: they all start with a weight of 6.382417 g, they all
@@ -260,7 +260,7 @@ for a species like a lionfish, but we will throw it in.</p>
 <span>    hjust <span class="op">=</span> <span class="fl">0</span>, nudge_x <span class="op">=</span> <span class="fl">5</span>, size <span class="op">=</span> <span class="fl">3</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span>, segment.color <span class="op">=</span> <span class="st">'gray'</span>, box.padding <span class="op">=</span> <span class="fl">0.3</span>, max.overlaps <span class="op">=</span> <span class="cn">Inf</span></span>
 <span>  <span class="op">)</span>  <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Day of year"</span>, y<span class="op">=</span><span class="st">"Relative mass"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">500</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="External_Data_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="External_Data_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="700"></p>
 <p>We can also see what organism would not survive (would go to zero
 body mass) in the Little River in TN given our (bad) assumptions going
 into the analysis:</p>
@@ -308,7 +308,7 @@ species at a site – use it with your own better data!</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

@@ -27,5 +27,5 @@ single_station_compute(
 data.frame with growth over year
 }
 \description{
-Compute growth for a year at a station
+ADD LATER
 }

@@ -2,7 +2,8 @@
 
 export(bem_from_fb4)
 export(bem_new)
-export(consumption)
+export(consumption2)
+export(consumption3)
 export(daily_temperature_interpolate)
 export(daily_temperature_raw)
 export(fb4_closest_species)

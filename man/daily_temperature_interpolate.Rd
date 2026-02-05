@@ -16,8 +16,9 @@ daily_temperature_interpolate(
 
 \item{start_date}{Start date for the interpolation (e.g. "2020-01-01")}
 
-\item{end_date}{End date for the interpolation (e.g. "2020-12-31")
-@param minimum_fraction_missing Minimum fraction of data that must be present to do the interpolation; otherwise, it will return NA for all temperatures. Default is 0.8, meaning at least 80\% of the data must be present.}
+\item{end_date}{End date for the interpolation (e.g. "2020-12-31")}
+
+\item{minimum_fraction_missing}{Minimum fraction of data that must be present to do the interpolation; otherwise, it will return NA for all temperatures. Default is 0.8, meaning at least 80\% of the data must be present.}
 }
 \value{
 A data frame with interpolated daily temperature data, including date, julian day, and temperature

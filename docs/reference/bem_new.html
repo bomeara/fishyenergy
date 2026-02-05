@@ -42,7 +42,27 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bem_new</span><span class="op">(</span><span class="va">CP</span>, <span class="va">CA</span>, <span class="va">CB</span>, <span class="va">CTM</span>, <span class="va">CTO</span>, <span class="va">CQ</span>, <span class="va">ACT</span>, <span class="va">RA</span>, <span class="va">RB</span>, <span class="va">RTM</span>, <span class="va">RTO</span>, <span class="va">RQ</span>, <span class="va">FA</span>, <span class="va">UA</span>, <span class="va">SDA</span>, <span class="va">ED</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bem_new</span><span class="op">(</span></span>
+<span>  <span class="va">CP</span>,</span>
+<span>  <span class="va">CA</span>,</span>
+<span>  <span class="va">CB</span>,</span>
+<span>  <span class="va">CTM</span>,</span>
+<span>  <span class="va">CTO</span>,</span>
+<span>  <span class="va">CQ</span>,</span>
+<span>  <span class="va">CTL</span>,</span>
+<span>  <span class="va">CK1</span>,</span>
+<span>  <span class="va">CK4</span>,</span>
+<span>  <span class="va">ACT</span>,</span>
+<span>  <span class="va">RA</span>,</span>
+<span>  <span class="va">RB</span>,</span>
+<span>  <span class="va">RTM</span>,</span>
+<span>  <span class="va">RTO</span>,</span>
+<span>  <span class="va">RQ</span>,</span>
+<span>  <span class="va">FA</span>,</span>
+<span>  UA <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  SDA <span class="op">=</span> <span class="fl">0.15</span>,</span>
+<span>  ED <span class="op">=</span> <span class="fl">3000</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -66,11 +86,23 @@
 
 
 <dt id="arg-cto">CTO<a class="anchor" aria-label="anchor" href="#arg-cto"></a></dt>
-<dd><p>laboratory temperature preferendum (degrees C)=</p></dd>
+<dd><p>laboratory temperature preferendum (degrees C)</p></dd>
 
 
 <dt id="arg-cq">CQ<a class="anchor" aria-label="anchor" href="#arg-cq"></a></dt>
 <dd><p>approximates a Q10; the rate at which the function increases over relatively low water temperatures</p></dd>
+
+
+<dt id="arg-ctl">CTL<a class="anchor" aria-label="anchor" href="#arg-ctl"></a></dt>
+<dd><p>temperature at which consumption is XXXX (degrees C)</p></dd>
+
+
+<dt id="arg-ck-">CK1<a class="anchor" aria-label="anchor" href="#arg-ck-"></a></dt>
+<dd><p>temperature at which consumption is XXXX (degrees C)</p></dd>
+
+
+<dt id="arg-ck-">CK4<a class="anchor" aria-label="anchor" href="#arg-ck-"></a></dt>
+<dd><p>temperature at which consumption is XXXX (degrees C)</p></dd>
 
 
 <dt id="arg-act">ACT<a class="anchor" aria-label="anchor" href="#arg-act"></a></dt>
@@ -106,7 +138,7 @@
 
 
 <dt id="arg-sda">SDA<a class="anchor" aria-label="anchor" href="#arg-sda"></a></dt>
-<dd><p>salinity (psu)</p></dd>
+<dd><p>specific dynamic action (proportion)</p></dd>
 
 
 <dt id="arg-ed">ED<a class="anchor" aria-label="anchor" href="#arg-ed"></a></dt>
@@ -127,7 +159,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

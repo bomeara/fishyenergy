@@ -26,5 +26,5 @@ loop_species_across_station(
 A data.frame with growth results for each species and life stage, including species name, life stage, and cumulative weight over the year
 }
 \description{
-Loop through species across a station
+ADD LATER
 }

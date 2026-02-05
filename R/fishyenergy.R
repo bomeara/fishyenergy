@@ -140,7 +140,7 @@ fb4_closest_species <- function(species) {
 #' @param ED energy density (J/kg)
 #' @return BEM object
 #' @export
-bem_new <- function(CP, CA, CB, CTM, CTO, CQ, CTL, CK1, CK4, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED) {
+bem_new <- function(CP, CA, CB, CTM, CTO, CQ, CTL, CK1, CK4, ACT, RA, RB, RTM, RTO, RQ, FA, UA=0.1, SDA=0.15, ED=3000) {
 	result <- c(CP, CA, CB, CTM, CTO, CQ, CTL, CK1, CK4, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED)
 	names(result) <- c('CP', 'CA', 'CB', 'CTM', 'CTO', 'CQ', 'CTL', 'CK1', 'CK4', 'ACT', 'RA', 'RB', 'RTM', 'RTO', 'RQ', 'FA', 'UA', 'SDA', 'ED')
 	result_df <- data.frame(t(as.matrix(result)))
@@ -316,7 +316,7 @@ single_station_compute <- function(T_vector, BEM, starting_weight=6.382417, prey
 	results$W2_cum[1] <- starting_weight
 	for (day in 2:nrow(results)) {
 		# simulate consumption --> grams of prey
-		results$C1_ins[day] <- consumption(T=results$temp[day], W=results$W2_cum[day-1], BEM=BEM) * results$W2_cum[day-1]
+		results$C1_ins[day] <- consumption2(T=results$temp[day], W=results$W2_cum[day-1], BEM=BEM) * results$W2_cum[day-1]
 		if(is.na(results$C1_ins[day])) {
 			results$C1_ins[day] <- 0
 		}
@@ -325,7 +325,7 @@ single_station_compute <- function(T_vector, BEM, starting_weight=6.382417, prey
 		results$C2_ins[day] <- results$C1_ins[day] * prey_ED  # convert from grams of food to joules with prey energy density parameter
 		
 		# simulate respiration --> grams of oxygen
-		results$R1_ins[day] <- respiration(T=results$temp[day], W=results$W2_cum[day-1], BEM=BEM) *  results$W2_cum[day-1]
+		results$R1_ins[day] <- respiration1(T=results$temp[day], W=results$W2_cum[day-1], BEM=BEM) *  results$W2_cum[day-1]
 		
 		# simulate respiration --> joules of energy
 		results$R2_ins[day] <- results$R1_ins[day] * oxycal_coeff # convert from grams of oxygen to joules with oxycalorific coefficient

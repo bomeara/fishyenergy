@@ -2,7 +2,7 @@
 title: "External Data"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{External_Data}
+  %\VignetteIndexEntry{External Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

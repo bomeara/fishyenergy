@@ -1,0 +1,43 @@
+# Interpolate daily temperature data
+
+From a raw set of daily temperature data from daily_temperature_raw,
+this interpolates the temperature data to fill in missing dates. You may
+want to have raw data before and after the period of interest so that
+dates within can be interpolated. If the start and end dates are not
+provided, it will use the min and max dates from the temperature data.
+
+## Usage
+
+``` r
+daily_temperature_interpolate(
+  temperature_data,
+  start_date = NULL,
+  end_date = NULL,
+  minimum_fraction_missing = 0.8
+)
+```
+
+## Arguments
+
+- temperature_data:
+
+  Data frame with daily temperature data from daily_temperature_raw()
+
+- start_date:
+
+  Start date for the interpolation (e.g. "2020-01-01")
+
+- end_date:
+
+  End date for the interpolation (e.g. "2020-12-31")
+
+- minimum_fraction_missing:
+
+  Minimum fraction of data that must be present to do the interpolation;
+  otherwise, it will return NA for all temperatures. Default is 0.8,
+  meaning at least 80% of the data must be present.
+
+## Value
+
+A data frame with interpolated daily temperature data, including date,
+julian day, and temperature

@@ -4,7 +4,27 @@
 \alias{bem_new}
 \title{Create a new object with BEM data}
 \usage{
-bem_new(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED)
+bem_new(
+  CP,
+  CA,
+  CB,
+  CTM,
+  CTO,
+  CQ,
+  CTL,
+  CK1,
+  CK4,
+  ACT,
+  RA,
+  RB,
+  RTM,
+  RTO,
+  RQ,
+  FA,
+  UA = 0.1,
+  SDA = 0.15,
+  ED = 3000
+)
 }
 \arguments{
 \item{CP}{proportion of maximum consumption}
@@ -15,9 +35,15 @@ bem_new(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED)
 
 \item{CTM}{critical thermal maximum (degrees C)}
 
-\item{CTO}{laboratory temperature preferendum (degrees C)=}
+\item{CTO}{laboratory temperature preferendum (degrees C)}
 
 \item{CQ}{approximates a Q10; the rate at which the function increases over relatively low water temperatures}
+
+\item{CTL}{temperature at which consumption is XXXX (degrees C)}
+
+\item{CK1}{temperature at which consumption is XXXX (degrees C)}
+
+\item{CK4}{temperature at which consumption is XXXX (degrees C)}
 
 \item{ACT}{activity coefficient}
 
@@ -35,7 +61,7 @@ bem_new(CP, CA, CB, CTM, CTO, CQ, ACT, RA, RB, RTM, RTO, RQ, FA, UA, SDA, ED)
 
 \item{UA}{activity (mg/kg-day)}
 
-\item{SDA}{salinity (psu)}
+\item{SDA}{specific dynamic action (proportion)}
 
 \item{ED}{energy density (J/kg)}
 }
