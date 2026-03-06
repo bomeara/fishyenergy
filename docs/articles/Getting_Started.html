@@ -33,8 +33,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/External_Data.html">External Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Getting_Started.html">Getting Started</a></li>
+<li><a class="dropdown-item" href="../articles/Getting_Started.html">Getting Started</a></li>
+    <li><a class="dropdown-item" href="../articles/Mapping_BrookTrout.html">Mapping Brook trout</a></li>
+    <li><a class="dropdown-item" href="../articles/Validation.html">Validation</a></li>
   </ul>
 </li>
       </ul>
@@ -64,38 +65,342 @@
 
     
     
-<p>The model here is adopted from <a href="https://github.com/troiamj/GB_BEM_v01" class="external-link uri">https://github.com/troiamj/GB_BEM_v01</a>, which is based on
-<a href="https://doi.org/10.1093/conphys/coac035" class="external-link">Troia and Perkin
-(2022)</a>.</p>
+<div class="section level3">
+<h3 id="in-this-vignette-you-will">In this vignette, you will:<a class="anchor" aria-label="anchor" href="#in-this-vignette-you-will"></a>
+</h3>
+<ol style="list-style-type: decimal">
+<li>Learn fundamentals of bioenergetics modeling (BEM) by visualizing
+mass dependent and temperature-dependent physiological rates.</li>
+<li>Simulate daily energetics and growth of a fish for a year.</li>
+<li>Explore effects of temporal extrinsic parameters like temperature,
+the proportion of maximum consumption (CP), the activity multiplier
+(ACT), and prey energy density.</li>
+<li>Compare energetics and growth among a representative warmwater and
+coldwater species.</li>
+</ol>
+<div class="section level5">
+<h5 id="section"></h5>
+<p>First, install the fishyenergy package and load the library.
+Dependencies include reshape2, stringr, terra, sf, lubridate, and
+ggplot2. These libraries are automatically loaded.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bomeara.github.io/fishyenergy/">fishyenergy</a></span><span class="op">)</span></span></code></pre></div>
-<p>First, let’s load in our parameters for our model. For the vignette,
-we’re loading it from a saved one in our package, but you can get one
-from your computer instead</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">setwd</a></span><span class="op">(</span><span class="st">"D:\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v01\\fishyenergy\\"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape" class="external-link">reshape2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="section-1"></h5>
+</div>
+<div class="section level4">
+<h4 id="temperature-dependent-physiological-rates">1) Temperature-dependent physiological rates<a class="anchor" aria-label="anchor" href="#temperature-dependent-physiological-rates"></a>
+</h4>
+<p>Next, let’s look at temperature-dependent physiological rates of a
+few species. Start by loading the intrinsic bioenergetics parameters of
+five example species. These parameters have been published by various
+authors since the 1980s and are available from Fish Bioenergetics 4.0
+(FB4)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bem_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>,<span class="st">"BEM_parameters_v01.csv"</span>, package<span class="op">=</span><span class="st">"fishyenergy"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">chosen_row</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">bem_vector</span> <span class="op">&lt;-</span> <span class="va">bem_raw</span><span class="op">[</span><span class="va">chosen_row</span>,<span class="op">]</span></span>
-<span><span class="va">BEM</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bem_new.html">bem_new</a></span><span class="op">(</span><span class="va">bem_vector</span><span class="op">$</span><span class="va">CP</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">CA</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">CB</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">CTM</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">CTO</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">CQ</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">ACT</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">RA</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">RB</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">RTM</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">RTO</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">RQ</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">FA</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">UA</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">SDA</span>, <span class="va">bem_vector</span><span class="op">$</span><span class="va">ED</span><span class="op">)</span></span></code></pre></div>
-<p>And then load in the temperatures for a year at a site:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">parms_fb4</span><span class="op">)</span></span></code></pre></div>
+<div class="section level5">
+<h5 id="section-2"></h5>
+<p>Let’s retain only one focal species, largemouth bass, and look at
+these data.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">temp_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>,<span class="st">"modeled_WT_HUC12100201.csv"</span>, package<span class="op">=</span><span class="st">"fishyenergy"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">chosen_col</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">temp_vec</span> <span class="op">&lt;-</span> <span class="va">temp_raw</span><span class="op">[</span>,<span class="va">chosen_col</span><span class="op">]</span></span></code></pre></div>
-<p>Let’s plot the temperature data to make sure they look like what we’d
-expect</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
+<span><span class="va">parms.micsal</span> <span class="op">&lt;-</span> <span class="va">parms_fb4</span><span class="op">[</span><span class="va">parms_fb4</span><span class="op">$</span><span class="va">genus_species</span> <span class="op">==</span> <span class="st">"micropterus_salmoides"</span>,<span class="op">]</span></span>
+<span><span class="va">parms.micsal</span></span>
+<span><span class="co">#&gt;           genus_species LifeStage           Source    lwA   lwB CEQ   CA     CB   CQ  CTO CTM CTL CK1 CK4 REQ       RA     RB     RQ    RTO RTM RTL RK1 RK4     SDA    FA      UA pred_ED</span></span>
+<span><span class="co">#&gt; 2 micropterus_salmoides     adult Rice et al. 1983 0.0226 2.781   2 0.33 -0.325 2.65 27.5  37  NA  NA  NA   1 0.008352 -0.355 0.0313 0.0196   0   0   1   0 0.15848 0.104 0.08817    4184</span></span></code></pre></div>
+<p>The first column shows the Latin name in snake case. Other columns
+like lwA and lwB are the intercept and slope of the length-weight
+equation. Still other columns like CA and CB are the intercept and slope
+of the mass dependent consumption equation (a negative power law).
+There’s also specific dynamic action (i.e., the proportion of energy
+consumed allocated to the cost of digestion), predator energy density,
+and many other variables defined by Hanson et al. (1997).</p>
+</div>
+<div class="section level5">
+<h5 id="section-3"></h5>
+<p>Let’s visualize the effect of temperature on consumption,
+respiration, and various other physiological rates for largemouth bass.
+To do this, we use the bem_curve function which needs to be supplied
+with a few essential arguments.</p>
+<p>Set the mass to a reasonable amount (454 grams which is ~ 1
+pound).</p>
+<p>We plot this curve over ecologically realistic temperature range of
+5°C to 35°C.</p>
+<p>We specify the intrinsic parameters for largemouth bass and the
+corresponding consumption and respiration functions… 2 and 1,
+respectively.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<<<<<<< Updated upstream
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">364</span>, origin<span class="op">=</span><span class="st">"2020-01-01"</span><span class="op">)</span>, y<span class="op">=</span><span class="va">temp_vec</span>, xlab<span class="op">=</span><span class="st">"Day"</span>, ylab<span class="op">=</span><span class="st">"Temperature"</span>, type<span class="op">=</span><span class="st">'l'</span>, bty<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Getting_Started_files/figure-html/unnamed-chunk-4-1.png" alt="Line plot showing temperature over a year" width="700"></p>
 <p>Yay, looks good. Now let’s compute the weight gain per day of our
 fishy:</p>
+=======
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bem_curve.html">bem_curve</a></span><span class="op">(</span>M <span class="op">=</span> <span class="fl">454</span>,</span>
+<span>          T <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">35</span>,</span>
+<span>          CP <span class="op">=</span> <span class="fl">1.0</span>,</span>
+<span>          ACT <span class="op">=</span> <span class="fl">1.0</span>,</span>
+<span>          prey_ED <span class="op">=</span> <span class="fl">4000</span>,</span>
+<span>          parms.intrinsic <span class="op">=</span> <span class="va">parms.micsal</span>,</span>
+<span>          C_eq <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>          R_eq <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" width="576"></p>
+<p>Notice that the consumption curve increases exponentially to an
+optimum temperature of ~28°C and then declines at higher temperatures.
+This curve shape is characteristic of consumption function 2. In
+contrast, we see that the respiration curve increases exponentially over
+the full range of temperatures (i.e., there is no optimum beyond which
+respiration declines). This curve shape is characteristic of respiration
+function 1.</p>
+<p>Compare the above curves to those plotted when the activity
+multiplier is changed from 1.0 to 2.0, thus simulating a predator fish
+with 2 times the metabolic demand of the previous predator fish at rest.
+Notice that the red respiration curve is higher and consequently the
+black surplus curve is lower.</p>
+>>>>>>> Stashed changes
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">station_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/single_station_compute.html">single_station_compute</a></span><span class="op">(</span>T_vector<span class="op">=</span><span class="va">temp_vec</span>, BEM<span class="op">=</span><span class="va">BEM</span><span class="op">)</span></span></code></pre></div>
-<p>And look at how its weight changes over the year at that station:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bem_curve.html">bem_curve</a></span><span class="op">(</span>M <span class="op">=</span> <span class="fl">454</span>,</span>
+<span>          T <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">35</span>,</span>
+<span>          CP <span class="op">=</span> <span class="fl">1.0</span>,</span>
+<span>          ACT <span class="op">=</span> <span class="fl">2.0</span>,</span>
+<span>          prey_ED <span class="op">=</span> <span class="fl">4000</span>,</span>
+<span>          parms.intrinsic <span class="op">=</span> <span class="va">parms.micsal</span>,</span>
+<span>          C_eq <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>          R_eq <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" width="576"></p>
+</div>
+<div class="section level5">
+<h5 id="section-4"></h5>
+<p>It is clear that largemouth bass perform well at higher temperatures
+which is why we know them to be members of the warmwater thermal guild.
+Let’s visualize the effect of temperature on the same physiological
+rates for a putative coldwater species, the brook trout. Notice that the
+consumption and respiration equations for brook trout are 2 and 2,
+respectively.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<<<<<<< Updated upstream
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">364</span>, origin<span class="op">=</span><span class="st">"2020-01-01"</span><span class="op">)</span>, y<span class="op">=</span><span class="va">station_result</span><span class="op">$</span><span class="va">W2_cum</span>, xlab<span class="op">=</span><span class="st">"Day"</span>, ylab<span class="op">=</span><span class="st">"Mass (g)"</span>, type<span class="op">=</span><span class="st">'l'</span>, bty<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Getting_Started_files/figure-html/unnamed-chunk-6-1.png" alt="Line plot showing mass over a year" width="700"></p>
   </main>
+=======
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bem_curve.html">bem_curve</a></span><span class="op">(</span>M <span class="op">=</span> <span class="fl">454</span>,</span>
+<span>          T <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">35</span>,</span>
+<span>          CP <span class="op">=</span> <span class="fl">1.0</span>,</span>
+<span>          ACT <span class="op">=</span> <span class="fl">1.0</span>,</span>
+<span>          prey_ED <span class="op">=</span> <span class="fl">4000</span>,</span>
+<span>          parms.intrinsic <span class="op">=</span> <span class="va">parms_fb4</span><span class="op">[</span><span class="va">parms_fb4</span><span class="op">$</span><span class="va">genus_species</span> <span class="op">==</span> <span class="st">"salvelinus_fontinalis"</span>,<span class="op">]</span>,</span>
+<span>          C_eq <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>          R_eq <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" width="576"></p>
+</div>
+<div class="section level5">
+<h5 id="section-5"></h5>
+</div>
+</div>
+<div class="section level4">
+<h4 id="grow-a-fish">2) Grow a fish!<a class="anchor" aria-label="anchor" href="#grow-a-fish"></a>
+</h4>
+<p>First, simulate (i.e., create a fake) temperature time series with
+mean daily water temperature for every day of a calendar year. We do
+this using a sine wave function, setting mean annual temperature and
+annual amplitude to values that are realistic for a temperate waterbody
+that does not ice over during the winter.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">parm.tmean</span> <span class="op">&lt;-</span> <span class="fl">16</span>        <span class="co"># mean annual temperature</span></span>
+<span><span class="va">parm.ampli</span> <span class="op">&lt;-</span> <span class="fl">13</span>        <span class="co"># temperature amplitude</span></span>
+<span><span class="va">julian</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">365</span>,<span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">WT_mean</span> <span class="op">&lt;-</span> <span class="va">parm.ampli</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">pi</span><span class="op">/</span><span class="fl">365</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="va">julian</span> <span class="op">-</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">parm.tmean</span></span>
+<span><span class="va">temps_fake</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">julian</span>, <span class="va">WT_mean</span><span class="op">)</span></span></code></pre></div>
+<p>Plot the time series of mean daily water temperature.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of year"</span>, y <span class="op">=</span> <span class="st">"Water temperature (°C)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">366</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">360</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">40</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian</span>, y <span class="op">=</span> <span class="va">WT_mean</span><span class="op">)</span>, <span class="va">temps_fake</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="576"></p>
+<div class="section level5">
+<h5 id="section-6"></h5>
+<p>Next, use the bem_grow function to simulate the daily bioenergetic
+budget of a largemouth bass. We need to load some parameters that
+potentially vary temporally. The dataframe has 365 rows representing
+each day of the year. There are five noteworthy columns (i.e.,
+variables):</p>
+<p>CP is the proportion of maximum consumption and decrease as prey
+quantity declines or as exploitative competition increases.</p>
+<p>ACT is the activity multiplier where a value of zero would indicate
+no metabolic costs beyond being at rest. Maintaining position in a
+flowing stream, avoiding predators, pursuing prey, and engaging in
+reproductive behavior increase ACT.</p>
+<p>The next two parameters (gsi_f and gsi_m) allow the user to model
+somatic growth of a reproductively mature fish that allocates some
+energy to gonadal tissue. Separate parameters are provided for females
+and males because the sexes invest different amounts of energy to their
+gonads–gsi_f and gsi_m, respectively. The default data assume a
+reproductively immature fish (i.e., gsi = 0).</p>
+<p>Modifying prey energy density (prey_ED) over the year can simulate
+ontogenetic diet shifts or changes in prey quality. There are numerous
+published estimates of prey energy density for common prey items like
+invertebrates, fish, and so on.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">parms_temporal_DEFAULT</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">parms_temporal_DEFAULT</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 365   6</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">parms_temporal_DEFAULT</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       date CP ACT gsi_f gsi_m prey_ED</span></span>
+<span><span class="co">#&gt; 1 1/1/2025  1   1     0     0    3698</span></span>
+<span><span class="co">#&gt; 2 1/2/2025  1   1     0     0    3698</span></span>
+<span><span class="co">#&gt; 3 1/3/2025  1   1     0     0    3698</span></span>
+<span><span class="co">#&gt; 4 1/4/2025  1   1     0     0    3698</span></span>
+<span><span class="co">#&gt; 5 1/5/2025  1   1     0     0    3698</span></span>
+<span><span class="co">#&gt; 6 1/6/2025  1   1     0     0    3698</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="section-7"></h5>
+<p>Next, use the bem_grow function to simulate the daily bioenergetic
+budget of a largemouth bass. Start the fish at 454 grams which is ~1
+pound. We need to load some parameters that potentially vary
+temporally.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">grow.micsal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bem_grow.html">bem_grow</a></span><span class="op">(</span>start_M2 <span class="op">=</span> <span class="fl">454</span>,</span>
+<span>                        temperature <span class="op">=</span> <span class="va">temps_fake</span>,</span>
+<span>                        parms.intrinsic <span class="op">=</span> <span class="va">parms.micsal</span>,</span>
+<span>                        parms.temporal <span class="op">=</span> <span class="va">parms_temporal_DEFAULT</span>,</span>
+<span>                        C_eq <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>                        R_eq <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="section-8"></h5>
+<p>The output of bem_grow is quite extensive. There are 365 rows
+representing each day of the year and 43(!) variables. Let’s have a look
+at those variables:</p>
+<p>The first eight variables represent inputs that you’re already
+familiar with like temperature, CP, ACT, gsi, and so on.</p>
+<p>The remaining variables are outputs including consumption (C),
+respiration (R), egestion (F), excretion (U), specific dynamic action
+(SDA), somatic mass (MS), and gonadal mass for females and males
+(MG).</p>
+<p>The “1” version of these variables are in units of energy (joules)
+and the “2” version of these variables are in units of mass (grams). The
+“_ins” version of these variables represents instantaneous (i.e., daily)
+values and the “_cum” represents cumulative values (i.e., since January
+1st).</p>
+<p>Finally, cumulative length (L_cum) and Fulton condition factor (K)
+are calculated from the length-weight parameters in parms_fb4. Survival
+(Surv) is assumed to start at 1 on January 1st and remains 1 if Fulton
+condition factor remains at or above 0.4 but switches to 0 if K falls
+below 0.4.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">grow.micsal</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   julian WT_mean pred_ED gsi_m gsi_f CP ACT prey_ED C1_ins   C2_ins R1_ins   R2_ins F1_ins  F2_ins U1_ins  U2_ins SDA1_ins SDA2_ins   MS1_ins MS2_ins MG1_ins MG2_ins    M1_ins M2_ins C1_cum    C2_cum R1_cum    R2_cum F1_cum   F2_cum U1_cum   U2_cum SDA1_cum SDA2_cum    MS1_cum MS2_cum MG1_cum MG2_cum     M1_cum  M2_cum   L_cum        K Surv</span></span>
+<span><span class="co">#&gt; 1      1     4.1    4184     0     0  1   1    3698  0.000    0.000  0.000    0.000  0.000   0.000  0.000   0.000    0.000    0.000     0.000   0.000       0       0     0.000  0.000  0.000     0.000  0.000     0.000  0.000    0.000  0.000    0.000    0.000    0.000      0.000 454.000       0       0      0.000 454.000 35.2587       NA   NA</span></span>
+<span><span class="co">#&gt; 2      2     4.0    4184     0     0  1   1    3698  1.537 5682.363  0.490 6640.852  0.160 590.966  0.135 501.014    0.218  806.885 -2857.354  -0.683       0       0 -2857.354 -0.683  1.537  5682.363  0.490  6640.852  0.160  590.966  0.135  501.014    0.218  806.885  -2857.354 453.317       0       0  -2857.354 453.317 35.2587 1.034197    1</span></span>
+<span><span class="co">#&gt; 3      3     3.9    4184     0     0  1   1    3698  1.515 5601.397  0.488 6616.928  0.158 582.545  0.134 493.875    0.215  795.388 -2887.338  -0.690       0       0 -2887.338 -0.690  3.051 11283.760  0.978 13257.779  0.317 1173.511  0.269  994.889    0.433 1602.272  -5744.692 452.627       0       0  -5744.692 452.627 35.2587 1.032623    1</span></span>
+<span><span class="co">#&gt; 4      4     3.8    4184     0     0  1   1    3698  1.494 5524.576  0.486 6593.751  0.155 574.556  0.132 487.102    0.212  784.479 -2915.312  -0.697       0       0 -2915.312 -0.697  4.545 16808.336  1.464 19851.531  0.473 1748.067  0.401 1481.991    0.645 2386.751  -8660.004 451.930       0       0  -8660.004 451.930 35.2587 1.031033    1</span></span>
+<span><span class="co">#&gt; 5      5     3.8    4184     0     0  1   1    3698  1.474 5451.794  0.485 6571.325  0.153 566.987  0.130 480.685    0.209  774.144 -2941.347  -0.703       0       0 -2941.347 -0.703  6.020 22260.130  1.949 26422.856  0.626 2315.054  0.531 1962.676    0.855 3160.896 -11601.351 451.227       0       0 -11601.351 451.227 35.2587 1.029429    1</span></span>
+<span><span class="co">#&gt; 6      6     3.7    4184     0     0  1   1    3698  1.456 5382.949  0.483 6549.651  0.151 559.827  0.128 474.615    0.207  764.368 -2965.511  -0.709       0       0 -2965.511 -0.709  7.475 27643.079  2.432 32972.507  0.777 2874.880  0.659 2437.290    1.061 3925.264 -14566.863 450.518       0       0 -14566.863 450.518 35.2587 1.027812    1</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="section-9"></h5>
+<p>Plot the time series of m2_cum. This is the cumulative mass of the
+predator fish in grams. Notice that our largemouth bass does most of its
+growing during the warm summer months which makes sense for this
+warmwater species. What doesn’t make sense is that this fish starts the
+year at 454 grams (~1 pound) and ends the year at a whopping 3,592 grams
+(7.9 pounds)!</p>
+<p>This is because we unrealistically have assumed the predator fish has
+limitless food (CP = 1), sets up shop in one place and never moves (ACT
+= 1), and allocates no energy to reproduction (gsi_ = 0).</p>
+<p>The bem_validate function provides a means of estimating
+difficult-to-measure parameters like CP and ACT using field- or
+lab-derived measurements of length-at-age to identify pairs of CP and
+ACT values that result in realistic end-of-year mass. See the Validation
+vignette to learn this workflow.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of year"</span>, y <span class="op">=</span> <span class="st">"Accumulated mass (g)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">365</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">360</span>,<span class="fl">60</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian</span>, y <span class="op">=</span> <span class="va">M2_cum</span><span class="op">)</span>, <span class="va">grow.micsal</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" width="576"></p>
+</div>
+<div class="section level5">
+<h5 id="section-10"></h5>
+<p>To better visualize this summer growth, plot m2_ins. The horizontal
+red line is at y = 0, meaning that the predator fish has an energy
+deficit below this line (winter) and an energy surplus above this line
+(summer).</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of year"</span>, y <span class="op">=</span> <span class="st">"Daily mass change (g)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">366</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">360</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian</span>, y <span class="op">=</span> <span class="va">M2_ins</span><span class="op">)</span>, <span class="va">grow.micsal</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" width="576"></p>
+<p>Let’s manually adjust CP and ACT to see how it affects growth. If dig
+into the literature, CP values are often around 0.6 and ACT values are
+often around 1.4. Change these values in the parms_temporal_DEFAULT
+dataframe, re-run the bem_grow function, and then re-plot growth. It
+seems reasonable that a 454 gram fish would grow to 548 grams in a
+year–that is, from 1.0 pounds to 1.2 pounds.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">parms_temporal_DEFAULT</span><span class="op">$</span><span class="va">CP</span> <span class="op">&lt;-</span> <span class="fl">0.6</span></span>
+<span><span class="va">parms_temporal_DEFAULT</span><span class="op">$</span><span class="va">ACT</span> <span class="op">&lt;-</span> <span class="fl">1.4</span></span>
+<span></span>
+<span><span class="va">grow.micsal.real</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bem_grow.html">bem_grow</a></span><span class="op">(</span>start_M2 <span class="op">=</span> <span class="fl">454</span>,</span>
+<span>                             temperature <span class="op">=</span> <span class="va">temps_fake</span>,</span>
+<span>                             parms.intrinsic <span class="op">=</span> <span class="va">parms.micsal</span>,</span>
+<span>                             parms.temporal <span class="op">=</span> <span class="va">parms_temporal_DEFAULT</span>,</span>
+<span>                             C_eq <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>                             R_eq <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of year"</span>, y <span class="op">=</span> <span class="st">"Accumulated mass (g)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">366</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">360</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian</span>, y <span class="op">=</span> <span class="va">M2_cum</span><span class="op">)</span>, <span class="va">grow.micsal.real</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" width="576"></p>
+<p>Finally, let’s look at how mass, length, and condition change over
+time. Bioenergetics models are biologically realistic in that they
+simulate daily energy balance–that is, either deficits or surpluses.
+Mass can decrease or increase over time whereas length can increase with
+energy surpluses but cannot realistically decrease when there are energy
+deficits. The bem_grow function uses this axiom to simulate changes in
+Fulton condition factor over time as demonstrated below:</p>
+<p>The previous plot shows that the mass of the predator fish starts at
+454 grams on January 1st and decreases for 120 (until ~April). The
+predator fish then grows in both mass and length until day 290
+(~October). Plot length (cm) over time to see how length does not change
+during periods of energy deficit and increases when there is an energy
+surplus.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of year"</span>, y <span class="op">=</span> <span class="st">"Total length (cm)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">366</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">360</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian</span>, y <span class="op">=</span> <span class="va">L_cum</span><span class="op">)</span>, <span class="va">grow.micsal.real</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" width="576"></p>
+<p>When mass decreases and length stays the same, Fulton condition
+should decrease.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Day of year"</span>, y <span class="op">=</span> <span class="st">"Fulton condition"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">366</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">360</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian</span>, y <span class="op">=</span> <span class="va">K</span><span class="op">)</span>, <span class="va">grow.micsal.real</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Getting_Started_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" width="576"></p>
+</div>
+</div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
+>>>>>>> Stashed changes
 </div>
 
 

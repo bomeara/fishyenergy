@@ -4,18 +4,28 @@
 \alias{consumption}
 \title{Consumption of energy}
 \usage{
+<<<<<<< Updated upstream:man/consumption.Rd
 consumption(T, W, BEM)
+=======
+consumption3(M, T, CP = 1, parms.intrinsic)
+>>>>>>> Stashed changes:man/consumption3.Rd
 }
 \arguments{
-\item{T}{temperature (degrees C) at which consumption is calculated}
+\item{M}{Mass (grams) of fish}
 
-\item{W}{weight (grams) of fish}
+\item{T}{Temperature (degrees C) at which consumption is calculated}
 
-\item{BEM}{object}
+\item{CP}{Proportion of maximum consumption (default is 1.0)}
+
+\item{parms.intrinsic}{A parms.intrinsic object}
 }
 \value{
-specific consumption rate (grams of food consumed per gram of fish mass per day)
+Specific consumption rate (grams of food consumed per gram of fish mass per day)
 }
 \description{
+<<<<<<< Updated upstream:man/consumption.Rd
 Consumption of energy
+=======
+Consumption equation 3 from Hanson et al. 1997
+>>>>>>> Stashed changes:man/consumption3.Rd
 }

@@ -35,6 +35,9 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/External_Data.html">External Data</a></li>
     <li><a class="dropdown-item" href="../articles/Getting_Started.html">Getting Started</a></li>
+    <li><a class="dropdown-item" href="../articles/mapping_example01_brookTrout.html">Mapping Brook trout in southern Appalachian streams</a></li>
+    <li><a class="dropdown-item" href="../articles/mapping_example02_largemouthBass.html">Mapping largemouth bass in lakes</a></li>
+    <li><a class="dropdown-item" href="../articles/mapping_example03_southernFlounder.html">Mapping Southern flounder in estuary</a></li>
   </ul>
 </li>
       </ul>
@@ -88,8 +91,8 @@ introduced to the eastern US. We can use the
 the Fish Bioenergetics 4.0 database:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bomeara.github.io/fishyenergy/">fishyenergy</a></span><span class="op">)</span></span>
-<span><span class="va">closest_species</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fb4_closest_species.html">fb4_closest_species</a></span><span class="op">(</span><span class="st">"Thymallus arcticus"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Sources for Thymallus arcticus baicalensis are: Hartman and Jensen 2016"</span></span>
+<span><span class="va">closest_species</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bomeara.github.io/fishyenergy/reference/fb4_closest_species.html">fb4_closest_species</a></span><span class="op">(</span><span class="st">"Thymallus arcticus"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Progress [---------------------------------] 0/468 (  0%) ?sProgress [==============================] 468/468 (100%)  0s                                                            [1] "Sources for Thymallus arcticus baicalensis are: Hartman and Jensen 2016"</span></span>
 <span><span class="va">closest_species</span></span>
 <span><span class="co">#&gt; [1] "Thymallus arcticus baicalensis"</span></span></code></pre></div>
 <p>We can then get information from the included dataset,
@@ -105,7 +108,7 @@ consumption and other parameters. The values below are from Troia and
 Perkin (2022) for <em>Micropterus treculii</em> and are probably wrong
 for <em>Thymallus arcticus</em>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">BEM</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bem_from_fb4.html">bem_from_fb4</a></span><span class="op">(</span><span class="va">closest_species</span>, CP<span class="op">=</span><span class="fl">0.5</span>, FA<span class="op">=</span><span class="fl">0.1018428</span>, UA<span class="op">=</span><span class="fl">0.08743042</span>, SDA<span class="op">=</span><span class="fl">0.150819</span>, ED<span class="op">=</span><span class="fl">3983.646</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">BEM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bomeara.github.io/fishyenergy/reference/BEM_from_FB4.html">bem_from_fb4</a></span><span class="op">(</span><span class="va">closest_species</span>, CP<span class="op">=</span><span class="fl">0.5</span>, FA<span class="op">=</span><span class="fl">0.1018428</span>, UA<span class="op">=</span><span class="fl">0.08743042</span>, SDA<span class="op">=</span><span class="fl">0.150819</span>, ED<span class="op">=</span><span class="fl">3983.646</span><span class="op">)</span></span></code></pre></div>
 <p>We might want to see how this species would grow in various places in
 Tennesssee, but we need information on the water temperature in those
 places. One source is the US Geological Survey (USGS) databases, which
@@ -113,7 +116,7 @@ have that information. So let’s find all the sites in Tennesssee that
 have water temperature data, using a wrapper for the
 <code>dataRetrieval</code> package:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/water_stations_find.html">water_stations_find</a></span><span class="op">(</span>state<span class="op">=</span><span class="st">"TN"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bomeara.github.io/fishyenergy/reference/water_stations_find.html">water_stations_find</a></span><span class="op">(</span>state<span class="op">=</span><span class="st">"TN"</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">stations</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span>, caption<span class="op">=</span><span class="st">"First 5 stations in Tennessee with water temperature data"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>First 5 stations in Tennessee with water temperature
@@ -185,12 +188,16 @@ data</caption>
 get it for 2023, padding a bit on each side so we can get a full year of
 data:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">raw_temps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daily_temperature_raw.html">daily_temperature_raw</a></span><span class="op">(</span><span class="va">little_river_id</span>, start_date<span class="op">=</span><span class="st">"2022-11-01"</span>, end_date<span class="op">=</span><span class="st">"2024-02-01"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">raw_temps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bomeara.github.io/fishyenergy/reference/daily_temperature_raw.html">daily_temperature_raw</a></span><span class="op">(</span><span class="va">little_river_id</span>, start_date<span class="op">=</span><span class="st">"2022-11-01"</span>, end_date<span class="op">=</span><span class="st">"2024-02-01"</span><span class="op">)</span></span></code></pre></div>
 <p>This was measured manually, so there are not a lot of data points.
 Let’s plot the data to see what it looks like:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">raw_temps</span><span class="op">$</span><span class="va">ActivityStartDate</span>, <span class="va">raw_temps</span><span class="op">$</span><span class="va">ResultMeasureValue</span>, pch<span class="op">=</span><span class="fl">19</span>, xlab<span class="op">=</span><span class="st">"Date"</span>, ylab<span class="op">=</span><span class="st">"Temperature (C)"</span>, main<span class="op">=</span><span class="st">"Little River Temperature Data"</span>, bty<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
+<<<<<<< Updated upstream
 <p><img src="External_Data_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+=======
+<p><img src="External_Data_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="700"></p>
+>>>>>>> Stashed changes
 <p>We need points for every day, so let’s interpolate the data. By
 default, it will give us an error if there are a lot of missing data: by
 default, if it is over 80% missing. But we can manually change that
@@ -199,21 +206,29 @@ set it to 0.5, so it will give us an error if more than 50% of the data
 is missing. We can also focus on just 2023 by setting the
 <code>start_date</code> and <code>end_date</code> arguments:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">interpolated_temps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/daily_temperature_interpolate.html">daily_temperature_interpolate</a></span><span class="op">(</span><span class="va">raw_temps</span>, minimum_fraction_missing<span class="op">=</span><span class="fl">0.05</span>, start_date<span class="op">=</span><span class="st">"2023-01-01"</span>, end_date<span class="op">=</span><span class="st">"2023-12-31"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">interpolated_temps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bomeara.github.io/fishyenergy/reference/daily_temperature_interpolate.html">daily_temperature_interpolate</a></span><span class="op">(</span><span class="va">raw_temps</span>, minimum_fraction_missing<span class="op">=</span><span class="fl">0.05</span>, start_date<span class="op">=</span><span class="st">"2023-01-01"</span>, end_date<span class="op">=</span><span class="st">"2023-12-31"</span><span class="op">)</span></span></code></pre></div>
 <p>We can see these on the original plot:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">raw_temps</span><span class="op">$</span><span class="va">ActivityStartDate</span>, <span class="va">raw_temps</span><span class="op">$</span><span class="va">ResultMeasureValue</span>, pch<span class="op">=</span><span class="fl">19</span>, xlab<span class="op">=</span><span class="st">"Date"</span>, ylab<span class="op">=</span><span class="st">"Temperature (C)"</span>, main<span class="op">=</span><span class="st">"Little River Temperature Data"</span>, bty<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">interpolated_temps</span><span class="op">$</span><span class="va">date</span>, <span class="va">interpolated_temps</span><span class="op">$</span><span class="va">temp</span>, col<span class="op">=</span><span class="st">"red"</span>, pch<span class="op">=</span><span class="st">'.'</span><span class="op">)</span></span></code></pre></div>
+<<<<<<< Updated upstream
 <p><img src="External_Data_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+=======
+<p><img src="External_Data_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" width="700"></p>
+>>>>>>> Stashed changes
 <p>It’s not a smoothed plot: we keep the actual temperatures the fish
 experienced, and just linearly interpolate between them. Now we can
 compute the weight gain for the fish at this site:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">station_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/single_station_compute.html">single_station_compute</a></span><span class="op">(</span>T_vector<span class="op">=</span><span class="va">interpolated_temps</span><span class="op">$</span><span class="va">temp</span>, BEM<span class="op">=</span><span class="va">BEM</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">station_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bomeara.github.io/fishyenergy/reference/single_station_compute.html">single_station_compute</a></span><span class="op">(</span>T_vector<span class="op">=</span><span class="va">interpolated_temps</span><span class="op">$</span><span class="va">temp</span>, BEM<span class="op">=</span><span class="va">BEM</span><span class="op">)</span></span></code></pre></div>
 <p>We can plot the weight gain over the year:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">interpolated_temps</span><span class="op">$</span><span class="va">date</span>, <span class="va">station_result</span><span class="op">$</span><span class="va">W2_cum</span>, xlab<span class="op">=</span><span class="st">"Date"</span>, ylab<span class="op">=</span><span class="st">"Mass (g)"</span>, type<span class="op">=</span><span class="st">'l'</span>, bty<span class="op">=</span><span class="st">"n"</span>, main<span class="op">=</span><span class="st">"Weight Gain in Little River"</span><span class="op">)</span></span></code></pre></div>
+<<<<<<< Updated upstream
 <p><img src="External_Data_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+=======
+<p><img src="External_Data_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" width="700"></p>
+>>>>>>> Stashed changes
 <p>We can look at every species in the database and see how they would
 have done in the Little River in TN. For this, we will make very, very
 bad assumptions: they all start with a weight of 6.382417 g, they all
@@ -224,7 +239,7 @@ values for different life stages if present. We also assume each is
 happy living in a freshwater temperate mountain stream – very unlikely
 for a species like a lionfish, but we will throw it in.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">all_organisms</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loop_species_across_station.html">loop_species_across_station</a></span><span class="op">(</span><span class="va">interpolated_temps</span><span class="op">$</span><span class="va">temp</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">all_organisms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bomeara.github.io/fishyenergy/reference/loop_species_across_station.html">loop_species_across_station</a></span><span class="op">(</span><span class="va">interpolated_temps</span><span class="op">$</span><span class="va">temp</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">all_organisms</span><span class="op">$</span><span class="va">SpeciesStage</span> <span class="op">&lt;-</span> <span class="va">all_organisms</span><span class="op">$</span><span class="va">common</span></span>
 <span></span>
@@ -260,7 +275,11 @@ for a species like a lionfish, but we will throw it in.</p>
 <span>    hjust <span class="op">=</span> <span class="fl">0</span>, nudge_x <span class="op">=</span> <span class="fl">5</span>, size <span class="op">=</span> <span class="fl">3</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span>, segment.color <span class="op">=</span> <span class="st">'gray'</span>, box.padding <span class="op">=</span> <span class="fl">0.3</span>, max.overlaps <span class="op">=</span> <span class="cn">Inf</span></span>
 <span>  <span class="op">)</span>  <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x<span class="op">=</span><span class="st">"Day of year"</span>, y<span class="op">=</span><span class="st">"Relative mass"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">500</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<<<<<<< Updated upstream
 <p><img src="External_Data_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+=======
+<p><img src="External_Data_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" width="700"></p>
+>>>>>>> Stashed changes
 <p>We can also see what organism would not survive (would go to zero
 body mass) in the Little River in TN given our (bad) assumptions going
 into the analysis:</p>

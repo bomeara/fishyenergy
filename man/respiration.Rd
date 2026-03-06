@@ -4,15 +4,28 @@
 \alias{respiration}
 \title{Respiration 1 equation}
 \usage{
+<<<<<<< Updated upstream:man/respiration.Rd
 respiration(T, W, BEM)
+=======
+respiration1(M, T, ACT = 1, parms.intrinsic)
+>>>>>>> Stashed changes:man/respiration1.Rd
 }
 \arguments{
-\item{T}{temperature (degrees C) at which consumption is calculated}
+\item{M}{Mass (grams) of fish}
 
-\item{W}{weight (grams) of fish}
+\item{T}{Temperature (degrees C) at which respiration is calculated}
 
-\item{BEM}{BEM object}
+\item{ACT}{Activity multiplier (default is 1.0)}
+
+\item{parms.intrinsic}{A parms.intrinsic object}
+}
+\value{
+Specific respiration rate (grams of oxygen per gram of fish mass per day)
 }
 \description{
+<<<<<<< Updated upstream:man/respiration.Rd
 Respiration 1 equation
+=======
+Respiration equation 1 from Hanson et al. 1997
+>>>>>>> Stashed changes:man/respiration1.Rd
 }
