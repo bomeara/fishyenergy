@@ -1,26 +1,19 @@
-Package: fishyenergy
-Title: Predict Fish Mass Gain
-Version: 0.2025.6.02
-Authors@R: 
-    person("Brian", "O'Meara", , "omeara.brian@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-0337-5997"))
-Description: This uses functions from Troia and Perkin (2022) to predict
-    gain of fish mass using a model originally from Hanson et al. (1997).
-License: GPL (>= 3)
-URL: https://bomeara.github.io/fishyenergy/
-Depends: 
-    R (>= 3.5)
-Imports: 
-    dataRetrieval,
-    phangorn,
-    rotl,
-    zoo
-Suggests: 
-    knitr,
-    rmarkdown
-VignetteBuilder: 
-    knitr
+Package: FishyEnergy
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Authors@R: c(
+    person(
+      "Jane", "Doe",
+      email = "jane@example.com",
+      role = c("aut", "cre")
+    )
+  )
+Description: More about what it does (maybe more than one line).
+    Continuation lines should be indented.
+License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+Depends: 
+    R (>= 3.5)

@@ -1,0 +1,158 @@
+---
+title: "Mapping Southern flounder"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Mapping Southern flounder}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+### In this vignette, you will:
+1) Explore spatial variation in the performance of southern flounder (Paralichthys lethostigma) in coastal bays and estuaries of the western Gulf of Mexico, Texas, USA.
+2) Use bioenergetics modeling to simulate individual performance metrics across 8,862 1-square-km grid cells.
+3) Create maps showing spatially-contiguous variation in these performance metrics and drivers of this spatial variation (e.g., temperature).
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+#####
+First, install the fishyenergy package and load the library. Dependencies include reshape2, stringr, terra, sf, lubridate, and ggplot2.
+These libraries are automatically loaded.
+```{r setup}
+setwd("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v02\\FishyEnergy\\")
+devtools::load_all()
+library(reshape2)
+library(stringr)
+library(terra)
+library(sf)
+library(lubridate)
+library(ggplot2)
+```
+
+#####
+Next, load the intrinsic bioenergetics parameters of five example species. These parameters have been published by various authors since the 1980s and are available from Fish Bioenergetics 4.0 (FB4)
+```{r}
+data(parms_fb4)
+```
+
+#####
+Let's retain only one focal species, the southern flounder, and look at these data.
+```{r}
+options(width = 500)
+parms.parlet <- parms_fb4[parms_fb4$genus_species == "paralichthys_lethostigma",]
+parms.parlet
+```
+The first column shows the Latin name in snake case.
+Other columns like lwA and lwB are the intercept and slope of the length-weight equation.
+Still other columns like CA and CB are the intercept and slope of the mass dependent consumption equation (a negative power law).
+There's also specific dynamic action (i.e., the proportion of energy consumed allocated to the cost of digestion), predator energy density, and many other variables defined by Hanson et al. (1997).
+
+Let's plot the temperature dependent parameters for southern flounder.
+```{r fig.height=4, fig.width=6}
+bem_curve(M = 454,
+          T = 5:35,
+          CP = 1.0,
+          ACT = 1.0,
+          prey_ED = 4000,
+          parms.intrinsic = parms.parlet,
+          C_eq = 2,
+          R_eq = 1)
+```
+
+#####
+Next, we need to load some parameters that potentially vary temporally. The dataframe has 365 rows representing each day of the year. There are five noteworthy columns (i.e., variables):
+  
+  
+CP is the proportion of maximum consumption and decrease as prey quantity declines or as exploitative competition increases.
+
+
+ACT is the activity multiplier where a value of zero would indicate no metabolic costs beyond being at rest. Maintaining position in a flowing stream, avoiding predators, pursuing prey, and engaging in reproductive behavior increase ACT.
+
+
+The next two parameters (gsi_f and gsi_m) allow the user to model somatic growth of a reproductively mature fish that allocates some energy to gonadal tissue. Separate parameters are provided for females and males because the sexes invest different amounts of energy to their gonads--gsi_f and gsi_m, respectively. The default data assume a reproductively immature fish (i.e., gsi = 0).
+
+
+Modifying prey energy density (prey_ED) over the year can simulate ontogenetic diet shifts or changes in prey quality. There are numerous published estimates of prey energy density for common prey items like invertebrates, fish, and so on.
+```{r}
+options(width = 500)
+data(parms_temporal_DEFAULT)
+dim(parms_temporal_DEFAULT)
+head(parms_temporal_DEFAULT)
+```
+
+
+#####
+Let's modify CP and ACT to more realistic values. Specifically, we will use CP = 0.75 and ACT = 1.50 These parameter values were validated behind the scenes using the bem_validate function. See the Validation vignette for details.
+```{r}
+options(width = 500)
+parms_temporal_DEFAULT$CP = 0.75
+parms_temporal_DEFAULT$ACT = 1.50
+head(parms_temporal_DEFAULT)
+```
+
+
+#####
+Let's explore some coastal temperature data modified from the open-source [Texas BAYCAST dataset](https://www.twdb.texas.gov/surfacewater/bays/models/index.asp)  . In brief, this dataset provides daily ocean/estuary surface temperatures along the western coast of the Gulf of Mexico. In fishyenergy, we provide a 1-square-km resolution raster layer of these temperatures.
+
+
+#####
+Let's load this dataset called temps_bayc in fishyenergy and map the spatial variation in temperature. These data are formatted as a 3-dimensional array with spatial dimensions of 542 vertical pixels by 410 horizontal pixels and 365 days in the temporal dimension. Note that only 8,862 of the 222,220 spatial pixels represent a bay/estuary and have a temperature value.
+```{r}
+temps_bayc <- rast("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v02\\for__use_data\\BAYCAST_2025.tif")
+```
+
+
+#####
+Let's visualize the spatial variation in these temperature data. Surface water temperatures on January 1st range from approximately 13 to 22°C along the Texas Gulf Coast. On August 1st, temperatures range from 27 to 32°C.
+```{r fig.height=4, fig.width=6}
+plot(temps_bayc[[001]])
+plot(temps_bayc[[213]])
+```
+
+
+#####
+Run the bem_project function to grow a fish for n habitat patches. Be sure to set the is.raster argument to TRUE because the temperature input is a raster and not in tabular form.
+```{r}
+output.bayc <- bem_project(start_M2 = 454, 
+                           temperature = temps_bayc,
+                           parms.intrinsic = parms.parlet,
+                           parms.temporal = parms_temporal_DEFAULT,
+                           C_eq = 2,
+                           R_eq = 1,
+                           is.raster = TRUE)
+```
+
+
+#####
+Output from bem_project is a list of length three.
+
+1) The first list element is the run time. The bem_project function, like the bem_validate function, takes some time to run and that time increases with the number of habitat patches.
+```{r}
+output.bayc$run.time
+```
+
+2) The last two outputs are tabular. The first, year.end.perform, has a number of rows equal to the number of habitat patches. There are two columns representing the habitat patch ID and the simulated end-of-year mass (M2_cum).
+```{r}
+options(width = 500)
+head(output.bayc$year.end.perform)
+```
+
+
+3) The other tabular output, daily.output, is a list with a number of elements equal to the number of habitat patches. Each element is dataframe with the same 365 rows and 43 columns produced by the bem_grow function.
+```{r}
+options(width = 500)
+head(output.bayc$daily.output[[1]])
+```
+
+#####
+Mapping simulated performance across habitat patches.
+```{r fig.height=4, fig.width=6}
+plot(output.bayc$year.end.perform$M2_end)
+```

@@ -1,0 +1,192 @@
+---
+title: "Mapping Brook trout"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Mapping Brook trout}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+### In this vignette, you will:
+1) Explore spatial variation in the performance of Brook trout (Salvelinus fontinalis) in interconfluence stream reaches of the Little River watershed, a tributary of the upper Tennessee River system that drains the Blue Ridge Mountains and Great Smoky Mountains National Park in Tennessee, USA.
+2) Use bioenergetics modeling to simulate individual performance metrics across 513 interconfluence stream reaches (lotic habitat patches).
+3) Create maps showing spatially-contiguous variation in these performance metrics and drivers of this spatial variation (e.g., temperature).
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+#####
+First, install the fishyenergy package and load the library. Dependencies include reshape2, stringr, terra, sf, lubridate, and ggplot2.
+These libraries are automatically loaded.
+```{r setup}
+setwd("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v02\\FishyEnergy\\")
+devtools::load_all()
+library(reshape2)
+library(stringr)
+library(terra)
+library(sf)
+library(lubridate)
+library(ggplot2)
+```
+
+
+#####
+Next, load the intrinsic bioenergetics parameters of five example species. These parameters have been published by various authors since the 1980s and are available from Fish Bioenergetics 4.0 (FB4).
+```{r}
+data(parms_fb4)
+```
+
+#####
+Let's retain only one focal species, Brook trout, and look at these data.
+```{r}
+options(width = 500)
+parms.salfon <- parms_fb4[parms_fb4$genus_species == "salvelinus_fontinalis",]
+parms.salfon
+```
+The first column shows the Latin name in snake case.
+Other columns like lwA and lwB are the intercept and slope of the length-weight equation.
+Still other columns like CA and CB are the intercept and slope of the mass dependent consumption equation (a negative power law).
+There's also specific dynamic action (i.e., the proportion of energy consumed allocated to the cost of digestion), predator energy density, and many other variables defined by Hanson et al. (1997).
+
+
+#####
+Next, we need to load some parameters that potentially vary temporally. The dataframe has 365 rows representing each day of the year. There are five noteworthy columns (i.e., variables):
+  
+  
+CP is the proportion of maximum consumption and decrease as prey quantity declines or as exploitative competition increases.
+
+
+ACT is the activity multiplier where a value of zero would indicate no metabolic costs beyond being at rest. Maintaining position in a flowing stream, avoiding predators, pursuing prey, and engaging in reproductive behavior increase ACT.
+
+
+The next two parameters (gsi_f and gsi_m) allow the user to model somatic growth of a reproductively mature fish that allocates some energy to gonadal tissue. Separate parameters are provided for females and males because the sexes invest different amounts of energy to their gonads--gsi_f and gsi_m, respectively. The default data assume a reproductively immature fish (i.e., gsi = 0).
+
+
+Modifying prey energy density (prey_ED) over the year can simulate ontogenetic diet shifts or changes in prey quality. There are numerous published estimates of prey energy density for common prey items like invertebrates, fish, and so on.
+```{r}
+options(width = 500)
+data(parms_temporal_DEFAULT)
+dim(parms_temporal_DEFAULT)
+head(parms_temporal_DEFAULT)
+```
+
+
+#####
+Let's modify CP and ACT to more realistic values. Specifically, we will use CP = 0.50 and ACT = 1.60 These parameter values were validated behind the scenes using the bem_validate function. See the Validation vignette for details.
+```{r}
+options(width = 500)
+parms_temporal_DEFAULT$CP = 0.50
+parms_temporal_DEFAULT$ACT = 1.50
+head(parms_temporal_DEFAULT)
+```
+
+
+#####
+Let's explore some stream temperature data produced by Herrera-Rodriguez, Giam, Troia, and others as part of a Southeastern Climate Adaptation Science Center (CASC) project. This dataset provides daily mean temperatures for 76,553 interconfluence stream segments in the Tennessee and Cumberland River systems for every year from 1982 to 2022. These segments represent those of the National Stream Internet (NSI; modified from the National Hydrography Dataset) and so include some geographic (e.g., elevation above sea level) and hydrographic (e.g., catchment area) covariates for these segments. In fishyenergy, we have extracted daily temperatures in 2022 and covariates for 513 interconfluence stream segments in the Little River watershed. Let's load this dataset called temps_casc in fishyenergy. 
+
+
+The dataset has 513 rows each representing a different interconfluence stream segment and 366 columns representing the unique segment ID (COMID) followed by the 365 julian days.
+```{r}
+options(width = 2000)
+data(temps_casc)
+dim(temps_casc)
+head(temps_casc[,1:91])
+```
+
+#####
+Let's visualize the spatial and temporal variation in these temperature data. Each line is one of the 513 interconfluence stream segments.
+```{r fig.height=4, fig.width=6}
+temps_casc.long <- melt(temps_casc, id.vars = "COMID", value.name = "WT_mean")
+temps_casc.long$date <- as.numeric(gsub("julian","", temps_casc.long$variable))
+ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
+    labs(x = "Day of year", y = "Water temperature (°C)") +
+    scale_x_continuous(expand = c(0,0), limits = c(0,365), breaks = seq(0,360,60)) +
+    scale_y_continuous(expand = c(0,0), limits = c(0,40), breaks = seq(0,40,10)) +
+    geom_line(aes(x = date, y = WT_mean/10, group = COMID), temps_casc.long, linewidth = 0.5, alpha = 0.1)
+```
+
+
+#####
+Let's map the spatial variation in temperature.
+```{r fig.height=4, fig.width=6}
+temps_casc.mean <- aggregate(WT_mean ~ COMID, temps_casc.long, FUN = mean)
+
+data(envir_casc)
+
+vect.temps_casc.mean <- merge(x = envir_casc, y = temps_casc.mean, by = "COMID")
+
+ggplot(NULL) + theme_classic() +
+  scale_color_gradient(low = "blue", high = "red") +
+  geom_sf(aes(color = WT_mean/10), data = vect.temps_casc.mean, size = 1.5, shape = 16)
+```
+
+#####
+Run the bem_project function to grow a fish for n habitat patches. Be sure to set the is.raster argument to FALSE because the temperature input is in tabular form and not raster.
+```{r fig.height=4, fig.width=6}
+output.casc <- bem_project(start_M2 = 13,
+                           temperature = temps_casc,
+                           parms.intrinsic = parms.salfon,
+                           parms.temporal = parms_temporal_DEFAULT,
+                           C_eq = 2,
+                           R_eq = 2,
+                           is.raster = FALSE)
+```
+
+#####
+Output from bem_project is a list of length three.
+
+1) The first list element is the run time. The bem_project function, like the bem_validate function, takes some time to run and that time increases with the number of habitat patches.
+```{r}
+output.casc$run.time
+```
+
+2) The last two outputs are tabular. The first, year.end.perform, has a number of rows equal to the number of habitat patches. There are two columns representing the habitat patch ID and the simulated end-of-year mass (M2_cum).
+```{r}
+options(width = 500)
+head(output.casc$year.end.perform)
+```
+
+
+3) The other tabular output, daily.output, is a list with a number of elements equal to the number of habitat patches. Each element is dataframe with the same 365 rows and 43 columns produced by the bem_grow function.
+```{r}
+options(width = 500)
+head(output.casc$daily.output[[1]])
+```
+
+#####
+Mapping simulated performance across habitat patches.
+```{r fig.height=4, fig.width=6}
+perf.casc <- output.casc$year.end.perform
+colnames(perf.casc)[1] <- "COMID"
+
+vect.perf.casc <- merge(x = envir_casc, y = perf.casc, by = "COMID")
+vect.perf.casc <- st_as_sf(vect.perf.casc)
+
+ggplot(NULL) + theme_classic() +
+  scale_colour_gradient("Number of\ndeficit days",
+                        low = "blue", high = "yellow",
+                        guide = guide_colorbar(frame.colour = "black", ticks.colour = "black")) +
+  geom_sf(aes(color = def_days), data = vect.perf.casc, size = 1.5, shape = 16)
+```
+
+#####
+What is the relationship between environmental variables and brook trout performance? Let's plot and see. Each point represents a different interconfluence stream reach in the Little River watershed.
+```{r fig.height=4, fig.width=6}
+ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
+    labs(x = "Elevation (masl)", y = "Number of deficit days") +
+    geom_point(aes(x = ElevCat, y = def_days), vect.perf.casc, shape = 16, size = 3, alpha = 0.5) +
+    geom_smooth(aes(x = ElevCat, y = def_days), vect.perf.casc, method = "gam")
+
+ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
+    labs(x = "Catchment area (square km)", y = "Number of deficit days") +
+    scale_x_log10() +
+    geom_point(aes(x = TotDASqKM, y = def_days), vect.perf.casc, shape = 16, size = 3, alpha = 0.5) +
+    geom_smooth(aes(x = TotDASqKM, y = def_days), vect.perf.casc, method = "gam")
+```

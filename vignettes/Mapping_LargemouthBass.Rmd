@@ -1,0 +1,216 @@
+---
+title: "Mapping Largemouth bass"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Mapping Largemouth bass}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+### In this vignette, you will:
+1) Explore spatial variation in the performance of Largemouth bass (Micropterus salmoides) in lakes across the southeastern United States.
+2) Use bioenergetics modeling to simulate individual performance metrics across 8,001 lakes (lentic habitat patches)
+3) Create maps showing spatially-contiguous variation in these performance metrics and drivers of this spatial variation (e.g., temperature).
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+#####
+First, install the fishyenergy package and load the library. Dependencies include reshape2, stringr, terra, sf, lubridate, and ggplot2.
+These libraries are automatically loaded.
+```{r setup}
+setwd("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v02\\FishyEnergy\\")
+devtools::load_all()
+library(reshape2)
+library(stringr)
+library(terra)
+library(sf)
+library(lubridate)
+library(ggplot2)
+```
+
+#####
+Next, load the intrinsic bioenergetics parameters of five example species. These parameters have been published by various authors since the 1980s and are available from Fish Bioenergetics 4.0 (FB4)
+```{r}
+data(parms_fb4)
+```
+
+#####
+Let's retain only one focal species, Largemouth bass, and look at these data.
+```{r}
+options(width = 500)
+parms.micsal <- parms_fb4[parms_fb4$genus_species == "micropterus_salmoides",]
+parms.micsal
+```
+The first column shows the Latin name in snake case.
+Other columns like lwA and lwB are the intercept and slope of the length-weight equation.
+Still other columns like CA and CB are the intercept and slope of the mass dependent consumption equation (a negative power law).
+There's also specific dynamic action (i.e., the proportion of energy consumed allocated to the cost of digestion), predator energy density, and many other variables defined by Hanson et al. (1997).
+
+
+#####
+Next, we need to load some parameters that potentially vary temporally. The dataframe has 365 rows representing each day of the year. There are five noteworthy columns (i.e., variables):
+  
+  
+CP is the proportion of maximum consumption and decrease as prey quantity declines or as exploitative competition increases.
+
+
+ACT is the activity multiplier where a value of zero would indicate no metabolic costs beyond being at rest. Maintaining position in a flowing stream, avoiding predators, pursuing prey, and engaging in reproductive behavior increase ACT.
+
+
+The next two parameters (gsi_f and gsi_m) allow the user to model somatic growth of a reproductively mature fish that allocates some energy to gonadal tissue. Separate parameters are provided for females and males because the sexes invest different amounts of energy to their gonads--gsi_f and gsi_m, respectively. The default data assume a reproductively immature fish (i.e., gsi = 0).
+
+
+Modifying prey energy density (prey_ED) over the year can simulate ontogenetic diet shifts or changes in prey quality. There are numerous published estimates of prey energy density for common prey items like invertebrates, fish, and so on.
+```{r}
+options(width = 500)
+data(parms_temporal_DEFAULT)
+dim(parms_temporal_DEFAULT)
+head(parms_temporal_DEFAULT)
+```
+
+
+#####
+Let's modify CP and ACT to more realistic values. Specifically, we will use CP = 0.82 and ACT = 1.69. These parameter values were validated using age-1 largemouth bass from Watts Bar Lake in East Tennessee, USA. See the Validation vignette for details.
+```{r}
+options(width = 500)
+parms_temporal_DEFAULT$CP = 0.82
+parms_temporal_DEFAULT$ACT = 1.69
+head(parms_temporal_DEFAULT)
+```
+
+
+#####
+Let's explore some lake temperature data modified from the open-source LakeTEMP dataset (Korver et al. 2024). In brief, this dataset provides monthly lake surface temperatures for 1,427,688 lakes throughout the world as well as some geographic (e.g., elevation above sea level) and bathymetric (e.g., lake depth) covariates for these lakes. In fishyenergy, we have extracted these monthly temperatures and covariates for 8,001 lakes in 15 southeastern US states plus Puerto Rico. We then used a generalized additive model fitted to monthly temperatures to interpolate temperatures to the daily resolution needed for bioenergetics modeling. Let's load this dataset called temps_lake in fishyenergy. 
+
+
+The dataset has 8,001 rows each representing a different lake and 366 columns representing the unique lake ID (Hylak_id) followed by the 365 julian days.
+```{r}
+options(width = 500)
+data(temps_lake)
+dim(temps_lake)
+head(temps_lake[,1:91])
+```
+
+#####
+Let's visualize the spatial and temporal variation in these temperature data. Each line is one of the 8,001 lakes.
+```{r fig.height=4, fig.width=6}
+temps_lake.long <- melt(temps_lake, id.vars = "Hylak_id", value.name = "WT_mean")
+temps_lake.long$date <- as.numeric(gsub("julian","", temps_lake.long$variable))
+ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
+    labs(x = "Day of year", y = "Water temperature (°C)") +
+    scale_x_continuous(expand = c(0,0), limits = c(0,365), breaks = seq(0,360,60)) +
+    scale_y_continuous(expand = c(0,0), limits = c(0,40), breaks = seq(0,40,10)) +
+    geom_line(aes(x = date, y = WT_mean, group = Hylak_id), temps_lake.long, linewidth = 0.5, alpha = 0.1)
+```
+
+
+#####
+Let's map the spatial variation in temperature.
+```{r fig.height=4, fig.width=6}
+temps_lake.mean <- aggregate(WT_mean ~ Hylak_id, temps_lake.long, FUN = mean)
+
+data(envir_lake)
+
+temps_lake.mean <- merge(x = temps_lake.mean, y = envir_lake, by = "Hylak_id")
+
+vect.temps_lake.mean <- st_as_sf(temps_lake.mean, crs = "+proj=longlat +datum=WGS84", coords = c("center_long", "center_lat"))
+
+vect.sdafs <- read_sf("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v01\\for__use_data\\states_sdafs\\states_sdafs.shp")
+
+ggplot(NULL) + theme_classic() +
+  scale_color_gradient(low = "blue", high = "red") +
+  geom_sf(aes(), data = vect.sdafs, size = 0.5, fill = "gray") +
+  geom_sf(aes(color = WT_mean), data = vect.temps_lake.mean, size = 0.5, shape = 16) +
+  geom_sf(aes(), data = vect.sdafs, fill = NA, color = "black")
+```
+
+#####
+Run the bem_project function to grow a fish for n habitat patches. Be sure to set the is.raster argument to FALSE because the temperature input is in tabular form and not raster.
+```{r}
+
+output.lakes <- bem_project(start_M2 = 454, 
+                            temperature = temps_lake,
+                            parms.intrinsic = parms.micsal,
+                            parms.temporal = parms_temporal_DEFAULT,
+                            C_eq = 2,
+                            R_eq = 1,
+                            is.raster = FALSE)
+```
+
+#####
+Output from bem_project is a list of length three.
+
+1) The first list element is the run time. The bem_project function, like the bem_validate function, takes some time to run and that time increases with the number of habitat patches.
+```{r}
+output.lakes$run.time
+```
+
+2) The last two outputs are tabular. The first, year.end.perform, has a number of rows equal to the number of habitat patches. There are two columns representing the habitat patch ID and the simulated end-of-year mass (M2_cum).
+```{r}
+options(width = 500)
+head(output.lakes$year.end.perform)
+```
+
+
+3) The other tabular output, daily.output, is a list with a number of elements equal to the number of habitat patches. Each element is dataframe with the same 365 rows and 43 columns produced by the bem_grow function.
+```{r}
+options(width = 500)
+head(output.lakes$daily.output[[1]])
+```
+
+#####
+Mapping simulated performance across habitat patches.
+```{r fig.height=4, fig.width=6}
+perf.lakes <- output.lakes$year.end.perform
+colnames(perf.lakes) <- c("Hylak_id", "M2_cum")
+
+perf.lakes <- merge(x = perf.lakes, y = envir_lake, by = "Hylak_id")
+
+vect.perf.lakes <- st_as_sf(perf.lakes, crs = "+proj=longlat +datum=WGS84", coords = c("center_long", "center_lat"))
+
+ggplot(NULL) + theme_classic() +
+  scale_colour_gradient("Year-end\nmass (g)",
+                        low = "yellow", high = "red",
+                        guide = guide_colorbar(frame.colour = "black", ticks.colour = "black")) +
+  geom_sf(aes(), data = vect.sdafs, size = 0.5, fill = "gray") +
+  geom_sf(aes(color = M2_cum), data = vect.perf.lakes, size = 1, shape = 16) +
+  geom_sf(aes(), data = vect.sdafs, fill = NA, color = "black")
+```
+
+#####
+What is the relationship between environmental variables and largemouth bass performance? Let's plot and see. Each point represents a different lake in the southeastern US.
+```{r fig.height=4, fig.width=6}
+ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
+    labs(x = "Latitude (°N)", y = "End-of-year mass (g)") +
+    geom_point(aes(x = center_lat, y = M2_cum), perf.lakes, shape = 16, size = 3, alpha = 0.5) +
+    geom_smooth(aes(x = center_lat, y = M2_cum), perf.lakes, method = "gam")
+
+
+ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
+    labs(x = "Elevation (masl)", y = "End-of-year mass (g)") +
+    scale_x_log10() +
+    geom_point(aes(x = Elevation, y = M2_cum), perf.lakes, shape = 16, size = 3, alpha = 0.5) +
+    geom_smooth(aes(x = Elevation, y = M2_cum), perf.lakes, method = "gam")
+
+
+ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
+    labs(x = "Lake area (square km)", y = "End-of-year mass (g)") +
+    scale_x_log10() +
+    geom_point(aes(x = Lake_area, y = M2_cum), perf.lakes, shape = 16, size = 3, alpha = 0.5) +
+    geom_smooth(aes(x = Lake_area, y = M2_cum), perf.lakes, method = "gam")
+
+
+ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
+    labs(x = "Mean lake depth (m)", y = "End-of-year mass (g)") +
+    scale_x_log10() +
+    geom_point(aes(x = Depth_avg, y = M2_cum), perf.lakes, shape = 16, size = 3, alpha = 0.5) +
+    geom_smooth(aes(x = Depth_avg, y = M2_cum), perf.lakes, method = "gam")
+```
