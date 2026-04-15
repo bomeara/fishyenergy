@@ -10,7 +10,7 @@
 #'   \item{Source}{(character) description}
 #'   \item{lwA}{(numeric) y-intercept for length-weight relationship on log-log scale}
 #'   \item{lwB}{(numeric) slope for length-weight relationship on log-log scale}
-#'   \item{CEQ}{(integer) consumption equation 1, 2, or 3}
+#'   \item{CEQ}{(integer) consumption equation 1, 2, 3, or 4}
 #'   \item{CA}{(numeric) intercept estimate for mass-dependent consumption}
 #'   \item{CB}{(numeric) slope estimate for mass-dependent consumption}
 #'   \item{CQ}{(numeric) Q10 for temperature-dependent consumption}
@@ -19,7 +19,7 @@
 #'   \item{CTL}{(numeric) temperature-dependent parameter for consumption}
 #'   \item{CK1}{(numeric) temperature-dependent parameter for consumption}
 #'   \item{CK4}{(numeric) temperature-dependent parameter for consumption}
-#'   \item{REQ}{(integer) respiration equation 1 or 2}
+#'   \item{REQ}{(integer) respiration equation 1, 2, or 4}
 #'   \item{RA}{(numeric) intercept estimate for mass-dependent respiration}
 #'   \item{RB}{(numeric) slope estimate for mass-dependent respiration}
 #'   \item{RQ}{(numeric) Q10 for temperature-dependent respiration}
@@ -80,18 +80,6 @@
 #'
 "temps_casc"
 
-#' Daily water temperature many bay/estuary grid cells
-#'
-#' This dataset provides daily ocean/estuary surface temperatures along the western coast of the Gulf of Mexico. In fishyenergy, we provide a 1-km resolution raster layer of these temperatures.
-#'
-#' @format A 3-dimensional array with spatial dimensions of 542 vertical pixels by 410 horizontal pixels and 365 days in the temporal dimension. Note that only 8,862 of the 222,220 spatial pixels represent a bay/estuary and have a temperature value.:
-#' \describe{
-#'   ...
-#' }
-#' @source Texas BAYCAST.
-#'
-"temps_bayc"
-
 #' Environmental covariates for many lakes
 #'
 #' This dataset contains geographic and bathymetric covariates for all 8,046 lakes extracted from the lakeTEMP dataset.
@@ -113,19 +101,6 @@
 #' @source LakeTEMP; Korver et al. 2024. Remote Sensing of Environment. https://doi.org/10.1016/j.rse.2024.114164.
 #'
 "envir_lake"
-
-#' Fifteen southeastern states representing the Southern Division of the American Fisheries Society
-#'
-#' This is a shapefile containing the borders of all fifteen southeastern states representing the Southern Division of the American Fisheries Society (minus Puerto Rico)
-#'
-#' @format A vector shapefile with an attribute table containing 15 rows and 1 column:
-#' \describe{
-#'   \item{STATE_NAME}{(character) The name of the state}
-#'   ...
-#' }
-#' @source Southeastern Climate Adaptation Science Center (CASC), National Hydrography Dataset (NHD), StreamCat
-#'
-"geogr_lake"
 
 #' Environmental covariates for many stream reaches
 #'
@@ -172,7 +147,7 @@
 #' @export
 consumption1 <- function(M, T, CP = 1.0, parms.intrinsic)
 {
-  fT_C <- exp(parms.intrinsic$CQ*T)
+  fT_C <- exp(parms.intrinsic$CQ*round(T, digits = 1))
   Cmax <- parms.intrinsic$CA*M^parms.intrinsic$CB
   C <- Cmax*CP*fT_C
   return(C)
@@ -192,7 +167,7 @@ consumption2 <- function(M, T, CP = 1.0, parms.intrinsic)
   Y <- log(parms.intrinsic$CQ)*(parms.intrinsic$CTM-parms.intrinsic$CTO+2)
   Z <- log(parms.intrinsic$CQ)*(parms.intrinsic$CTM-parms.intrinsic$CTO)
   X <- (Z^2*(1+(1+40/Y)^0.5)^2)/400
-  V <- (parms.intrinsic$CTM-T)/(parms.intrinsic$CTM-parms.intrinsic$CTO)
+  V <- (parms.intrinsic$CTM-round(T, digits = 1))/(parms.intrinsic$CTM-parms.intrinsic$CTO)
   fT_C <- V^X*exp(X*(1-V))
   Cmax <- parms.intrinsic$CA*M^parms.intrinsic$CB
   C <- Cmax*CP*fT_C
@@ -211,10 +186,10 @@ consumption2 <- function(M, T, CP = 1.0, parms.intrinsic)
 consumption3 <- function(M, T, CP = 1.0, parms.intrinsic)
 {
   G2 <- (1/(parms.intrinsic$CTL-parms.intrinsic$CTM))*log((0.98*(1-parms.intrinsic$CK4))/(parms.intrinsic$CK4*0.02))
-  L2 <- exp(G2*(parms.intrinsic$CTL-T))
+  L2 <- exp(G2*(parms.intrinsic$CTL-round(T, digits = 1)))
   KB <- (parms.intrinsic$CK4*L2)/(1+parms.intrinsic$CK4*(L2-1))
   G1 <- (1/(parms.intrinsic$CTO-parms.intrinsic$CQ))* log((0.98*(1-parms.intrinsic$CK1))/(parms.intrinsic$CK1*0.02))
-  L1 <- exp(G1)*(T-parms.intrinsic$CQ)
+  L1 <- exp(G1)*(round(T, digits = 1)-parms.intrinsic$CQ)
   KA <- (parms.intrinsic$CK1*L1)/(1+parms.intrinsic$CK1*(L1-1))
   fT_C <- KA*KB
   Cmax <- parms.intrinsic$CA*M^parms.intrinsic$CB
@@ -228,13 +203,14 @@ consumption3 <- function(M, T, CP = 1.0, parms.intrinsic)
 #' @param M Mass (grams) of fish
 #' @param T Temperature (degrees C) at which consumption is calculated
 #' @param CP Proportion of maximum consumption (default is 1.0)
-#' @param parms.intrinsic A parms.intrinsic object
+#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed
+#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match
 #' @return Specific consumption rate (grams of food consumed per gram of fish mass per day)
 #' @export
-consumption4 <- function(M, T, CP = 1.0, parms.intrinsic)
+consumption4 <- function(M, T, CP = 1.0, parms.intrinsic, match.table)
 {
-  fT_C <- parms.intrinsic[parms.intrinsic$WT_mean == T,"C_match"]
-  Cmax <- 0.28*M^-0.30    # hard code average CA and CB values... for now.
+  fT_C <- match.table[match.table$WT_mean %in% round(T, digits = 1),"C_match"]
+  Cmax <- parms.intrinsic$CA*M^parms.intrinsic$CB
   C <- Cmax*CP*fT_C
   return(C)
 }
@@ -250,7 +226,7 @@ consumption4 <- function(M, T, CP = 1.0, parms.intrinsic)
 #' @export
 respiration1 <- function(M, T, ACT = 1.0, parms.intrinsic)
 {
-  fT_R <- exp(parms.intrinsic$RQ*T)
+  fT_R <- exp(parms.intrinsic$RQ*round(T, digits = 1))
   Rrest <- parms.intrinsic$RA*M^parms.intrinsic$RB*fT_R
   R <- Rrest*ACT
   return(R)
@@ -270,7 +246,7 @@ respiration2 <- function(M, T, ACT = 1.0, parms.intrinsic)
   Y <- log(parms.intrinsic$RQ)*(parms.intrinsic$RTM-parms.intrinsic$RTO+2)
   Z <- log(parms.intrinsic$RQ)*(parms.intrinsic$RTM-parms.intrinsic$RTO)
   X <- (Z^2*(1+(1+40/Y)^0.5)^2)/400
-  V <- (parms.intrinsic$RTM-T)/(parms.intrinsic$RTM-parms.intrinsic$RTO)
+  V <- (parms.intrinsic$RTM-round(T, digits = 1))/(parms.intrinsic$RTM-parms.intrinsic$RTO)
   fT_R <- V^X*exp(X*(1-V))
   Rrest <- parms.intrinsic$RA*M^parms.intrinsic$RB*fT_R
   R <- Rrest*ACT
@@ -283,13 +259,14 @@ respiration2 <- function(M, T, ACT = 1.0, parms.intrinsic)
 #' @param M Mass (grams) of fish
 #' @param T Temperature (degrees C) at which consumption is calculated
 #' @param ACT Activity multiplier (default is 1.0)
-#' @param parms.intrinsic A parms.intrinsic object
+#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed
+#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match
 #' @return Specific respiration rate (grams of oxygen per gram of fish mass per day)
 #' @export
-respiration4 <- function(M, T, ACT = 1.0, parms.intrinsic)
+respiration4 <- function(M, T, ACT = 1.0, parms.intrinsic, match.table)
 {
-  fT_R <- parms.intrinsic[parms.intrinsic$WT_mean == T,"R_match"]
-  Rrest <- 0.01*M^-0.24  # hard code average RA and RB values... for now.
+  fT_R <- match.table[match.table$WT_mean %in% round(T, digits = 1),"R_match"]
+  Rrest <- parms.intrinsic$RA*M^parms.intrinsic$RB
   R <- Rrest*ACT*fT_R
   return(R)
 }
@@ -303,11 +280,11 @@ respiration4 <- function(M, T, ACT = 1.0, parms.intrinsic)
 #' @param ACT Activity multiplier (default is 1.0)
 #' @param prey_ED Prey energy density in joules per gram of wet mass (default is 4000)
 #' @param parms.intrinsic A parms.intrinsic object
-#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997
-#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997
+#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or new equation 4
+#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997 or new equation 4
 #' @return A plot of temperature dependent rates
 #' @export
-bem_curve <- function(M, T, CP = 1.0, ACT = 1.0, prey_ED = 4000, parms.intrinsic, C_eq, R_eq)
+bem_curve <- function(M, T, CP = 1.0, ACT = 1.0, prey_ED = 4000, parms.intrinsic, C_eq, R_eq, match.table)
 {
   # consumption curve --> grams of prey and joules of energy
   if(C_eq == 1){
@@ -323,7 +300,7 @@ bem_curve <- function(M, T, CP = 1.0, ACT = 1.0, prey_ED = 4000, parms.intrinsic
     C2_curve = C1_curve * prey_ED
   }
   else if (C_eq == 4){
-    C1_curve <- consumption4(M, T, CP, parms.intrinsic)
+    C1_curve <- consumption4(M, T, CP, parms.intrinsic, match.table)
     C2_curve = C1_curve * prey_ED
   }
   else{
@@ -340,7 +317,7 @@ bem_curve <- function(M, T, CP = 1.0, ACT = 1.0, prey_ED = 4000, parms.intrinsic
     R2_curve = R1_curve * 13560.0
   }
   else if(R_eq == 4){
-    R1_curve <- respiration4(M, T, ACT, parms.intrinsic)
+    R1_curve <- respiration4(M, T, ACT, parms.intrinsic, match.table)
     R2_curve = R1_curve * 13560.0
   }
   else{
@@ -421,13 +398,14 @@ bem_curve <- function(M, T, CP = 1.0, ACT = 1.0, prey_ED = 4000, parms.intrinsic
 #' @description the Wisconsin bioenergetics model from Hanson et al. 1997
 #' @param start_M2 (default is 100 grams)
 #' @param temperature a dataframe populated with a time series of mean daily water temperature (degrees C x 10) of a habitat patch
-#' @param parms.intrinsic A parms.intrinsic object
+#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed if C_eq = 4 and/or R_eq = 4
 #' @param parms.temporal a dataframe populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters
-#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997
+#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or equation 4
 #' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997
+#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match; only applicable if C_eq = 4 and/or R_eq = 4
 #' @return dataframe populated with output parameters (columns) for time series of projected days (rows)
 #' @export
-bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temporal, C_eq, R_eq)
+bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temporal, C_eq, R_eq, match.table)
 {
   dframe.sim_parms <- temperature
   dframe.sim_parms$pred_ED = parms.intrinsic$pred_ED
@@ -567,6 +545,51 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
                                                                    dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic)),
+                                               NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
+                                               respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"ACT"],
+                                                            parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("C2_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.temporal[i,"prey_ED"]                                         # convert from grams of food to joules with prey energy density parameter
+      dframe.sim_parms[i,c("R2_ins")] = dframe.sim_parms[i,c("R1_ins")] * 13560.0                                                              # convert from grams of oxygen to joules with oxycalorific coefficient
+      dframe.sim_parms[i,c("F1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("F2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("SDA1_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C1_ins")] - dframe.sim_parms[i,c("F1_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("SDA2_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C2_ins")] - dframe.sim_parms[i,c("F2_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("MS1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (1- parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MG1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MS2_ins")] = dframe.sim_parms[i,c("MS1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MG2_ins")] = dframe.sim_parms[i,c("MG1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MS1_cum")] = dframe.sim_parms[i-1,c("MS1_cum")] + dframe.sim_parms[i,c("MS1_ins")]
+      dframe.sim_parms[i,c("MG1_cum")] = dframe.sim_parms[i-1,c("MG1_cum")] + dframe.sim_parms[i,c("MG1_ins")]
+      dframe.sim_parms[i,c("MS2_cum")] = dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i,c("MS2_ins")]
+      dframe.sim_parms[i,c("MG2_cum")] = dframe.sim_parms[i-1,c("MG2_cum")] + dframe.sim_parms[i,c("MG2_ins")]
+      dframe.sim_parms[i,c("L_cum")] = (dframe.sim_parms[i-1,c("MS2_cum")] / parms.intrinsic$lwA)^(1 / parms.intrinsic$lwB)
+      dframe.sim_parms[i,c("L_cum")] = ifelse(dframe.sim_parms[i,c("L_cum")] < dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i,c("L_cum")])
+      dframe.sim_parms[i,c("K")] = 100*(dframe.sim_parms[i,c("MS2_cum")]/(dframe.sim_parms[i,c("L_cum")]^3))}
+
+  }
+  else if(C_eq == 4 & R_eq == 1){
+    for(i in 2:nrow(dframe.sim_parms)){
+      dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"CP"],
+                                                                   parms.intrinsic,
+                                                                   match.table)),
+                                               0,                                                                                              # ** if temp > CTM, then consumption is zero
+                                               consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"CP"],
+                                                            parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"ACT"],
+                                                                   parms.intrinsic,
+                                                                   match.table)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
                                                             dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
@@ -766,6 +789,235 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
       dframe.sim_parms[i,c("K")] = 100*(dframe.sim_parms[i,c("MS2_cum")]/(dframe.sim_parms[i,c("L_cum")]^3))}
 
   }
+  else if(C_eq == 4 & R_eq == 2){
+    for(i in 2:nrow(dframe.sim_parms)){
+      dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"CP"],
+                                                                   parms.intrinsic,
+                                                                   match.table)),
+                                               0,                                                                                              # ** if temp > CTM, then consumption is zero
+                                               consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"CP"],
+                                                            parms.intrinsic,
+                                                            match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"ACT"],
+                                                                   parms.intrinsic,
+                                                                   match.table)),
+                                               NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
+                                               respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"ACT"],
+                                                            parms.intrinsic,
+                                                            match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("C2_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.temporal[i,"prey_ED"]                                         # convert from grams of food to joules with prey energy density parameter
+      dframe.sim_parms[i,c("R2_ins")] = dframe.sim_parms[i,c("R1_ins")] * 13560.0                                                              # convert from grams of oxygen to joules with oxycalorific coefficient
+      dframe.sim_parms[i,c("F1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("F2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("SDA1_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C1_ins")] - dframe.sim_parms[i,c("F1_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("SDA2_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C2_ins")] - dframe.sim_parms[i,c("F2_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("MS1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (1- parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MG1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MS2_ins")] = dframe.sim_parms[i,c("MS1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MG2_ins")] = dframe.sim_parms[i,c("MG1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MS1_cum")] = dframe.sim_parms[i-1,c("MS1_cum")] + dframe.sim_parms[i,c("MS1_ins")]
+      dframe.sim_parms[i,c("MG1_cum")] = dframe.sim_parms[i-1,c("MG1_cum")] + dframe.sim_parms[i,c("MG1_ins")]
+      dframe.sim_parms[i,c("MS2_cum")] = dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i,c("MS2_ins")]
+      dframe.sim_parms[i,c("MG2_cum")] = dframe.sim_parms[i-1,c("MG2_cum")] + dframe.sim_parms[i,c("MG2_ins")]
+      dframe.sim_parms[i,c("L_cum")] = (dframe.sim_parms[i-1,c("MS2_cum")] / parms.intrinsic$lwA)^(1 / parms.intrinsic$lwB)
+      dframe.sim_parms[i,c("L_cum")] = ifelse(dframe.sim_parms[i,c("L_cum")] < dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i,c("L_cum")])
+      dframe.sim_parms[i,c("K")] = 100*(dframe.sim_parms[i,c("MS2_cum")]/(dframe.sim_parms[i,c("L_cum")]^3))}
+
+  }
+  else if(C_eq == 1 & R_eq == 4){
+    for(i in 2:nrow(dframe.sim_parms)){
+      dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"CP"],
+                                                                   parms.intrinsic)),
+                                               0,                                                                                              # ** if temp > CTM, then consumption is zero
+                                               consumption1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"CP"],
+                                                            parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"ACT"],
+                                                                   parms.intrinsic,
+                                                                   match.table)),
+                                               NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
+                                               respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"ACT"],
+                                                            parms.intrinsic,
+                                                            match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("C2_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.temporal[i,"prey_ED"]                                         # convert from grams of food to joules with prey energy density parameter
+      dframe.sim_parms[i,c("R2_ins")] = dframe.sim_parms[i,c("R1_ins")] * 13560.0                                                              # convert from grams of oxygen to joules with oxycalorific coefficient
+      dframe.sim_parms[i,c("F1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("F2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("SDA1_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C1_ins")] - dframe.sim_parms[i,c("F1_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("SDA2_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C2_ins")] - dframe.sim_parms[i,c("F2_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("MS1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (1- parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MG1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MS2_ins")] = dframe.sim_parms[i,c("MS1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MG2_ins")] = dframe.sim_parms[i,c("MG1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MS1_cum")] = dframe.sim_parms[i-1,c("MS1_cum")] + dframe.sim_parms[i,c("MS1_ins")]
+      dframe.sim_parms[i,c("MG1_cum")] = dframe.sim_parms[i-1,c("MG1_cum")] + dframe.sim_parms[i,c("MG1_ins")]
+      dframe.sim_parms[i,c("MS2_cum")] = dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i,c("MS2_ins")]
+      dframe.sim_parms[i,c("MG2_cum")] = dframe.sim_parms[i-1,c("MG2_cum")] + dframe.sim_parms[i,c("MG2_ins")]
+      dframe.sim_parms[i,c("L_cum")] = (dframe.sim_parms[i-1,c("MS2_cum")] / parms.intrinsic$lwA)^(1 / parms.intrinsic$lwB)
+      dframe.sim_parms[i,c("L_cum")] = ifelse(dframe.sim_parms[i,c("L_cum")] < dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i,c("L_cum")])
+      dframe.sim_parms[i,c("K")] = 100*(dframe.sim_parms[i,c("MS2_cum")]/(dframe.sim_parms[i,c("L_cum")]^3))}
+
+  }
+  else if(C_eq == 2 & R_eq == 4){
+    for(i in 2:nrow(dframe.sim_parms)){
+      dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"CP"],
+                                                                   parms.intrinsic)),
+                                               0,                                                                                              # ** if temp > CTM, then consumption is zero
+                                               consumption2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"CP"],
+                                                            parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"ACT"],
+                                                                   parms.intrinsic,
+                                                                   match.table)),
+                                               NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
+                                               respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"ACT"],
+                                                            parms.intrinsic,
+                                                            match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("C2_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.temporal[i,"prey_ED"]                                         # convert from grams of food to joules with prey energy density parameter
+      dframe.sim_parms[i,c("R2_ins")] = dframe.sim_parms[i,c("R1_ins")] * 13560.0                                                              # convert from grams of oxygen to joules with oxycalorific coefficient
+      dframe.sim_parms[i,c("F1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("F2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("SDA1_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C1_ins")] - dframe.sim_parms[i,c("F1_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("SDA2_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C2_ins")] - dframe.sim_parms[i,c("F2_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("MS1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (1- parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MG1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MS2_ins")] = dframe.sim_parms[i,c("MS1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MG2_ins")] = dframe.sim_parms[i,c("MG1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MS1_cum")] = dframe.sim_parms[i-1,c("MS1_cum")] + dframe.sim_parms[i,c("MS1_ins")]
+      dframe.sim_parms[i,c("MG1_cum")] = dframe.sim_parms[i-1,c("MG1_cum")] + dframe.sim_parms[i,c("MG1_ins")]
+      dframe.sim_parms[i,c("MS2_cum")] = dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i,c("MS2_ins")]
+      dframe.sim_parms[i,c("MG2_cum")] = dframe.sim_parms[i-1,c("MG2_cum")] + dframe.sim_parms[i,c("MG2_ins")]
+      dframe.sim_parms[i,c("L_cum")] = (dframe.sim_parms[i-1,c("MS2_cum")] / parms.intrinsic$lwA)^(1 / parms.intrinsic$lwB)
+      dframe.sim_parms[i,c("L_cum")] = ifelse(dframe.sim_parms[i,c("L_cum")] < dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i,c("L_cum")])
+      dframe.sim_parms[i,c("K")] = 100*(dframe.sim_parms[i,c("MS2_cum")]/(dframe.sim_parms[i,c("L_cum")]^3))}
+
+  }
+  else if(C_eq == 3 & R_eq == 4){
+    for(i in 2:nrow(dframe.sim_parms)){
+      dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption3((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"CP"],
+                                                                   parms.intrinsic)),
+                                               0,                                                                                              # ** if temp > CTM, then consumption is zero
+                                               consumption3((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"CP"],
+                                                            parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"ACT"],
+                                                                   parms.intrinsic,
+                                                                   match.table)),
+                                               NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
+                                               respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"ACT"],
+                                                            parms.intrinsic,
+                                                            match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("C2_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.temporal[i,"prey_ED"]                                         # convert from grams of food to joules with prey energy density parameter
+      dframe.sim_parms[i,c("R2_ins")] = dframe.sim_parms[i,c("R1_ins")] * 13560.0                                                              # convert from grams of oxygen to joules with oxycalorific coefficient
+      dframe.sim_parms[i,c("F1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("F2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("SDA1_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C1_ins")] - dframe.sim_parms[i,c("F1_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("SDA2_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C2_ins")] - dframe.sim_parms[i,c("F2_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("MS1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (1- parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MG1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MS2_ins")] = dframe.sim_parms[i,c("MS1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MG2_ins")] = dframe.sim_parms[i,c("MG1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MS1_cum")] = dframe.sim_parms[i-1,c("MS1_cum")] + dframe.sim_parms[i,c("MS1_ins")]
+      dframe.sim_parms[i,c("MG1_cum")] = dframe.sim_parms[i-1,c("MG1_cum")] + dframe.sim_parms[i,c("MG1_ins")]
+      dframe.sim_parms[i,c("MS2_cum")] = dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i,c("MS2_ins")]
+      dframe.sim_parms[i,c("MG2_cum")] = dframe.sim_parms[i-1,c("MG2_cum")] + dframe.sim_parms[i,c("MG2_ins")]
+      dframe.sim_parms[i,c("L_cum")] = (dframe.sim_parms[i-1,c("MS2_cum")] / parms.intrinsic$lwA)^(1 / parms.intrinsic$lwB)
+      dframe.sim_parms[i,c("L_cum")] = ifelse(dframe.sim_parms[i,c("L_cum")] < dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i,c("L_cum")])
+      dframe.sim_parms[i,c("K")] = 100*(dframe.sim_parms[i,c("MS2_cum")]/(dframe.sim_parms[i,c("L_cum")]^3))}
+
+  }
+  else if(C_eq == 4 & R_eq == 4){
+    for(i in 2:nrow(dframe.sim_parms)){
+      dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"CP"],
+                                                                   parms.intrinsic,
+                                                                   match.table)),
+                                               0,                                                                                              # ** if temp > CTM, then consumption is zero
+                                               consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"CP"],
+                                                            parms.intrinsic,
+                                                            match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
+                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   parms.temporal[i,"ACT"],
+                                                                   parms.intrinsic,
+                                                                   match.table)),
+                                               NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
+                                               respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
+                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            parms.temporal[i,"ACT"],
+                                                            parms.intrinsic,
+                                                            match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
+
+      dframe.sim_parms[i,c("C2_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.temporal[i,"prey_ED"]                                         # convert from grams of food to joules with prey energy density parameter
+      dframe.sim_parms[i,c("R2_ins")] = dframe.sim_parms[i,c("R1_ins")] * 13560.0                                                              # convert from grams of oxygen to joules with oxycalorific coefficient
+      dframe.sim_parms[i,c("F1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("F2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$FA                                                   # assume egestion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U1_ins")] = dframe.sim_parms[i,c("C1_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("U2_ins")] = dframe.sim_parms[i,c("C2_ins")] * parms.intrinsic$UA                                                   # assume excretion is a constant proportion of consumption
+      dframe.sim_parms[i,c("SDA1_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C1_ins")] - dframe.sim_parms[i,c("F1_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("SDA2_ins")] = parms.intrinsic$SDA * (dframe.sim_parms[i,c("C2_ins")] - dframe.sim_parms[i,c("F2_ins")])            # assume SDA is a constant proportion of assimilated energy (consumption minus egestion)
+      dframe.sim_parms[i,c("MS1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (1- parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MG1_ins")] = (dframe.sim_parms[i,c("C2_ins")] - (dframe.sim_parms[i,c("R2_ins")] + dframe.sim_parms[i,c("F2_ins")] + dframe.sim_parms[i,c("U2_ins")] + dframe.sim_parms[i,c("SDA2_ins")])) * (parms.temporal[i,"gsi_f"])
+      dframe.sim_parms[i,c("MS2_ins")] = dframe.sim_parms[i,c("MS1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MG2_ins")] = dframe.sim_parms[i,c("MG1_ins")] * (1/dframe.sim_parms[i,"pred_ED"])                                   # convert from joules to grams of body mass with predator energy density parameter
+      dframe.sim_parms[i,c("MS1_cum")] = dframe.sim_parms[i-1,c("MS1_cum")] + dframe.sim_parms[i,c("MS1_ins")]
+      dframe.sim_parms[i,c("MG1_cum")] = dframe.sim_parms[i-1,c("MG1_cum")] + dframe.sim_parms[i,c("MG1_ins")]
+      dframe.sim_parms[i,c("MS2_cum")] = dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i,c("MS2_ins")]
+      dframe.sim_parms[i,c("MG2_cum")] = dframe.sim_parms[i-1,c("MG2_cum")] + dframe.sim_parms[i,c("MG2_ins")]
+      dframe.sim_parms[i,c("L_cum")] = (dframe.sim_parms[i-1,c("MS2_cum")] / parms.intrinsic$lwA)^(1 / parms.intrinsic$lwB)
+      dframe.sim_parms[i,c("L_cum")] = ifelse(dframe.sim_parms[i,c("L_cum")] < dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i-1,c("L_cum")], dframe.sim_parms[i,c("L_cum")])
+      dframe.sim_parms[i,c("K")] = 100*(dframe.sim_parms[i,c("MS2_cum")]/(dframe.sim_parms[i,c("L_cum")]^3))}
+
+  }
   else{
     stop("Consumption and/or respiration equation(s) not specified")
   }
@@ -836,17 +1088,18 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
 #' Project growth to validate a bioenergetics model with empirical end-of-year mass
 #'
 #' @description simulate growth with resampled CP and ACT parameters to identify parameter sets that match empirical end-of-year mass
-#' @param start_M2 (default is 100 grams)
-#' @param end_M2.empirical mass of fish at end of year based on empirically-derived field or lab size-at-age estimate
+#' @param start_L starting total length in cm
+#' @param end_L.empirical total length (cm) of fish at end of year based on empirically-derived field or lab size-at-age estimate
 #' @param temperature a dataframe populated with a time series of mean daily water temperature (degrees C x 10) of a habitat patch
-#' @param parms.intrinsic A parms.intrinsic object
+#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed if C_eq = 4 and/or R_eq = 4
 #' @param parms.temporal a dataframe populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters
-#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997
+#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or equation 4
 #' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997
+#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match; only applicable if C_eq = 4 and/or R_eq = 4
 #' @param resamp.n specify the number of CP-ACT parameter sets to draw from uniform distributions (default is 1000)
 #' @return a list of length 5; raw bem_grow output for each patch and year-end performance indices for each patch; also plotted validation output
 #' @export
-bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intrinsic, parms.temporal, C_eq, R_eq, resamp.n = 1000)
+bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intrinsic, parms.temporal, C_eq, R_eq, match.table, resamp.n = 1000)
 {
   time.start <- Sys.time()
   # resample CP and ACT
@@ -865,7 +1118,7 @@ bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intri
   start_M2 <- parms.intrinsic$lwA * (start_L) ^ parms.intrinsic$lwB
   list.sim_parms <- list()
   for(i in 1:length(list.resamp)){
-    list.sim_parms[[i]] <- bem_grow(start_M2, temperature, parms.intrinsic, list.resamp[[i]], C_eq, R_eq)
+    list.sim_parms[[i]] <- bem_grow(start_M2, temperature, parms.intrinsic, list.resamp[[i]], C_eq, R_eq, match.table)
     list.sim_parms[[i]]$resampID <- parms.resample[i,"resampID"]
     list.sim_parms[[i]]$julian <- 1:365
   }
@@ -928,14 +1181,14 @@ bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intri
   return(list.results)
 }
 
-#' Project growth and performance indices across heterogeneous habitat patches
+#' Project performance indices across heterogeneous habitat patches
 #'
 #' @description solve daily energy budgets for n habitat patches
 #' @param start_M2 (default is 100 grams)
 #' @param temperature a dataframe with 365 rows; the first column is the date; subsequent columns are WT_mean (degrees C x 10) for n habitat patches OR a raster layer with x, y, and z values representing latitudes, longitudes, and 365 days of temperature
 #' @param parms.intrinsic A parms.intrinsic object
 #' @param parms.temporal a list of dataframes populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters; each list element is a different habitat patch
-#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997
+#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or equation 4
 #' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997
 #' @param is.raster FALSE if temperature data are in tabular format; TRUE if temperature data are in raster format. Default is FALSE
 #' @return a list of length 2; raw bem_grow output for each patch and year-end performance indices for each patch
@@ -958,7 +1211,7 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
     # grow fish; loop through n habitat patches
     list.sim_parms <- list()
     for(i in 1:length(temperature)){
-      list.sim_parms[[i]] <- bem_grow(start_M2, temperature[[i]], parms.intrinsic, parms.temporal, C_eq, R_eq)
+      list.sim_parms[[i]] <- bem_grow(start_M2, temperature[[i]], parms.intrinsic, parms.temporal, C_eq, R_eq, match.table)
     }
     names(list.sim_parms) <- names(temperature)
 
@@ -1053,7 +1306,7 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
     # grow fish; loop through n habitat patches
     list.sim_parms <- list()
     for(i in 1:length(df.temperature)){
-      list.sim_parms[[i]] <- bem_grow(start_M2, df.temperature[[i]], parms.intrinsic, parms.temporal, C_eq, R_eq)
+      list.sim_parms[[i]] <- bem_grow(start_M2, df.temperature[[i]], parms.intrinsic, parms.temporal, C_eq, R_eq, match.table)
     }
     names(list.sim_parms) <- names(df.temperature)
 
