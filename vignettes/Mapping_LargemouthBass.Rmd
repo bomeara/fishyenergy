@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 First, install the fishyenergy package and load the library. Dependencies include reshape2, stringr, terra, sf, lubridate, and ggplot2.
 These libraries are automatically loaded.
 ```{r setup}
-setwd("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v02\\FishyEnergy\\")
+setwd("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v02\\fishyenergy\\")
 devtools::load_all()
 library(reshape2)
 library(stringr)
