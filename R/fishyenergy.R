@@ -199,7 +199,7 @@ consumption3 <- function(M, T, CP = 1.0, parms.intrinsic)
 
 #' Consumption equation 4
 #'
-#' @description Consumption equation 4; new equation for FishyEnergy that simply matches Cmax for a given temperature
+#' @description Consumption equation 4; new equation for fishyenergy that simply matches Cmax for a given temperature
 #' @param M Mass (grams) of fish
 #' @param T Temperature (degrees C) at which consumption is calculated
 #' @param CP Proportion of maximum consumption (default is 1.0)
@@ -255,7 +255,7 @@ respiration2 <- function(M, T, ACT = 1.0, parms.intrinsic)
 
 #' Respiration equation 4
 #'
-#' @description Respiration equation 4; new equation for FishyEnergy that simply matches Rrest for a given temperature
+#' @description Respiration equation 4; new equation for fishyenergy that simply matches Rrest for a given temperature
 #' @param M Mass (grams) of fish
 #' @param T Temperature (degrees C) at which consumption is calculated
 #' @param ACT Activity multiplier (default is 1.0)
