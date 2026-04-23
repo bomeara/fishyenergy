@@ -1,19 +1,47 @@
 Package: FishyEnergy
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Run Bioenergetics Models for Fish
 Version: 0.1.0
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
+      "Matthew", "Troia",
+      email = "Matthew.Troia@utsa.edu",
       role = c("aut", "cre")
+    ),
+    person(
+      "Xingli", "Giam",
+      email = "xgiam@utk.edu",
+      role = c("aut")
+    ),	
+    person(
+      "Jason", "Jaworski",
+      email = "Jason.Jaworski@my.utsa.edu",
+      role = c("aut")
+    ),	
+    person(
+      "Karmann", "Kessler",
+      email = "karmann.kessler@my.utsa.edu",
+      role = c("aut")
+    ),	
+    person(
+      "Gabriel", "Murillo",
+      email = "gmurillo@gbra.org",
+      role = c("aut")
+    ),	
+    person(
+      "Brian", "O'Meara",
+      email = "omeara.brian@gmail.com",
+      role = c("aut"),
+	  comment = c(ORCID = "0000-0002-0337-5997")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
-License: What license is it under?
+Description: Bioenergetics Models (BEM) are commonly used for estimating where fish can have net growth over the course of their lives. They use various parameters about the fish (such as their efficiency converting prey to body mass) and about the environment (such as water temperature day by day). 
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

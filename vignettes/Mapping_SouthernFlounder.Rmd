@@ -24,17 +24,12 @@ knitr::opts_chunk$set(
 
 #####
 First, install the fishyenergy package and load the library. Dependencies include reshape2, stringr, terra, sf, lubridate, and ggplot2.
-These libraries are automatically loaded.
+
 ```{r setup}
-setwd("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v02\\fishyenergy\\")
-devtools::load_all()
-library(reshape2)
-library(stringr)
-library(terra)
-library(sf)
-library(lubridate)
-library(ggplot2)
+remotes::install_github("bomeara/fishyenergy")
+library(fishyenergy)
 ```
+
 
 #####
 Next, load the intrinsic bioenergetics parameters of five example species. These parameters have been published by various authors since the 1980s and are available from Fish Bioenergetics 4.0 (FB4)

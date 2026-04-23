@@ -4,15 +4,20 @@
 \alias{respiration2}
 \title{Respiration equation 2}
 \usage{
-respiration2(T, W, BEM)
+respiration2(M, T, ACT = 1, parms.intrinsic)
 }
 \arguments{
-\item{T}{temperature (degrees C) at which consumption is calculated}
+\item{M}{Mass (grams) of fish}
 
-\item{W}{weight (grams) of fish}
+\item{T}{Temperature (degrees C) at which respiration is calculated}
 
-\item{BEM}{BEM object}
+\item{ACT}{Activity multiplier (default is 1.0)}
+
+\item{parms.intrinsic}{A parms.intrinsic object}
+}
+\value{
+Specific respiration rate (grams of oxygen per gram of fish mass per day)
 }
 \description{
-ADD LATER
+Respiration equation 2 from Hanson et al. 1997
 }
