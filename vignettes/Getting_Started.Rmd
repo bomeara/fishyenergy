@@ -28,7 +28,7 @@ First, install the fishyenergy package and load the library. Dependencies includ
 
 ```{r setup}
 remotes::install_github("bomeara/fishyenergy")
-library(fishyenergy)
+library(FishyEnergy)
 ```
 
 
@@ -115,6 +115,7 @@ temps_fake <- data.frame(julian, WT_mean)
 
 Plot the time series of mean daily water temperature.
 ```{r fig.height=4, fig.width=6}
+library(ggplot2)
 ggplot(NULL) + theme_classic() +
   labs(x = "Day of year", y = "Water temperature (°C)") +
   scale_x_continuous(expand = c(0,0), limits = c(0,366), breaks = seq(0, 360, 60)) + 

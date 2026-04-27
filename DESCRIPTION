@@ -43,5 +43,11 @@ RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
 Suggests: 
-    testthat (>= 3.0.0)
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    utils
 Config/testthat/edition: 3
+VignetteBuilder: utils, knitr
+Imports: 
+    ggplot2

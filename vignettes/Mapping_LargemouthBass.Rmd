@@ -27,7 +27,7 @@ First, install the fishyenergy package and load the library. Dependencies includ
 
 ```{r setup}
 remotes::install_github("bomeara/fishyenergy")
-library(fishyenergy)
+library(FishyEnergy)
 ```
 
 #####
@@ -96,8 +96,11 @@ head(temps_lake[,1:91])
 #####
 Let's visualize the spatial and temporal variation in these temperature data. Each line is one of the 8,001 lakes.
 ```{r fig.height=4, fig.width=6}
-temps_lake.long <- melt(temps_lake, id.vars = "Hylak_id", value.name = "WT_mean")
+library(reshape2)
+temps_lake.long <- reshape2::melt(temps_lake, id.vars = "Hylak_id", value.name = "WT_mean")
 temps_lake.long$date <- as.numeric(gsub("julian","", temps_lake.long$variable))
+
+library(ggplot2)
 ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
     labs(x = "Day of year", y = "Water temperature (°C)") +
     scale_x_continuous(expand = c(0,0), limits = c(0,365), breaks = seq(0,360,60)) +

@@ -2,9 +2,12 @@ pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  External_Data: External_Data.html
   Getting_Started: Getting_Started.html
-last_built: 2026-02-05T17:45Z
+  Mapping_BrookTrout: Mapping_BrookTrout.html
+  Mapping_LargemouthBass: Mapping_LargemouthBass.html
+  Mapping_SouthernFlounder: Mapping_SouthernFlounder.html
+  Validation: Validation.html
+last_built: 2026-04-27T02:21Z
 urls:
   reference: https://bomeara.github.io/fishyenergy/reference
   article: https://bomeara.github.io/fishyenergy/articles

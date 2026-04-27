@@ -27,7 +27,7 @@ First, install the fishyenergy package and load the library. Dependencies includ
 
 ```{r setup}
 remotes::install_github("bomeara/fishyenergy")
-library(fishyenergy)
+library(FishyEnergy)
 ```
 
 
