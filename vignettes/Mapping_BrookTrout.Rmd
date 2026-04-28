@@ -1,3 +1,4 @@
+
 ---
 title: "Mapping Brook trout"
 output: rmarkdown::html_vignette
@@ -119,9 +120,14 @@ data(envir_casc)
 
 vect.temps_casc.mean <- merge(x = envir_casc, y = temps_casc.mean, by = "COMID")
 
+library(sf)
+vect.temps_casc.mean <- st_as_sf(vect.temps_casc.mean)
+
 ggplot(NULL) + theme_classic() +
-  scale_color_gradient(low = "blue", high = "red") +
-  geom_sf(aes(color = WT_mean/10), data = vect.temps_casc.mean, size = 1.5, shape = 16)
+  scale_colour_gradient("°C",
+                        low = "blue", high = "red",
+                        guide = guide_colorbar(frame.colour = "black", ticks.colour = "black")) +
+  geom_sf(aes(color = WT_mean / 10), data = vect.temps_casc.mean, size = 1.5, shape = 16)
 ```
 
 #####
@@ -179,11 +185,10 @@ What is the relationship between environmental variables and brook trout perform
 ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
     labs(x = "Elevation (masl)", y = "Number of deficit days") +
     geom_point(aes(x = ElevCat, y = def_days), vect.perf.casc, shape = 16, size = 3, alpha = 0.5) +
-    geom_smooth(aes(x = ElevCat, y = def_days), vect.perf.casc, method = "gam")
+    geom_smooth(aes(x = ElevCat, y = def_days), vect.perf.casc, method = "gam", se = FALSE)
 
 ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
     labs(x = "Catchment area (square km)", y = "Number of deficit days") +
     scale_x_log10() +
-    geom_point(aes(x = TotDASqKM, y = def_days), vect.perf.casc, shape = 16, size = 3, alpha = 0.5) +
-    geom_smooth(aes(x = TotDASqKM, y = def_days), vect.perf.casc, method = "gam")
+    geom_point(aes(x = TotDASqKM, y = def_days), vect.perf.casc, shape = 16, size = 3, alpha = 0.5)
 ```
