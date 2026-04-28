@@ -97,7 +97,7 @@ head(temps_lake[,1:91])
 Let's visualize the spatial and temporal variation in these temperature data. Each line is one of the 8,001 lakes.
 ```{r fig.height=4, fig.width=6}
 library(reshape2)
-temps_lake.long <- reshape2::melt(temps_lake, id.vars = "Hylak_id", value.name = "WT_mean")
+temps_lake.long <- melt(temps_lake, id.vars = "Hylak_id", value.name = "WT_mean")
 temps_lake.long$date <- as.numeric(gsub("julian","", temps_lake.long$variable))
 
 library(ggplot2)
@@ -107,7 +107,6 @@ ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
     scale_y_continuous(expand = c(0,0), limits = c(0,40), breaks = seq(0,40,10)) +
     geom_line(aes(x = date, y = WT_mean / 10, group = Hylak_id), temps_lake.long, linewidth = 0.5, alpha = 0.1)
 ```
-
 
 #####
 Let's map the spatial variation in temperature.
