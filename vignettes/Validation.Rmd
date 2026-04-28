@@ -88,6 +88,7 @@ head(temps_lake[,1:91])
 #####
 Let's visualize the spatial variation in these temperature data. Surface water temperatures on January 1st range from approximately 0 to 25°C across these 8,043 lakes. On August 1st, temperatures range from 25 to 35°C.
 ```{r fig.height=4, fig.width=6}
+library(ggplot2)
 ggplot(NULL) + theme_classic() +
     labs(x = "Water temperature (°C)", y = "Number of lakes") +
     scale_x_continuous(expand = c(0,0), limits = c(0,40), breaks = seq(0,40,10)) +
@@ -177,7 +178,7 @@ vali.micsal_WattsBar <- bem_validate(start_L = 15.0,
                                      parms.temporal = parms_temporal_DEFAULT,
                                      C_eq = 2,
                                      R_eq = 1,
-                                     resamp.n = 1000)
+                                     resamp.n = 100)
 ```
 
 #####

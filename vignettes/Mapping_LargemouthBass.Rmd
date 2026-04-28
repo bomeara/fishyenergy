@@ -121,13 +121,13 @@ temps_lake.mean <- merge(x = temps_lake.mean, y = envir_lake, by = "Hylak_id")
 library(sf)
 vect.temps_lake.mean <- st_as_sf(temps_lake.mean, crs = "+proj=longlat +datum=WGS84", coords = c("center_long", "center_lat"))
 
-vect.sdafs <- read_sf("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v01\\for__use_data\\states_sdafs\\states_sdafs.shp")
+data(geogr_lake)
 
 ggplot(NULL) + theme_classic() +
   scale_color_gradient(low = "blue", high = "red") +
-  geom_sf(aes(), data = vect.sdafs, size = 0.5, fill = "gray") +
+  geom_sf(aes(), data = geogr_lake, size = 0.5, fill = "gray") +
   geom_sf(aes(color = WT_mean), data = vect.temps_lake.mean, size = 0.5, shape = 16) +
-  geom_sf(aes(), data = vect.sdafs, fill = NA, color = "black")
+  geom_sf(aes(), data = geogr_lake, fill = NA, color = "black")
 ```
 
 #####
@@ -178,9 +178,9 @@ ggplot(NULL) + theme_classic() +
   scale_colour_gradient("Year-end\nmass (g)",
                         low = "yellow", high = "red",
                         guide = guide_colorbar(frame.colour = "black", ticks.colour = "black")) +
-  geom_sf(aes(), data = vect.sdafs, size = 0.5, fill = "gray") +
+  geom_sf(aes(), data = geogr_lake, size = 0.5, fill = "gray") +
   geom_sf(aes(color = M2_cum), data = vect.perf.lakes, size = 1, shape = 16) +
-  geom_sf(aes(), data = vect.sdafs, fill = NA, color = "black")
+  geom_sf(aes(), data = geogr_lake, fill = NA, color = "black")
 ```
 
 #####
