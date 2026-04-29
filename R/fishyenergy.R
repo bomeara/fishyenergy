@@ -1155,9 +1155,9 @@ bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intri
   # make plot
   plot1 <- ggplot2::ggplot(NULL) +
     ggplot2::theme_classic() +
-    ggplot2::labs(x = "Day of year", y = "Total length (cm)") +
-    ggplot2::scale_x_continuous(expand = c(0,0), limits = c(-5,367), breaks = seq(0,360,60)) +
-    #ggplot2::scale_y_continuous(expand = c(0,0)) +
+    ggplot2::labs(x = "Day of simulation", y = "Total length (cm)") +
+    ggplot2::scale_x_continuous(expand = c(0,0)) +
+    ggplot2::scale_y_continuous(expand = c(0,0)) +
     ggplot2::geom_line(ggplot2::aes(x = julian, y = L_cum, group = resampID), df.sim_parms.all, alpha = 0.5, color = "gray30") +
     ggplot2::geom_line(ggplot2::aes(x = julian, y = L_cum, group = resampID), df.sim_parms.yes, alpha = 1.0, color = "red") +
     ggplot2::geom_hline(yintercept = end_L.empirical, color = "blue", linetype = "dashed")
