@@ -1204,7 +1204,7 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
     for(i in 1:nrow(temperature)){
       list.results[[i]] <- data.frame(colnames(temperature)[-1], as.numeric(temperature[i,-1]))
       colnames(list.results[[i]]) <- c("date","WT_mean")
-      list.results[[i]]$WT_mean <- list.results[[i]]$WT_mean / 10
+      list.results[[i]]$WT_mean <- list.results[[i]]$WT_mean
     }
     names(list.results) <- temperature[,1]
     temperature <- list.results
@@ -1288,7 +1288,7 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
     time.start <- Sys.time()
 
     # reformat temps to list
-    df.temperature <- data.frame(terra::as.points(temperature)) / 10
+    df.temperature <- data.frame(terra::as.points(temperature))
     colnames(df.temperature) <- paste("julian", stringr::str_pad(1:365, 3, pad = 0), sep = "")
     gridID <- paste("cell", stringr::str_pad(1:nrow(df.temperature), nchar(nrow(df.temperature)), pad = 0), sep = "")
     df.temperature <- data.frame(gridID, terra::crds(terra::as.points(temperature)), df.temperature)
