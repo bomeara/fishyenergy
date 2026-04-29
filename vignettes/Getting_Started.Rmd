@@ -109,7 +109,7 @@ First, simulate (i.e., create a fake) temperature time series with mean daily wa
 parm.tmean <- 16        # mean annual temperature
 parm.ampli <- 13        # temperature amplitude
 julian <- seq(1,365,1)
-WT_mean <- parm.ampli * sin((2*(pi/365)) * julian - 2) + parm.tmean
+WT_mean <- round((parm.ampli * sin((2*(pi/365)) * julian - 2) + parm.tmean) * 10, digits = 0)
 temps_fake <- data.frame(julian, WT_mean)
 ```
 
@@ -120,7 +120,7 @@ ggplot(NULL) + theme_classic() +
   labs(x = "Day of year", y = "Water temperature (°C)") +
   scale_x_continuous(expand = c(0,0), limits = c(0,366), breaks = seq(0, 360, 60)) + 
   scale_y_continuous(expand = c(0,0), limits = c(0,40), breaks = seq(0, 40, 10)) + 
-  geom_line(aes(x = julian, y = WT_mean), temps_fake, linewidth = 1)
+  geom_line(aes(x = julian, y = WT_mean / 10), temps_fake, linewidth = 1)
 ```
 
 #####
