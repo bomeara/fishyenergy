@@ -490,22 +490,22 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   if(C_eq == 1 & R_eq == 1){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
@@ -532,22 +532,22 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 2 & R_eq == 1){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
@@ -575,24 +575,24 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 4 & R_eq == 1){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                           # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic,
                                                                    match.table)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic,
                                                                    match.table)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
@@ -620,22 +620,22 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 3 & R_eq == 1){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption3((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption3((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
@@ -663,22 +663,22 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 1 & R_eq == 2){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
@@ -706,22 +706,22 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 2 & R_eq == 2){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
@@ -749,22 +749,22 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 3 & R_eq == 2){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption3((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption3((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
@@ -792,25 +792,25 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 4 & R_eq == 2){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic,
                                                                    match.table)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic,
                                                             match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic,
                                                                    match.table)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic,
                                                             match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
@@ -839,23 +839,23 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 1 & R_eq == 4){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption1((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic,
                                                                    match.table)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic,
                                                             match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
@@ -884,23 +884,23 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 2 & R_eq == 4){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption2((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic,
                                                                    match.table)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic,
                                                             match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
@@ -929,23 +929,23 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 3 & R_eq == 4){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption3((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption3((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic,
                                                                    match.table)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic,
                                                             match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
@@ -974,25 +974,25 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   else if(C_eq == 4 & R_eq == 4){
     for(i in 2:nrow(dframe.sim_parms)){
       dframe.sim_parms[i,c("C1_ins")] = ifelse(is.nan(consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"CP"],
                                                                    parms.intrinsic,
                                                                    match.table)),
                                                0,                                                                                              # ** if temp > CTM, then consumption is zero
                                                consumption4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"CP"],
                                                             parms.intrinsic,
                                                             match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])
 
       dframe.sim_parms[i,c("R1_ins")] = ifelse(is.nan(respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),  # mass on the preceding day (somatic + gonadal)
-                                                                   dframe.sim_parms[i,c("WT_mean")],                                           # temperature on the ith julian day
+                                                                   dframe.sim_parms[i,c("WT_mean") / 10],                                      # temperature on the ith julian day
                                                                    parms.temporal[i,"ACT"],
                                                                    parms.intrinsic,
                                                                    match.table)),
                                                NA,                                                                                             # ** if temp > RTM (lethal limit), then the fish theoretically dies, so assign NA value
                                                respiration4((dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")]),         # mass on the preceding day (somatic + gonadal)
-                                                            dframe.sim_parms[i,c("WT_mean")],                                                  # temperature on the ith julian day
+                                                            dframe.sim_parms[i,c("WT_mean") / 10],                                             # temperature on the ith julian day
                                                             parms.temporal[i,"ACT"],
                                                             parms.intrinsic,
                                                             match.table)) * (dframe.sim_parms[i-1,c("MS2_cum")] + dframe.sim_parms[i-1,c("MG2_cum")])

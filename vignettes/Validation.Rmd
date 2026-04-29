@@ -74,10 +74,10 @@ head(parms_temporal_DEFAULT)
 ```
 
 #####
-Let's explore some lake temperature data modified from the open-source LakeTEMP dataset (Korver et al. 2024). In brief, this dataset provides monthly lake surface temperatures for 1,427,688 lakes throughout the world as well as some geographic (e.g., elevation above sea level) and bathymetric (e.g., lake depth) covariates for these lakes. In fishyenergy, we have extracted these monthly temperatures for 8,046 lakes in 15 southeastern US states plus Puerto Rico. We then used a generalized additive model fitted to monthly temperatures to interpolate temperatures to the daily resolution needed for bioenergetics modeling. Let's load this dataset called temps_lake in fishyenergy. 
+Let's explore some lake temperature data modified from the open-source LakeTEMP dataset (Korver et al. 2024). In brief, this dataset provides monthly lake surface temperatures for 1,427,688 lakes throughout the world as well as some geographic (e.g., elevation above sea level) and bathymetric (e.g., lake depth) covariates for these lakes. In fishyenergy, we have extracted these monthly temperatures for 8,001 lakes in 15 southeastern US states plus Puerto Rico. We then used a generalized additive model fitted to monthly temperatures to interpolate temperatures to the daily resolution needed for bioenergetics modeling. Let's load this dataset called temps_lake in fishyenergy. 
 
 
-The dataset has 8,046 rows each representing a different lake and 366 columns representing the unique lake ID (Hylak_id) followed by the 365 julian days. We print only the first 90 days or three months of the year.
+The dataset has 8,001 rows each representing a different lake and 366 columns representing the unique lake ID (Hylak_id) followed by the 365 julian days. We print only the first 90 days or three months of the year.
 ```{r}
 options(width = 2000)
 data(temps_lake)
@@ -93,13 +93,13 @@ ggplot(NULL) + theme_classic() +
     labs(x = "Water temperature (°C)", y = "Number of lakes") +
     scale_x_continuous(expand = c(0,0), limits = c(0,40), breaks = seq(0,40,10)) +
     scale_y_continuous(expand = c(0,0)) +
-    geom_histogram(aes(x = julian001), temps_lake, fill = "blue", color = "black")
+    geom_histogram(aes(x = julian001 / 10), temps_lake, fill = "blue", color = "black")
 
 ggplot(NULL) + theme_classic() +
     labs(x = "Water temperature (°C)", y = "Number of lakes") +
     scale_x_continuous(expand = c(0,0), limits = c(0,40), breaks = seq(0,40,10)) +
     scale_y_continuous(expand = c(0,0)) +
-    geom_histogram(aes(x = julian213), temps_lake, fill = "red", color = "black")
+    geom_histogram(aes(x = julian213 / 10), temps_lake, fill = "red", color = "black")
 ```
 
 #####
@@ -117,8 +117,8 @@ ggplot(NULL) + theme_classic() +
     labs(x = "Day of year", y = "Water temperature (°C)") +
     scale_x_continuous(expand = c(0,0), limits = c(0,365), breaks = seq(0,360,60)) +
     scale_y_continuous(expand = c(0,0), limits = c(0,40), breaks = seq(0,40,10)) +
-    geom_line(aes(x = date, y = WT.FL), temps_lake.subset, color = "#005030", linewidth = 1) +
-    geom_line(aes(x = date, y = WT.TN), temps_lake.subset, color = "#FF8200", linewidth = 1)
+    geom_line(aes(x = date, y = WT.FL / 10), temps_lake.subset, color = "#005030", linewidth = 1) +
+    geom_line(aes(x = date, y = WT.TN / 10), temps_lake.subset, color = "#FF8200", linewidth = 1)
 ```
 
 #####
