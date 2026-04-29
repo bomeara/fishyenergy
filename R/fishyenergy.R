@@ -1121,7 +1121,7 @@ bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intri
   for(i in 1:length(list.resamp)){
     list.sim_parms[[i]] <- bem_grow(start_M2, temperature, parms.intrinsic, list.resamp[[i]], C_eq, R_eq, match.table)
     list.sim_parms[[i]]$resampID <- parms.resample[i,"resampID"]
-    list.sim_parms[[i]]$julian <- 1:365
+    list.sim_parms[[i]]$julian <- 1:nrow(temperature)
   }
   names(list.sim_parms) <- parms.resample$resampID
 
@@ -1132,8 +1132,8 @@ bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intri
   M2_cum <- vector()
   L_cum <- vector()
   for(i in 1:resamp.n){
-    M2_cum[i] <- round(list.sim_parms[[i]][365,"M2_cum"], digits = 2)
-    L_cum[i] <- round(list.sim_parms[[i]][365,"L_cum"], digits = 1)
+    M2_cum[i] <- round(list.sim_parms[[i]][nrow(temperature),"M2_cum"], digits = 2)
+    L_cum[i] <- round(list.sim_parms[[i]][nrow(temperature),"L_cum"], digits = 1)
   }
   dframe.perform <- data.frame(resampID, CP, ACT, M2_cum, L_cum)
   dframe.perform$end_L <- end_L.empirical
