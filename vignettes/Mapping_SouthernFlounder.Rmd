@@ -101,8 +101,7 @@ Let's explore some coastal temperature data modified from the open-source [Texas
 Let's load this dataset called temps_bayc in fishyenergy and map the spatial variation in temperature. These data are formatted as a 3-dimensional array with spatial dimensions of 542 vertical pixels by 410 horizontal pixels and 365 days in the temporal dimension. Note that only 8,862 of the 222,220 spatial pixels represent a bay/estuary and have a temperature value.
 ```{r}
 library(terra)
-#temps_bayc <- rast(system.file("extdata", "temps_bayc.tif", package="fishyenergy"))
-temps_bayc <- rast("C:\\Users\\ysw841\\Downloads\\OFFLINE\\fishyenergy\\inst\\extdata\\temps_bayc.tif")
+temps_bayc <- rast(system.file("extdata", "temps_bayc.tif", package="FishyEnergy"))
 ```
 
 

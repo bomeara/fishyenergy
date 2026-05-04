@@ -122,7 +122,7 @@ vect.temps_lake.mean <- st_as_sf(temps_lake.mean, crs = "+proj=longlat +datum=WG
 
 library(terra)
 #data(geogr_lake)
-geogr_lake <- vect("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v01\\for__use_data\\states_sdafs\\states_sdafs.shp")
+geogr_lake <- vect(system.file("extdata", "states_sdafs.shp", package="FishyEnergy")) #("K:\\COS\\TroiaFishEcology\\TroiaMatthew\\utsa_b\\UTSA_v01\\UTSA_research_v01\\project_BEM_package_v01\\for__use_data\\states_sdafs\\states_sdafs.shp")
 geogr_lake <- st_as_sf(geogr_lake)
 
 ggplot(NULL) + theme_classic() +
