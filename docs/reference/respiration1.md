@@ -1,23 +1,32 @@
 # Respiration equation 1
 
-ADD LATER
+Respiration equation 1 from Hanson et al. 1997
 
 ## Usage
 
 ``` r
-respiration1(T, W, BEM)
+respiration1(M, T, ACT = 1, parms.intrinsic)
 ```
 
 ## Arguments
 
+- M:
+
+  Mass (grams) of fish
+
 - T:
 
-  temperature (degrees C) at which consumption is calculated
+  Temperature (degrees C) at which respiration is calculated
 
-- W:
+- ACT:
 
-  weight (grams) of fish
+  Activity multiplier (default is 1.0)
 
-- BEM:
+- parms.intrinsic:
 
-  BEM object
+  A parms.intrinsic object
+
+## Value
+
+Specific respiration rate (grams of oxygen per gram of fish mass per
+day)

@@ -1,28 +1,32 @@
 # Consumption equation 3
 
-ADD LATER
+Consumption equation 3 from Hanson et al. 1997
 
 ## Usage
 
 ``` r
-consumption3(T, W, BEM)
+consumption3(M, T, CP = 1, parms.intrinsic)
 ```
 
 ## Arguments
 
+- M:
+
+  Mass (grams) of fish
+
 - T:
 
-  temperature (degrees C) at which consumption is calculated
+  Temperature (degrees C) at which consumption is calculated
 
-- W:
+- CP:
 
-  weight (grams) of fish
+  Proportion of maximum consumption (default is 1.0)
 
-- BEM:
+- parms.intrinsic:
 
-  object
+  A parms.intrinsic object
 
 ## Value
 
-specific consumption rate (grams of food consumed per gram of fish mass
+Specific consumption rate (grams of food consumed per gram of fish mass
 per day)

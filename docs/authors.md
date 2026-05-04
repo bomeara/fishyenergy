@@ -2,8 +2,17 @@
 
 ## Authors
 
-- **Brian O'Meara**. Author, maintainer.
-  [](https://orcid.org/0000-0002-0337-5997)
+- **Matthew Troia**. Author, maintainer.
+
+- **Xingli Giam**. Author.
+
+- **Jason Jaworski**. Author.
+
+- **Karmann Kessler**. Author.
+
+- **Gabriel Murillo**. Author.
+
+- **Brian O'Meara**. Author. [](https://orcid.org/0000-0002-0337-5997)
 
 ## Citation
 

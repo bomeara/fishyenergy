@@ -1,0 +1,71 @@
+# Project growth to validate a bioenergetics model with empirical end-of-year mass
+
+simulate growth with resampled CP and ACT parameters to identify
+parameter sets that match empirical end-of-year mass
+
+## Usage
+
+``` r
+bem_validate(
+  start_L = 10,
+  end_L.empirical,
+  temperature,
+  parms.intrinsic,
+  parms.temporal,
+  C_eq,
+  R_eq,
+  match.table,
+  resamp.n = 1000
+)
+```
+
+## Arguments
+
+- start_L:
+
+  starting total length in cm
+
+- end_L.empirical:
+
+  total length (cm) of fish at end of year based on empirically-derived
+  field or lab size-at-age estimate
+
+- temperature:
+
+  a dataframe populated with a time series of mean daily water
+  temperature (degrees C x 10) of a habitat patch
+
+- parms.intrinsic:
+
+  A parms.intrinsic object; note that temperature dependent parameters
+  are bypassed if C_eq = 4 and/or R_eq = 4
+
+- parms.temporal:
+
+  a dataframe populated with a time series of intrinsic (e.g., GSI) and
+  extrinsic (e.g., prey energy density) biological parameters
+
+- C_eq:
+
+  Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or
+  equation 4
+
+- R_eq:
+
+  Specify respiration equation 1 or 2 from Hanson et al. 1997
+
+- match.table:
+
+  temperature dependent parameters formatted as a table with three
+  columns named WT_mean, C_match, and R_match; only applicable if C_eq =
+  4 and/or R_eq = 4
+
+- resamp.n:
+
+  specify the number of CP-ACT parameter sets to draw from uniform
+  distributions (default is 1000)
+
+## Value
+
+a list of length 5; raw bem_grow output for each patch and year-end
+performance indices for each patch; also plotted validation output

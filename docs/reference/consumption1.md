@@ -1,11 +1,11 @@
-# Consumption equation 2
+# Consumption equation 1
 
-consumption equation 2 from Hanson et al. 1997
+consumption equation 1 from Hanson et al. 1997
 
 ## Usage
 
 ``` r
-consumption2(M, T, CP = 1, parms.intrinsic)
+consumption1(M, T, CP = 1, parms.intrinsic)
 ```
 
 ## Arguments
