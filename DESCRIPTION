@@ -38,7 +38,7 @@ Authors@R: c(
 Description: Bioenergetics Models (BEM) are commonly used for estimating where fish can have net growth over the course of their lives. They use various parameters about the fish (such as their efficiency converting prey to body mass) and about the environment (such as water temperature day by day). 
 License: GPL (>= 3)
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
