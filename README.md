@@ -1,7 +1,7 @@
 # fishyenergy
 
-This uses functions from Troia and Perkin (2022) to predict gain of fish mass using a model originally from Hanson et al. (1997).
+This package uses functions from the Wisconsin Bioenergetics described by Hanson et al. (1997) to validate bioenergetics models and map bioenergetic performance of fishes.
 
-Funded by [NSF IOS-2222476](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2222476)
+See the [Getting Started vignette](https://bomeara.github.io/fishyenergy/articles/Getting_Started.html) for a quick introduction to the package. There is also a [Validation vignette](https://bomeara.github.io/fishyenergy/articles/Validation.html) and three mapping vignettes for [largemouth bass](https://bomeara.github.io/fishyenergy/articles/Mapping_LargemouthBass.html), [brook trout](https://bomeara.github.io/fishyenergy/articles/Mapping_BrookTrout.html), and [southern flounder](https://bomeara.github.io/fishyenergy/articles/Mapping_SouthernFlounder.html).
 
-See the [Getting Started vignette](https://bomeara.github.io/fishyenergy/articles/Getting_Started.html) for a quick introduction to the package and the [External Data vignette](https://bomeara.github.io/fishyenergy/articles/External_Data.html) for how to get data from the Fish Bioenergetics 4.0 software and USGS water temperature data.
+Funded by [NSF IOS-2222476](https://www.nsf.gov/awardsearch/showAward?AWD_ID=2222476).

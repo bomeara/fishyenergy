@@ -7,11 +7,10 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-### In this vignette, you will:
-1) Learn how to validate a bionenergetics model. That is, you will simulate 365 days of growth and then use empirical length-at-age estimates from a field study or lab growth experiment to identify consumption (CP) and activity (ACT) values that produce realistic growth.
-2) Visualize growth trajectories.
-3) Visualize validated combinations of CP and ACT.
-
+### Vignette objectives
+- Learn how to validate a bioenergetics model. That is, you will simulate 365 days of growth and then use empirical length-at-age estimates from a field study to identify consumption (CP) and activity (ACT) values that produce realistic growth.
+- Visualize growth trajectories.
+- Visualize validated combinations of CP and ACT.
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -22,50 +21,33 @@ knitr::opts_chunk$set(
 )
 ```
 
-#####
-First, install the fishyenergy package and load the library. Dependencies include reshape2, stringr, terra, sf, lubridate, and ggplot2.
-
+### Install and load fishyenergy
 ```{r setup}
 remotes::install_github("bomeara/fishyenergy")
 library(FishyEnergy)
 ```
 
-
-#####
-#### Temperature-dependent physiological rates
-Next, let's look at temperature-dependent physiological rates of a few species.
-Start by loading the intrinsic bioenergetics parameters of five example species. These parameters have been published by various authors since the 1980s and are available from Fish Bioenergetics 4.0 (FB4)
+### Load largemouth bass parameters
+Start by loading the intrinsic bioenergetics parameters of five example species. These parameters have been published by various authors since the 1980s and are available from [Fish Bioenergetics 4.0](http://fishbioenergetics.org/).
 ```{r}
 options(width = 500)
 data(parms_fb4)
 ```
 
-#####
-Let's retain only one focal species, largemouth bass, and look at these data.
-The first column shows the Latin name in snake case.
-Other columns like lwA and lwB are the intercept and slope of the length-weight equation.
-Still other columns like CA and CB are the intercept and slope of the mass dependent consumption equation (a negative power law).
-There's also specific dynamic action (i.e., the proportion of energy consumed allocated to the cost of digestion), predator energy density, and many other variables defined by Hanson et al. (1997).
+Retain only one focal species, largemouth bass *Micropterus salmoides*, and look at these data.
+
+- The first column shows the Latin name in snake case.
+- Other columns like lwA and lwB are the intercept and slope of the length-weight equation acquired from [FishBase](https://fishbase.org).
+- Still other columns like CA and CB are the intercept and slope of the mass dependent consumption equation (a negative power law).
+- There's also specific dynamic action (*i.e.*, the proportion of energy consumed allocated to the cost of digestion), predator energy density, and many other variables defined by Hanson *et al.* (1997).
 ```{r}
 options(width = 500)
 parms.micsal <- parms_fb4[parms_fb4$genus_species == "micropterus_salmoides",]
 parms.micsal
 ```
 
-#####
-Next, we need to load some parameters that potentially vary temporally. The dataframe has 365 rows representing each day of the year. There are five noteworthy columns (i.e., variables):
-
-
-CP is the proportion of maximum consumption and decrease as prey quantity declines or as exploitative competition increases.
-
-
-ACT is the activity multiplier where a value of zero would indicate no metabolic costs beyond being at rest. Maintaining position in a flowing stream, avoiding predators, pursuing prey, and engaging in reproductive behavior increase ACT.
-
-
-The next two parameters (gsi_f and gsi_m) allow the user to model somatic growth of a reproductively mature fish that allocates some energy to gonadal tissue. Separate parameters are provided for females and males because the sexes invest different amounts of energy to their gonads--gsi_f and gsi_m, respectively. The default data assume a reproductively immature fish (i.e., gsi = 0).
-
-
-Modifying prey energy density (prey_ED) over the year can simulate ontogenetic diet shifts or changes in prey quality. There are numerous published estimates of prey energy density for common prey items like invertebrates, fish, and so on.
+### Load temporally-varying parameters
+We need to load some parameters that potentially vary temporally. The dataframe has 365 rows representing each day of the year. There are five noteworthy columns (*i.e.*, variables).
 ```{r}
 options(width = 500)
 data(parms_temporal_DEFAULT)
@@ -73,11 +55,13 @@ dim(parms_temporal_DEFAULT)
 head(parms_temporal_DEFAULT)
 ```
 
-#####
-Let's explore some lake temperature data modified from the open-source LakeTEMP dataset (Korver et al. 2024). In brief, this dataset provides monthly lake surface temperatures for 1,427,688 lakes throughout the world as well as some geographic (e.g., elevation above sea level) and bathymetric (e.g., lake depth) covariates for these lakes. In fishyenergy, we have extracted these monthly temperatures for 8,001 lakes in 15 southeastern US states plus Puerto Rico. We then used a generalized additive model fitted to monthly temperatures to interpolate temperatures to the daily resolution needed for bioenergetics modeling. Let's load this dataset called temps_lake in fishyenergy. 
+- CP is the proportion of maximum consumption and decrease as prey quantity declines or as exploitative competition increases.
+- ACT is the activity multiplier where a value of zero would indicate no metabolic costs beyond being at rest. Maintaining position in a flowing stream, avoiding predators, pursuing prey, and engaging in reproductive behavior increase ACT.
+- The next two parameters (gsi_f and gsi_m) allow the user to model somatic growth of a reproductively mature fish that allocates some energy to gonadal tissue. Separate parameters are provided for females and males because the sexes invest different amounts of energy to their gonads. The default data assume a reproductively immature fish (*i.e.*, gsi = 0).
+- Modifying prey energy density (prey_ED) over the year can simulate ontogenetic diet shifts or changes in prey quality. There are numerous published estimates of prey energy density for common prey items like invertebrates, fish, and so on (see Appendix B from Hanson *et al.* 1997).
 
-
-The dataset has 8,001 rows each representing a different lake and 366 columns representing the unique lake ID (Hylak_id) followed by the 365 julian days. We print only the first 90 days or three months of the year.
+### Load lake temperatures
+Let's explore some lake temperature data modified from the open-source LakeTEMP dataset (Korver *et al.* 2024). In brief, this dataset provides monthly lake surface temperatures for 1,427,688 lakes throughout the world as well as some geographic (*e.g.*, elevation above sea level) and bathymetric (*e.g.*, lake depth) covariates for these lakes. In fishyenergy, we have extracted these monthly temperatures for 8,001 lakes in 15 southeastern US states plus Puerto Rico. We then used a generalized additive model fitted to monthly temperatures to interpolate temperatures to the daily resolution needed for bioenergetics modeling. Let's load this dataset called **temps_lake** in fishyenergy. The dataset has 8,001 rows each representing a different lake and 366 columns representing the unique lake ID (Hylak_id) followed by the 365 julian days. We print only the first 90 days or three months of the year.
 ```{r}
 options(width = 2000)
 data(temps_lake)
@@ -85,7 +69,7 @@ dim(temps_lake)
 head(temps_lake[,1:91])
 ```
 
-#####
+### Plot histograms of winter and summer temperatures
 Let's visualize the spatial variation in these temperature data. Surface water temperatures on January 1st range from approximately 0 to 25°C across these 8,043 lakes. On August 1st, temperatures range from 25 to 35°C.
 ```{r fig.height=4, fig.width=6}
 library(ggplot2)
@@ -102,8 +86,8 @@ ggplot(NULL) + theme_classic() +
     geom_histogram(aes(x = julian213 / 10), temps_lake, fill = "red", color = "black")
 ```
 
-#####
-Let's visualize the temporal variation in these temperature data for Watts Bar lake in East Tennessee and for Lake Okeechobee in South Florida.
+### Compare temperature time series between a northern and southern lake
+Let's visualize the temporal variation in these temperature data for [Watts Bar lake](https://www.google.com/maps/place/Watts+Bar+Lake/@35.7441763,-85.2117234,9z/data=!3m1!4b1!4m6!3m5!1s0x885dd607ba4ee5fd:0x9345845de4bcd0cb!8m2!3d35.6963849!4d-84.7263321!16zL20vMDY3bmsx?entry=ttu&g_ep=EgoyMDI2MDUwMi4wIKXMDSoASAFQAw%3D%3D) in East Tennessee and for [Lake Okeechobee](https://www.google.com/maps?sca_esv=e43388f8423b2460&rlz=1C1GCEA_enUS1209US1209&output=search&q=lake+okeechobee&source=lnms&fbs=ADc_l-aN0CWEZBOHjofHoaMMDiKpaEWjvZ2Py1XXV8d8KvlI3ppPEReeCOS7s1VbbZz2TLtLg-3tySDopuaXFPmErWGprNh7xplYbuAM26E83-634Tje944TsfmZQpQNhhGuNAE9iZKZtqtInQWOodZ2Cl3sdEvwbZykRhWtbQyheYQMZDZ5btbWCi0hM6KGDyAtxJ8TnNJv9mlrweos2-nVbBW5Dp0_pw&entry=mc&ved=1t:200715&ictx=111) in South Florida.
 ```{r fig.height=4, fig.width=6}
 
 date <- 1:365
@@ -121,7 +105,6 @@ ggplot(NULL) + theme_classic() +
     geom_line(aes(x = date, y = WT.TN / 10), temps_lake.subset, color = "#FF8200", linewidth = 1)
 ```
 
-#####
 Do some data wrangling to get the Watts Bar temperature into the format needed to simulate fish growth. That is, a dataframe with 365 rows representing each day of a calendar year and two columns representing the date and the daily mean water temperature.
 ```{r}
 options(width = 500)
@@ -133,8 +116,8 @@ temps_WattsBar$date <- 1:365
 temps_WattsBar <- temps_WattsBar[,c("date","WT_mean")]
 ```
 
-#####
-Next, use the bem_grow function to simulate the daily bioenergetic budget of an age-1 largemouth bass in Watts Bar. A realistic largemouth bass living in an East Tennessee reservoir reaches 15 cm total length and has a mass of 42 grams at the end of its first year, so let's simulate growth for that fish.
+### Simulating daily bioenergetics
+Use the **bem_grow** function to simulate the daily bioenergetic budget of an age-1 largemouth bass in Watts Bar. A realistic largemouth bass living in an East Tennessee reservoir reaches 15 cm total length and has a mass of 42 grams at the end of its first year (Etnier & Starnes 1993), so let's simulate growth for that fish.
 ```{r}
 grow.micsal_WattsBar <- bem_grow(start_M2 = 57,
                                  temperature = temps_WattsBar,
@@ -144,7 +127,7 @@ grow.micsal_WattsBar <- bem_grow(start_M2 = 57,
                                  R_eq = 1)
 ```
 
-#####
+### Plotting daily energetics
 Plot the time series of m2_cum. This predator fish starts the year at 57 grams (2 ounces) and ends the year at a whopping 1831 grams (~4 pounds), which is totally unrealistic. This is because we have assumed the predator fish has limitless food (CP = 1), sets up shop in one place and never moves (ACT = 1), and allocates no energy to reproduction (gsi_ = 0).
 ```{r fig.height=4, fig.width=6}
 ggplot(NULL) + theme_classic() +
@@ -153,23 +136,15 @@ ggplot(NULL) + theme_classic() +
   geom_line(aes(x = date, y = M2_cum), grow.micsal_WattsBar, linewidth = 1)
 ```
 
-#####
-Obviously CP=1 and ACT=1 are unrealistic, but what are realistic values? Unclear! These parameters are difficult to estimate for wild fish, but there is some literature describing ways some approaches to do so
+### Validating growth
+Obviously CP=1 and ACT=1 are unrealistic, but what are realistic values? Unclear! These parameters are difficult to estimate for wild fish, but there is some literature describing ways some approaches to do so (Diana 1979, Metcalfe *et al.* 2016, Wahl & Stein 1991, Wright *et al.* 2014).
 
-
-We developed the bem_validate function to address this challenge using an alterantive approach. What the function does is identify pairs of CP and ACT values that produce realistic growth. Inputs of bem_validate include a subset of those you're familiar with from bem_grow including temperature, parms.intrinsic, parms.temporal, C_eq, and R_eq.
-
+We developed the **bem_validate** function to address this challenge using an alternative approach. What the function does is identify pairs of CP and ACT values that simulate realistic growth. Inputs of bem_validate include a subset of those you're familiar with from the **bem_grow** function including temperature, parms.intrinsic, parms.temporal, C_eq, and R_eq.
 
 Three new inputs include:
-
-
 1) Total length in cm at the start of the year (start_L). We use total length as the input instead of mass because lengths-at-age are more commonly presented in the literature than are masses-at-age. The function just uses the parms_fb4 to convert the inputted start_L to mass before running the bem_grow function. For the example below, we use 15.0 cm TL reported for typical largemouth bass at the start of its second year of life (age-1) in Tennessee reservoirs by Etnier & Starnes 1993.
-
-
 2) The expected total length in cm at the end of the year based on empirically-derived growth (end_L.empirical). For the example below, we use 26.8 cm TL reported for typical largemouth bass at the end of its second year of life (age-1) in Tennessee reservoirs by Etnier & Starnes 1993.
-
-
-3) The number of CP and ACT parameter sets to test in the growth validation. CP values are drawn from a uniform probability distribution (base::runif) with a minimum of 0.0 and a maximum of 1.0. ACT values are also drawn from a uniform distribution with a minimum and maximum of 1.0 and 4.0, respectively.
+3) The number of CP and ACT parameter sets to test in the growth validation. CP values are drawn from a uniform probability distribution with a minimum of 0.0 and a maximum of 1.0. ACT values are also drawn from a uniform distribution with a minimum and maximum of 1.0 and 4.0, respectively.
 ```{r}
 vali.micsal_WattsBar <- bem_validate(start_L = 15.0,
                                      end_L.empirical = 26.8,
@@ -181,15 +156,12 @@ vali.micsal_WattsBar <- bem_validate(start_L = 15.0,
                                      resamp.n = 100)
 ```
 
-#####
 Output from bem_validate is a list of length five:
-
 
 1) The first list element is the run time. The bem_validate function, like the bem_project function, takes some time to run and that time increases with the number of parameter sets resampled.
 ```{r}
 vali.micsal_WattsBar$run.time
 ```
-
 
 2) The first graphical output is total length plotted as a function of julian day. A separate line is plotted for each resampled parameter set that finishes the year. Gray lines represent parameter sets that finish the year (i.e., the fish does not die before the end of the year). Red lines represent parameter sets that are within +/- 5% of empirically-derived end-of-year total length. The latter is shown as a horizontal dashed blue line.
 ```{r fig.height=4, fig.width=6}
@@ -197,13 +169,11 @@ options(width = 500)
 vali.micsal_WattsBar$plot_growth
 ```
 
-
 3) The other graphical output shows the resampled CP and ACT parameter sets in two-dimensional space. Gray symbols represent parameter sets that finish the year (i.e., the fish does not die before the end of the year). Red symbols represent parameter sets that are within +/- 5% of empirical end-of-year total length. Low CP and high ACT plot in the lower right and represent low growth parameter sets. Alternatively, high CP and low ACT plot in the upper left and represent high growth parameter sets. Parameter sets with low CP and low ACT or high CP and high ACT represent intermediate growth that typically correspond with empirical growth (i.e., represent realistic/validated parameter sets).
 ```{r fig.height=4, fig.width=4}
 options(width = 500)
 vali.micsal_WattsBar$plot_parms
 ```
-
 
 4) The last two outputs are tabular. The first, year.end.perform, has a number of rows equal to resamp.n each representing a resampled parameter set. There are seven columns representing the resampID 1 to resamp.n, the resampled parameters CP and ACT, the simulated end-of-year mass (M2_cum) and total length (L_cum), the empirically-derived end-of-year total length (end_L), and a Boolean variable indicating whether the simulated end-of-year total length is within +/-5% of empirically-derived end-of-year total length. Note that parameter sets that do not yield a full year of growth simulation return NAs and FALSEs.
 ```{r}
@@ -217,9 +187,20 @@ options(width = 500)
 vali.micsal_WattsBar$year.end.perform[vali.micsal_WattsBar$year.end.perform$accurate,c("CP","ACT")]
 ```
 
-
 5) The other tabular output, daily.output, is a list with a number of elements equal to resamp.n each representing a resampled parameter set. Each element is dataframe with the same 365 rows and 43 columns produced by the bem_grow function.
 ```{r}
 options(width = 500)
 head(vali.micsal_WattsBar$daily.output[[1]])
 ```
+
+### Next steps
+Now that you have the power of validation established, try one, two, or all three of the **Mapping** vignettes. These vignettes use the bem_project function to simulate growth of a fish at not just one habitat patch, but hundreds to thousands of habitat patches that differ in temperature. These three vignettes are intentionally diverse in application, including: [largemouth bass](https://bomeara.github.io/fishyenergy/articles/Mapping_LargemouthBass.html) across many lakes, [brook trout](https://bomeara.github.io/fishyenergy/articles/Mapping_BrookTrout.html) across interconfluence stream reaches in a montane stream network, and [southern flounder](https://bomeara.github.io/fishyenergy/articles/Mapping_SouthernFlounder.html) among raster cells of bays along the western coast of the Gulf of Mexico. Reach out to package developer [Matthew Troia](mailto:matthew.troia@utsa.edu) if you have questions about fishyenergy or suggestions to make it better!
+
+### References
+- Diana, J. S. (1979). The feeding pattern and daily ration of a top carnivore, the northern pike (Esox lucius). Canadian Journal of Zoology, 57(11), 2121-2127. 
+- Etnier, D. A., & Starnes, W. C. (1993). The Fishes of Tennessee. The University of Tennessee Press, Knoxville, TN.
+- Hanson, P. C., Johnson, T. B., Schindler, D. E., & Kitchell, J. F. (1997). Fish bioenergetics 3.0 for Windows.
+- Korver, M. C., Lehner, B., Cardille, J. A., & Carrea, L. (2024). Surface water temperature observations and ice phenology estimations for 1.4 million lakes globally. Remote Sensing of Environment, 308, 114164.
+- Metcalfe, J. D., Wright, S., Tudorache, C., & Wilson, R. P. (2016). Recent advances in telemetry for estimating the energy metabolism of wild fishes. Journal of Fish Biology, 88(1), 284-297.
+- Wahl, D. H., & Stein, R. A. (1991). Food consumption and growth of three esocids: field tests of a bioenergetic model. Transactions of the American Fisheries Society, 120(2), 230-246. 
+- Wright, S., Metcalfe, J. D., Hetherington, S., & Wilson, R. (2014). Estimating activity-specific energy expenditure in a teleost fish, using accelerometer loggers. Marine Ecology Progress Series, 496, 19-32.

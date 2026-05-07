@@ -1,46 +1,38 @@
 # Mapping Largemouth bass
 
-### In this vignette, you will:
+### Vignette objectives
 
-1.  Explore spatial variation in the performance of Largemouth bass
-    (Micropterus salmoides) in lakes across the southeastern United
-    States.
-2.  Use bioenergetics modeling to simulate individual performance
-    metrics across 8,001 lakes (lentic habitat patches)
-3.  Create maps showing spatially-contiguous variation in these
-    performance metrics and drivers of this spatial variation (e.g.,
-    temperature).
+- Explore spatial variation in the performance of Largemouth bass
+  *Micropterus salmoides* in lakes across the southeastern United
+  States.
+- Use bioenergetics modeling to simulate individual performance metrics
+  across 8,001 lakes (lentic habitat patches)
+- Create maps showing spatially-contiguous variation in these
+  performance metrics and drivers of this spatial variation (*e.g.*,
+  temperature).
 
-##### 
-
-First, install the fishyenergy package and load the library.
-Dependencies include reshape2, stringr, terra, sf, lubridate, and
-ggplot2.
+### Install and load fishyenergy.
 
 ``` r
-
 remotes::install_github("bomeara/fishyenergy")
 library(FishyEnergy)
 ```
 
-##### 
+### Load intrinsic bioenergetics parameters
 
-Next, load the intrinsic bioenergetics parameters of five example
+Start by loading the intrinsic bioenergetics parameters of five example
 species. These parameters have been published by various authors since
-the 1980s and are available from Fish Bioenergetics 4.0 (FB4)
+the 1980s and are available from [Fish Bioenergetics
+4.0](http://fishbioenergetics.org/).
 
 ``` r
-
 data(parms_fb4)
 ```
 
-##### 
-
-Let’s retain only one focal species, Largemouth bass, and look at these
-data.
+Retain only one focal species, largemouth bass *Micropterus salmoides*,
+and look at these data.
 
 ``` r
-
 options(width = 500)
 parms.micsal <- parms_fb4[parms_fb4$genus_species == "micropterus_salmoides",]
 parms.micsal
@@ -48,42 +40,22 @@ parms.micsal
 #> 2 micropterus_salmoides     adult Rice et al. 1983 0.0226 2.781   2 0.33 -0.325 2.65 27.5  37  NA  NA  NA   1 0.008352 -0.355 0.0313 0.0196   0   0   1   0 0.15848 0.104 0.08817    4184
 ```
 
-The first column shows the Latin name in snake case. Other columns like
-lwA and lwB are the intercept and slope of the length-weight equation.
-Still other columns like CA and CB are the intercept and slope of the
-mass dependent consumption equation (a negative power law). There’s also
-specific dynamic action (i.e., the proportion of energy consumed
-allocated to the cost of digestion), predator energy density, and many
-other variables defined by Hanson et al. (1997).
+- The first column shows the Latin name in snake case.
+- Other columns like lwA and lwB are the intercept and slope of the
+  length-weight equation acquired from [FishBase](https://fishbase.org).
+- Still other columns like CA and CB are the intercept and slope of the
+  mass dependent consumption equation (a negative power law).
+- There’s also specific dynamic action (*i.e.*, the proportion of energy
+  consumed allocated to the cost of digestion), predator energy density,
+  and many other variables defined by Hanson *et al.* (1997).
 
-##### 
+### Temporally-varying parameters
 
-Next, we need to load some parameters that potentially vary temporally.
-The dataframe has 365 rows representing each day of the year. There are
-five noteworthy columns (i.e., variables):
-
-CP is the proportion of maximum consumption and decrease as prey
-quantity declines or as exploitative competition increases.
-
-ACT is the activity multiplier where a value of zero would indicate no
-metabolic costs beyond being at rest. Maintaining position in a flowing
-stream, avoiding predators, pursuing prey, and engaging in reproductive
-behavior increase ACT.
-
-The next two parameters (gsi_f and gsi_m) allow the user to model
-somatic growth of a reproductively mature fish that allocates some
-energy to gonadal tissue. Separate parameters are provided for females
-and males because the sexes invest different amounts of energy to their
-gonads–gsi_f and gsi_m, respectively. The default data assume a
-reproductively immature fish (i.e., gsi = 0).
-
-Modifying prey energy density (prey_ED) over the year can simulate
-ontogenetic diet shifts or changes in prey quality. There are numerous
-published estimates of prey energy density for common prey items like
-invertebrates, fish, and so on.
+We need to load some parameters that potentially vary temporally. The
+dataframe has 365 rows representing each day of the year. There are five
+noteworthy columns (*i.e.*, variables).
 
 ``` r
-
 options(width = 500)
 data(parms_temporal_DEFAULT)
 dim(parms_temporal_DEFAULT)
@@ -98,15 +70,32 @@ head(parms_temporal_DEFAULT)
 #> 6 1/6/2025  1   1     0     0    3698
 ```
 
-##### 
+- CP is the proportion of maximum consumption and decrease as prey
+  quantity declines or as exploitative competition increases.
+- ACT is the activity multiplier where a value of zero would indicate no
+  metabolic costs beyond being at rest. Maintaining position in a
+  flowing stream, avoiding predators, pursuing prey, and engaging in
+  reproductive behavior increase ACT.
+- The next two parameters (gsi_f and gsi_m) allow the user to model
+  somatic growth of a reproductively mature fish that allocates some
+  energy to gonadal tissue. Separate parameters are provided for females
+  and males because the sexes invest different amounts of energy to
+  their gonads–gsi_f and gsi_m, respectively. The default data assume a
+  reproductively immature fish (*i.e.*, gsi = 0).
+- Modifying prey energy density (prey_ED) over the year can simulate
+  ontogenetic diet shifts or changes in prey quality. There are numerous
+  published estimates of prey energy density for common prey items like
+  invertebrates, fish, and so on (see Appendix B from Hanson *et al.*
+  1997).
 
 Let’s modify CP and ACT to more realistic values. Specifically, we will
 use CP = 0.82 and ACT = 1.69. These parameter values were validated
 using age-1 largemouth bass from Watts Bar Lake in East Tennessee, USA.
-See the Validation vignette for details.
+See the [Validation
+vignette](https://bomeara.github.io/fishyenergy/articles/Validation.html)
+for details.
 
 ``` r
-
 options(width = 500)
 parms_temporal_DEFAULT$CP = 0.82
 parms_temporal_DEFAULT$ACT = 1.69
@@ -120,26 +109,25 @@ head(parms_temporal_DEFAULT)
 #> 6 1/6/2025 0.82 1.69     0     0    3698
 ```
 
-##### 
+### Daily temperature timeseries
 
 Let’s explore some lake temperature data modified from the open-source
-LakeTEMP dataset (Korver et al. 2024). In brief, this dataset provides
+LakeTEMP dataset (Korver *et al.* 2024). In brief, this dataset provides
 monthly lake surface temperatures for 1,427,688 lakes throughout the
-world as well as some geographic (e.g., elevation above sea level) and
-bathymetric (e.g., lake depth) covariates for these lakes. In
+world as well as some geographic (*e.g.*, elevation above sea level) and
+bathymetric (*e.g.*, lake depth) covariates for these lakes. In
 fishyenergy, we have extracted these monthly temperatures and covariates
 for 8,001 lakes in 15 southeastern US states plus Puerto Rico. We then
 used a generalized additive model fitted to monthly temperatures to
 interpolate temperatures to the daily resolution needed for
-bioenergetics modeling. Let’s load this dataset called temps_lake in
-fishyenergy.
+bioenergetics modeling.
 
-The dataset has 8,001 rows each representing a different lake and 366
-columns representing the unique lake ID (Hylak_id) followed by the 365
-julian days.
+Load this dataset called **temps_lake** in fishyenergy. The dataset has
+8,001 rows each representing a different lake and 366 columns
+representing the unique lake ID (Hylak_id) followed by the 365 julian
+days.
 
 ``` r
-
 options(width = 500)
 data(temps_lake)
 dim(temps_lake)
@@ -161,13 +149,13 @@ head(temps_lake[,1:91])
 #> 6        47        48        50        51        52        53        55        56        57        59        60        62        63        65        66        68        70        71        73        75        76        78        80        82        83        85        87        89        91        93        94        96        98       100       102       104       106       108       110       112       114       116
 ```
 
-##### 
+### Plot temperature time series
 
 Let’s visualize the spatial and temporal variation in these temperature
-data. Each line is one of the 8,001 lakes.
+data. To do this, we need to convert the wide-form **temps_lake** to
+long form using the melt function.
 
 ``` r
-
 library(reshape2)
 temps_lake.long <- melt(temps_lake, id.vars = "Hylak_id", value.name = "WT_mean")
 temps_lake.long$date <- as.numeric(gsub("julian","", temps_lake.long$variable))
@@ -182,12 +170,18 @@ ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
 
 ![](Mapping_LargemouthBass_files/figure-html/unnamed-chunk-7-1.png)
 
-##### 
+Each line is one of the 8,001 lakes. Daily temperatures range from
+nearly 0°C in the winter to 35°C in the summer. Also, these lakes span
+nearly 15° of latitude and so there is considerably more among-lake
+temperature variation in the winter than in the summer driven by this
+latitudinal seasonality gradient.
 
-Let’s map the spatial variation in temperature.
+### Map temperatures
+
+Aggregate the long form temperature dataframe to calculate a mean annual
+water temperature for all 8,001 lakes and map these temperatures.
 
 ``` r
-
 temps_lake.mean <- aggregate(WT_mean ~ Hylak_id, temps_lake.long, FUN = mean)
 
 data(envir_lake)
@@ -211,14 +205,13 @@ ggplot(NULL) + theme_classic() +
 
 ![](Mapping_LargemouthBass_files/figure-html/unnamed-chunk-8-1.png)
 
-##### 
+### Simulate bioenergetic performance
 
-Run the bem_project function to grow a fish for n habitat patches. Be
-sure to set the is.raster argument to FALSE because the temperature
-input is in tabular form and not raster.
+Run the **bem_project** function to grow a fish for n habitat patches
+(*i.e.*, 8,001 lakes). Be sure to set the is.raster argument to FALSE
+because the temperature input is in tabular form and not raster.
 
 ``` r
-
 
 output.lakes <- bem_project(start_M2 = 454, 
                             temperature = temps_lake,
@@ -229,8 +222,6 @@ output.lakes <- bem_project(start_M2 = 454,
                             is.raster = FALSE)
 ```
 
-##### 
-
 Output from bem_project is a list of length three.
 
 1.  The first list element is the run time. The bem_project function,
@@ -238,9 +229,8 @@ Output from bem_project is a list of length three.
     increases with the number of habitat patches.
 
 ``` r
-
 output.lakes$run.time
-#> [1] "Run time is 23.73 minutes for 8001 habitat patches"
+#> [1] "Run time is 40.08 minutes for 8001 habitat patches"
 ```
 
 2.  The last two outputs are tabular. The first, year.end.perform, has a
@@ -249,7 +239,6 @@ output.lakes$run.time
     end-of-year mass (M2_cum).
 
 ``` r
-
 options(width = 500)
 head(output.lakes$year.end.perform)
 #>            patchID   M2_end   M2_dif    M1_m01    M1_m02    M1_m03     M1_m04   M1_m05   M1_m06   M1_m07    M1_m08    M1_m09    M1_m10     M1_m11    M1_m12   M1_cold  M1_warm     K_min K_yday def_days
@@ -267,7 +256,6 @@ head(output.lakes$year.end.perform)
     bem_grow function.
 
 ``` r
-
 options(width = 500)
 head(output.lakes$daily.output[[1]])
 #>        date WT_mean pred_ED gsi_m gsi_f  CP ACT prey_ED C1_ins   C2_ins R1_ins   R2_ins F1_ins   F2_ins U1_ins   U2_ins SDA1_ins SDA2_ins  MS1_ins MS2_ins MG1_ins MG2_ins   M1_ins M2_ins C1_cum    C2_cum R1_cum   R2_cum F1_cum    F2_cum U1_cum    U2_cum SDA1_cum  SDA2_cum  MS1_cum MS2_cum MG1_cum MG2_cum   M1_cum  M2_cum    L_cum        K
@@ -279,12 +267,12 @@ head(output.lakes$daily.output[[1]])
 #> 6 julian006    19.0    4184     0     0 0.8 1.7    3698  9.898 36601.41  1.335 18102.94  1.029 3806.547  0.873 3227.147    1.405 5197.330 6267.450   1.498       0       0 6267.450  1.498 49.577 183336.25  6.659 90297.72  5.156 19066.970  4.371 16164.757    7.040 26033.395 31773.40 461.594       0       0 31773.40 461.594 35.42821 1.038036
 ```
 
-##### 
+### Mapping simulated performance
 
-Mapping simulated performance across habitat patches.
+Any of the bioenergetic performance metrics can be mapped. Below we
+simply map the end-of-year mass across all 8,001 lakes.
 
 ``` r
-
 perf.lakes <- output.lakes$year.end.perform
 colnames(perf.lakes) <- c("Hylak_id", "M2_cum")
 
@@ -303,14 +291,13 @@ ggplot(NULL) + theme_classic() +
 
 ![](Mapping_LargemouthBass_files/figure-html/unnamed-chunk-13-1.png)
 
-##### 
+### Plotting performance along gradients
 
 What is the relationship between environmental variables and largemouth
 bass performance? Let’s plot and see. Each point represents a different
 lake in the southeastern US.
 
 ``` r
-
 ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
     labs(x = "Latitude (°N)", y = "End-of-year mass (g)") +
     geom_point(aes(x = center_lat, y = M2_cum), perf.lakes, shape = 16, size = 3, alpha = 0.5) +
@@ -320,7 +307,6 @@ ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
 ![](Mapping_LargemouthBass_files/figure-html/unnamed-chunk-14-1.png)
 
 ``` r
-
 
 
 ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
@@ -335,7 +321,6 @@ ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
 ``` r
 
 
-
 ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
     labs(x = "Lake area (square km)", y = "End-of-year mass (g)") +
     scale_x_log10() +
@@ -348,7 +333,6 @@ ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
 ``` r
 
 
-
 ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
     labs(x = "Mean lake depth (m)", y = "End-of-year mass (g)") +
     scale_x_log10() +
@@ -357,3 +341,23 @@ ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
 ```
 
 ![](Mapping_LargemouthBass_files/figure-html/unnamed-chunk-14-4.png)
+
+### Next steps
+
+If you haven’t yet, try the [brook
+trout](https://bomeara.github.io/fishyenergy/articles/Mapping_BrookTrout.html)
+and [southern
+flounder](https://bomeara.github.io/fishyenergy/articles/Mapping_SouthernFlounder.html)
+mapping vignettes. If you have, try mapping bioenergetic performance for
+your focal species and region. Reach out to [Matthew
+Troia](mailto:matthew.troia@utsa.edu) if you have questions about
+fishyenergy or suggestions to make it better!
+
+### References
+
+- Hanson, P. C., Johnson, T. B., Schindler, D. E., & Kitchell, J. F.
+  (1997). Fish bioenergetics 3.0 for Windows.
+- Korver, M. C., Lehner, B., Cardille, J. A., & Carrea, L. (2024).
+  Surface water temperature observations and ice phenology estimations
+  for 1.4 million lakes globally. Remote Sensing of Environment, 308,
+  114164.

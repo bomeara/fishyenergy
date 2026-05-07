@@ -1,49 +1,40 @@
 # Mapping Brook trout
 
-### In this vignette, you will:
+### Vignette objectives
 
-1.  Explore spatial variation in the performance of Brook trout
-    (Salvelinus fontinalis) in interconfluence stream reaches of the
-    Little River watershed, a tributary of the upper Tennessee River
-    system that drains the Blue Ridge Mountains and Great Smoky
-    Mountains National Park in Tennessee, USA.
-2.  Use bioenergetics modeling to simulate individual performance
-    metrics across 513 interconfluence stream reaches (lotic habitat
-    patches).
-3.  Create maps showing spatially-contiguous variation in these
-    performance metrics and drivers of this spatial variation (e.g.,
-    temperature).
+- Explore spatial variation in the performance of Brook trout
+  *Salvelinus fontinalis* in interconfluence stream reaches of the
+  Little River watershed, a tributary of the upper Tennessee River
+  system that drains the Blue Ridge Mountains and Great Smoky Mountains
+  National Park in Tennessee, USA.
+- Use bioenergetics modeling to simulate individual performance metrics
+  across 513 interconfluence stream reaches (lotic habitat patches).
+- Create maps showing spatially-contiguous variation in these
+  performance metrics and drivers of this spatial variation (e.g.,
+  temperature).
 
-##### 
-
-First, install the fishyenergy package and load the library.
-Dependencies include reshape2, stringr, terra, sf, lubridate, and
-ggplot2.
+### Install and load fishyenergy.
 
 ``` r
-
 remotes::install_github("bomeara/fishyenergy")
 library(FishyEnergy)
 ```
 
-##### 
+### Load intrinsic bioenergetics parameters
 
-Next, load the intrinsic bioenergetics parameters of five example
+Start by loading the intrinsic bioenergetics parameters of five example
 species. These parameters have been published by various authors since
-the 1980s and are available from Fish Bioenergetics 4.0 (FB4).
+the 1980s and are available from [Fish Bioenergetics
+4.0](http://fishbioenergetics.org/).
 
 ``` r
-
 data(parms_fb4)
 ```
 
-##### 
-
-Let’s retain only one focal species, Brook trout, and look at these
-data.
+Retain only one focal species, brook trout *Salvelinus fontinalis*, and
+look at these data.
 
 ``` r
-
 options(width = 500)
 parms.salfon <- parms_fb4[parms_fb4$genus_species == "salvelinus_fontinalis",]
 parms.salfon
@@ -51,42 +42,22 @@ parms.salfon
 #> 5 salvelinus_fontinalis juvenile_adult Troia modified from: Elliot 1976; Hartman and Sweka 2003; Hartman and Cox 2008 0.00881 3.04   2 0.3013 -0.3055 7.274  17  21  NA  NA  NA   2 0.0132 -0.265 4.5 20.2  25  NA  NA  NA 0.172 0.212 0.0314    4162
 ```
 
-The first column shows the Latin name in snake case. Other columns like
-lwA and lwB are the intercept and slope of the length-weight equation.
-Still other columns like CA and CB are the intercept and slope of the
-mass dependent consumption equation (a negative power law). There’s also
-specific dynamic action (i.e., the proportion of energy consumed
-allocated to the cost of digestion), predator energy density, and many
-other variables defined by Hanson et al. (1997).
+- The first column shows the Latin name in snake case.
+- Other columns like lwA and lwB are the intercept and slope of the
+  length-weight equation acquired from [FishBase](https://fishbase.org).
+- Still other columns like CA and CB are the intercept and slope of the
+  mass dependent consumption equation (a negative power law).
+- There’s also specific dynamic action (*i.e.*, the proportion of energy
+  consumed allocated to the cost of digestion), predator energy density,
+  and many other variables defined by Hanson *et al.* (1997).
 
-##### 
+### Temporally-varying parameters
 
-Next, we need to load some parameters that potentially vary temporally.
-The dataframe has 365 rows representing each day of the year. There are
-five noteworthy columns (i.e., variables):
-
-CP is the proportion of maximum consumption and decrease as prey
-quantity declines or as exploitative competition increases.
-
-ACT is the activity multiplier where a value of zero would indicate no
-metabolic costs beyond being at rest. Maintaining position in a flowing
-stream, avoiding predators, pursuing prey, and engaging in reproductive
-behavior increase ACT.
-
-The next two parameters (gsi_f and gsi_m) allow the user to model
-somatic growth of a reproductively mature fish that allocates some
-energy to gonadal tissue. Separate parameters are provided for females
-and males because the sexes invest different amounts of energy to their
-gonads–gsi_f and gsi_m, respectively. The default data assume a
-reproductively immature fish (i.e., gsi = 0).
-
-Modifying prey energy density (prey_ED) over the year can simulate
-ontogenetic diet shifts or changes in prey quality. There are numerous
-published estimates of prey energy density for common prey items like
-invertebrates, fish, and so on.
+We need to load some parameters that potentially vary temporally. The
+dataframe has 365 rows representing each day of the year. There are five
+noteworthy columns (*i.e.*, variables).
 
 ``` r
-
 options(width = 500)
 data(parms_temporal_DEFAULT)
 dim(parms_temporal_DEFAULT)
@@ -101,15 +72,31 @@ head(parms_temporal_DEFAULT)
 #> 6 1/6/2025  1   1     0     0    3698
 ```
 
-##### 
+- CP is the proportion of maximum consumption and decrease as prey
+  quantity declines or as exploitative competition increases.
+- ACT is the activity multiplier where a value of zero would indicate no
+  metabolic costs beyond being at rest. Maintaining position in a
+  flowing stream, avoiding predators, pursuing prey, and engaging in
+  reproductive behavior increase ACT.
+- The next two parameters (gsi_f and gsi_m) allow the user to model
+  somatic growth of a reproductively mature fish that allocates some
+  energy to gonadal tissue. Separate parameters are provided for females
+  and males because the sexes invest different amounts of energy to
+  their gonads–gsi_f and gsi_m, respectively. The default data assume a
+  reproductively immature fish (*i.e.*, gsi = 0).
+- Modifying prey energy density (prey_ED) over the year can simulate
+  ontogenetic diet shifts or changes in prey quality. There are numerous
+  published estimates of prey energy density for common prey items like
+  invertebrates, fish, and so on (see Appendix B from Hanson *et al.*
+  1997).
 
 Let’s modify CP and ACT to more realistic values. Specifically, we will
 use CP = 0.50 and ACT = 1.60 These parameter values were validated
-behind the scenes using the bem_validate function. See the Validation
-vignette for details.
+behind the scenes using the bem_validate function. See the [Validation
+vignette](https://bomeara.github.io/fishyenergy/articles/Validation.html)
+for details.
 
 ``` r
-
 options(width = 500)
 parms_temporal_DEFAULT$CP = 0.50
 parms_temporal_DEFAULT$ACT = 1.50
@@ -123,7 +110,7 @@ head(parms_temporal_DEFAULT)
 #> 6 1/6/2025 0.5 1.5     0     0    3698
 ```
 
-##### 
+### Daily temperature timeseries
 
 Let’s explore some stream temperature data produced by
 Herrera-Rodriguez, Giam, Troia, and others as part of a Southeastern
@@ -135,15 +122,14 @@ the Tennessee and Cumberland River systems for every year from 1982 to
 some geographic (e.g., elevation above sea level) and hydrographic
 (e.g., catchment area) covariates for these segments. In fishyenergy, we
 have extracted daily temperatures in 2022 and covariates for 513
-interconfluence stream segments in the Little River watershed. Let’s
-load this dataset called temps_casc in fishyenergy.
+interconfluence stream segments in the Little River watershed.
 
-The dataset has 513 rows each representing a different interconfluence
-stream segment and 366 columns representing the unique segment ID
-(COMID) followed by the 365 julian days.
+Load this dataset called **temps_casc** in fishyenergy. The dataset has
+513 rows each representing a different interconfluence stream segment
+and 366 columns representing the unique segment ID (COMID) followed by
+the 365 julian days.
 
 ``` r
-
 options(width = 2000)
 data(temps_casc)
 dim(temps_casc)
@@ -158,13 +144,12 @@ head(temps_casc[,1:91])
 #> 6 COMID22130033       148       138       128       118       108        89        74        79        84        78        81        89        89        85        90        95        77        81        90        86        78        82        84        80        80        82        90        93        82        81        88        97        93       114       103        96        92        94        88        94        96       115       117       117       114       120       118       119       119       121       122       121       122       136       144       137       128       121       111       111       124       135       148       152       156       158       149       148       138       133       123       120       119       125       127       144       147       145       146       147       149       153       154       152       149       135       136       135       146       155
 ```
 
-##### 
+### Plot temperature time series
 
 Let’s visualize the spatial and temporal variation in these temperature
 data. Each line is one of the 513 interconfluence stream segments.
 
 ``` r
-
 library(reshape2)
 temps_casc.long <- reshape2::melt(temps_casc, id.vars = "COMID", value.name = "WT_mean")
 temps_casc.long$date <- as.numeric(gsub("julian","", temps_casc.long$variable))
@@ -179,12 +164,11 @@ ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
 
 ![](Mapping_BrookTrout_files/figure-html/unnamed-chunk-7-1.png)
 
-##### 
+### Map temperatures
 
 Let’s map the spatial variation in temperature.
 
 ``` r
-
 temps_casc.mean <- aggregate(WT_mean ~ COMID, temps_casc.long, FUN = mean)
 
 data(envir_casc)
@@ -203,14 +187,14 @@ ggplot(NULL) + theme_classic() +
 
 ![](Mapping_BrookTrout_files/figure-html/unnamed-chunk-8-1.png)
 
-##### 
+### Simulate bioenergetic performance
 
-Run the bem_project function to grow a fish for n habitat patches. Be
-sure to set the is.raster argument to FALSE because the temperature
-input is in tabular form and not raster.
+Run the **bem_project** function to grow a fish for n habitat patches
+(*i.e.*, 513 interconfluences stream reaches). Be sure to set the
+is.raster argument to FALSE because the temperature input is in tabular
+form and not raster.
 
 ``` r
-
 output.casc <- bem_project(start_M2 = 13,
                            temperature = temps_casc,
                            parms.intrinsic = parms.salfon,
@@ -220,18 +204,14 @@ output.casc <- bem_project(start_M2 = 13,
                            is.raster = FALSE)
 ```
 
-##### 
-
-Output from bem_project is a list of length three.
-
-1.  The first list element is the run time. The bem_project function,
-    like the bem_validate function, takes some time to run and that time
-    increases with the number of habitat patches.
+Output from bem_project is a list of length three. 1) The first list
+element is the run time. The bem_project function, like the bem_validate
+function, takes some time to run and that time increases with the number
+of habitat patches.
 
 ``` r
-
 output.casc$run.time
-#> [1] "Run time is 1.55 minutes for 513 habitat patches"
+#> [1] "Run time is 10.17 minutes for 513 habitat patches"
 ```
 
 2.  The last two outputs are tabular. The first, year.end.perform, has a
@@ -240,11 +220,10 @@ output.casc$run.time
     end-of-year mass (M2_cum).
 
 ``` r
-
 options(width = 500)
 head(output.casc$year.end.perform)
 #>         patchID M2_end    M2_dif   M1_m01    M1_m02   M1_m03   M1_m04     M1_m05    M1_m06    M1_m07    M1_m08    M1_m09   M1_m10   M1_m11   M1_m12  M1_cold   M1_warm       K_min K_yday def_days
-#> 1 COMID22130003  1.722 -86.75385 2683.904  7284.495 19578.27 25991.14 -23403.536 -42280.01 -20250.72 -15382.85 -6720.649 1649.601 2273.570 1638.313 2683.904 -20250.72 0.013940710    273      141
+#> 1 COMID22130003  1.722 -86.75385 2683.904  7284.495 19578.27 25991.13 -23403.536 -42280.01 -20250.72 -15382.85 -6720.649 1649.601 2273.570 1638.313 2683.904 -20250.72 0.013940710    273      141
 #> 2 COMID22130007  1.706 -86.87692 2912.094  8100.296 20606.06 25553.06 -26976.617 -41265.11 -19010.09 -15452.26 -7002.279 1755.196 2120.255 1655.543 2912.094 -19010.09 0.013691706    273      142
 #> 3 COMID22130025  1.873 -85.59231 3317.405  8033.811 20285.88 26690.94 -32169.736 -43135.14 -19342.66 -12171.76 -4609.379 2367.028 2547.626 1874.162 3317.405 -19342.66 0.008309113    270      139
 #> 4 COMID22130027  2.284 -82.43077 3249.833  8531.687 21120.39 26201.48 -21474.652 -43000.16 -21888.76 -18265.94 -6820.474 2652.766 2930.336 2165.132 3249.833 -21888.76 0.014732969    272      140
@@ -258,7 +237,6 @@ head(output.casc$year.end.perform)
     bem_grow function.
 
 ``` r
-
 options(width = 500)
 head(output.casc$daily.output[[1]])
 #>        date WT_mean pred_ED gsi_m gsi_f  CP ACT prey_ED C1_ins   C2_ins R1_ins  R2_ins F1_ins  F2_ins U1_ins U2_ins SDA1_ins SDA2_ins MS1_ins MS2_ins MG1_ins MG2_ins  M1_ins M2_ins C1_cum   C2_cum R1_cum   R2_cum F1_cum   F2_cum U1_cum  U2_cum SDA1_cum SDA2_cum  MS1_cum MS2_cum MG1_cum MG2_cum   M1_cum M2_cum    L_cum         K
@@ -270,12 +248,16 @@ head(output.casc$daily.output[[1]])
 #> 6 julian006     7.8    4162     0     0 0.5 1.5    3698  0.173  639.299  0.023 309.488  0.037 135.531  0.005 20.074    0.023   86.648  87.557   0.021       0       0  87.557  0.021  1.876 6937.401  0.210 2845.600  0.398 1470.729  0.059 217.834    0.254  940.268 1462.970  13.352       0       0 1462.970 13.352 11.11757 0.9716305
 ```
 
-##### 
+### Mapping simulated performance
 
-Mapping simulated performance across habitat patches.
+Any of the bioenergetic performance metrics can be mapped for each of
+the 513 interconfluence stream reaches. Below we map the number of days
+for which a brook trout is projected to have an energy deficit because
+summertime energy deficits putatively limit the lower elevation range
+limit of brook trout in the southern Appalachian Mountains (Ensign *et
+al.* 1990, Hartman & Cox 2008).
 
 ``` r
-
 perf.casc <- output.casc$year.end.perform
 colnames(perf.casc)[1] <- "COMID"
 
@@ -291,14 +273,13 @@ ggplot(NULL) + theme_classic() +
 
 ![](Mapping_BrookTrout_files/figure-html/unnamed-chunk-13-1.png)
 
-##### 
+### Plotting performance along gradients
 
 What is the relationship between environmental variables and brook trout
 performance? Let’s plot and see. Each point represents a different
 interconfluence stream reach in the Little River watershed.
 
 ``` r
-
 ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
     labs(x = "Elevation (masl)", y = "Number of deficit days") +
     geom_point(aes(x = ElevCat, y = def_days), vect.perf.casc, shape = 16, size = 3, alpha = 0.5) +
@@ -309,7 +290,6 @@ ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
 
 ``` r
 
-
 ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
     labs(x = "Catchment area (square km)", y = "Number of deficit days") +
     scale_x_log10() +
@@ -317,3 +297,26 @@ ggplot(NULL) + theme_classic() + theme(legend.position = "none") +
 ```
 
 ![](Mapping_BrookTrout_files/figure-html/unnamed-chunk-14-2.png)
+
+### Next steps
+
+If you haven’t yet, try the [largemouth
+bass](https://bomeara.github.io/fishyenergy/articles/Mapping_LargemouthBass.html)
+and
+[flounder](https://bomeara.github.io/fishyenergy/articles/Mapping_SouthernFlounder.html)
+mapping vignettes. If you have, try mapping bioenergetic performance for
+your focal species and region. Reach out to [Matthew
+Troia](mailto:matthew.troia@utsa.edu) if you have questions about
+fishyenergy or suggestions to make it better!
+
+### References
+
+- Ensign, W. E., Strange, R. J., & Moore, S. E. (1990). Summer food
+  limitation reduces brook and rainbow trout biomass in a southern
+  Appalachian stream. Transactions of the American Fisheries Society,
+  119(5), 894-901.
+- Hanson, P. C., Johnson, T. B., Schindler, D. E., & Kitchell, J. F.
+  (1997). Fish bioenergetics 3.0 for Windows.
+- Hartman, K. J., & Cox, M. K. (2008). Refinement and testing of a brook
+  trout bioenergetics model. Transactions of the American Fisheries
+  Society, 137(1), 357-363.

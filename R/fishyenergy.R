@@ -5,36 +5,36 @@
 #'
 #' @format A data frame with 5 rows and 27 columns:
 #' \describe{
-#'   \item{genus_species}{(character) description}
-#'   \item{LifeStage}{(character) description}
-#'   \item{Source}{(character) description}
-#'   \item{lwA}{(numeric) y-intercept for length-weight relationship on log-log scale}
-#'   \item{lwB}{(numeric) slope for length-weight relationship on log-log scale}
-#'   \item{CEQ}{(integer) consumption equation 1, 2, 3, or 4}
-#'   \item{CA}{(numeric) intercept estimate for mass-dependent consumption}
-#'   \item{CB}{(numeric) slope estimate for mass-dependent consumption}
-#'   \item{CQ}{(numeric) Q10 for temperature-dependent consumption}
-#'   \item{CTO}{(numeric) thermal optimum for consumption}
-#'   \item{CTM}{(numeric) thermal maximum for consumption}
-#'   \item{CTL}{(numeric) temperature-dependent parameter for consumption}
-#'   \item{CK1}{(numeric) temperature-dependent parameter for consumption}
-#'   \item{CK4}{(numeric) temperature-dependent parameter for consumption}
-#'   \item{REQ}{(integer) respiration equation 1, 2, or 4}
-#'   \item{RA}{(numeric) intercept estimate for mass-dependent respiration}
-#'   \item{RB}{(numeric) slope estimate for mass-dependent respiration}
-#'   \item{RQ}{(numeric) Q10 for temperature-dependent respiration}
-#'   \item{RTO}{(numeric) thermal optimum for respiration}
-#'   \item{RTM}{(numeric) thermal maximum for respiration}
-#'   \item{RTL}{(numeric) temperature-dependent parameter for respiration}
-#'   \item{RK1}{(numeric) temperature-dependent parameter for respiration}
-#'   \item{RK4}{(numeric) temperature-dependent parameter for respiration}
-#'   \item{SDA}{(numeric) specific dynamic action}
-#'   \item{FA}{(numeric) egestion}
-#'   \item{UA}{(numeric) excretion}
-#'   \item{pred_ED}{(numeric) energy density of predator (i.e., focal species)}
+#'   \item{genus_species}{(character) Latin name in snake case.}
+#'   \item{LifeStage}{(character) Life stage reported by Deslauriers et al. 2017 after Hanson et al. (1997).}
+#'   \item{Source}{(character) Source reported by Deslauriers et al. 2017 after Hanson et al. (1997).}
+#'   \item{lwA}{(numeric) y-intercept for length-weight relationship on log-log scale.}
+#'   \item{lwB}{(numeric) slope for length-weight relationship on log-log scale.}
+#'   \item{CEQ}{(integer) consumption equation 1, 2, 3, or 4.}
+#'   \item{CA}{(numeric) intercept estimate for mass-dependent consumption.}
+#'   \item{CB}{(numeric) slope estimate for mass-dependent consumption.}
+#'   \item{CQ}{(numeric) Q10 for temperature-dependent consumption.}
+#'   \item{CTO}{(numeric) thermal optimum for consumption.}
+#'   \item{CTM}{(numeric) thermal maximum for consumption.}
+#'   \item{CTL}{(numeric) temperature-dependent parameter for consumption.}
+#'   \item{CK1}{(numeric) temperature-dependent parameter for consumption.}
+#'   \item{CK4}{(numeric) temperature-dependent parameter for consumption.}
+#'   \item{REQ}{(integer) respiration equation 1, 2, or 4.}
+#'   \item{RA}{(numeric) intercept estimate for mass-dependent respiration.}
+#'   \item{RB}{(numeric) slope estimate for mass-dependent respiration.}
+#'   \item{RQ}{(numeric) Q10 for temperature-dependent respiration.}
+#'   \item{RTO}{(numeric) thermal optimum for respiration.}
+#'   \item{RTM}{(numeric) thermal maximum for respiration.}
+#'   \item{RTL}{(numeric) temperature-dependent parameter for respiration.}
+#'   \item{RK1}{(numeric) temperature-dependent parameter for respiration.}
+#'   \item{RK4}{(numeric) temperature-dependent parameter for respiration.}
+#'   \item{SDA}{(numeric) specific dynamic action.}
+#'   \item{FA}{(numeric) egestion.}
+#'   \item{UA}{(numeric) excretion.}
+#'   \item{pred_ED}{(numeric) energy density of predator (i.e., focal species).}
 #'   ...
 #' }
-#' @source Fish Bioenergetics 4 (Deslauriers et al. 2017).
+#' @source Fish Bioenergetics 4 (Deslauriers et al. 2017 after Hanson et al. 1997).
 #'
 "parms_fb4"
 
@@ -44,8 +44,8 @@
 #'
 #' @format A data frame with 365 rows and 2 columns:
 #' \describe{
-#'   \item{date}{(date) dates from 1 January 2025 to 31 December 2025}
-#'   \item{WT_mean}{(numeric) mean daily water temperature in degrees C}
+#'   \item{date}{(date) dates from 1 January 2025 to 31 December 2025.}
+#'   \item{WT_mean}{(numeric) mean daily water temperature in degrees Celsius.}
 #'   ...
 #' }
 #' @source National Water Information System.
@@ -58,11 +58,11 @@
 #'
 #' @format A data frame with 365 rows and 8,046 columns:
 #' \describe{
-#'   \item{date}{(date) dates from 1 January 2021 to 31 December 2021; note that temps are the mean from years 2013 to 2021}
-#'   \item{Hylak_id}{(numeric) mean daily water temperature in degrees C for all 8046 unique identifier of lake, from HydroLAKES (Messager et al., 2016)}
+#'   \item{date}{(date) dates from 1 January 2021 to 31 December 2021; note that temps are the mean from years 2013 to 2021.}
+#'   \item{Hylak_id}{(numeric) mean daily water temperature in degrees C for all 8,001 unique identifier of lake, from HydroLAKES (Messager et al. 2016).}
 #'   ...
 #' }
-#' @source LakeTEMP; Korver et al. 2024. Remote Sensing of Environment. https://doi.org/10.1016/j.rse.2024.114164.
+#' @source LakeTEMP (Korver et al. 2024).
 #'
 "temps_lake"
 
@@ -72,8 +72,8 @@
 #'
 #' @format A data frame with 365 rows and 515 columns:
 #' \describe{
-#'   \item{date}{(date) dates from 1 January 2022 to 31 December 2022}
-#'   \item{COMID}{(numeric) mean daily water temperature in degrees C for all 513 COMIDs}
+#'   \item{date}{(date) dates from 1 January 2022 to 31 December 2022.}
+#'   \item{COMID}{(numeric) mean daily water temperature in degrees C for all 513 COMIDs.}
 #'   ...
 #' }
 #' @source Southeastern Climate Adaptation Science Center (CASC).
@@ -84,18 +84,18 @@
 #'
 #' This dataset contains geographic and bathymetric covariates for all 8,046 lakes extracted from the lakeTEMP dataset.
 #'
-#' @format A data frame with 8,046 rows and 10 columns:
+#' @format A data frame with 8,001 rows and 10 columns:
 #' \describe{
-#'   \item{Hylak_id}{(numeric) mean daily water temperature in degrees C for all 8046 unique identifier of lake, from HydroLAKES (Messager et al., 2016)}
-#'   \item{center_long}{(numeric) longitude of lake center in decimal degrees}
-#'   \item{center_lat}{(numeric) latitude of lake center in decimal degrees}
-#'   \item{stat_method}{(numeric) see Korver et al. 2024 for description}
-#'   \item{n_obs}{(numeric) see Korver et al. 2024 for description}
-#'   \item{intermittency}{(numeric) see Korver et al. 2024 for description}
-#'   \item{Lake_type}{(numeric) 1 = natural lake, 2 = reservoir, 3 = natural lake with regulation structure}
-#'   \item{Elevation}{(numeric) lake surface elevation in meters above sea level}
-#'   \item{Lake_area}{(numeric) lake surface area in square kilometers}
-#'   \item{Depth_avg}{(numeric) mean lake depth in meters}
+#'   \item{Hylak_id}{(numeric) mean daily water temperature in degrees C for all 8046 unique identifier of lake, from HydroLAKES (Messager et al., 2016).}
+#'   \item{center_long}{(numeric) longitude of lake center in decimal degrees.}
+#'   \item{center_lat}{(numeric) latitude of lake center in decimal degrees.}
+#'   \item{stat_method}{(numeric) see Korver et al. 2024 for description.}
+#'   \item{n_obs}{(numeric) see Korver et al. 2024 for description.}
+#'   \item{intermittency}{(numeric) see Korver et al. 2024 for description.}
+#'   \item{Lake_type}{(numeric) 1 = natural lake, 2 = reservoir, 3 = natural lake with regulation structure.}
+#'   \item{Elevation}{(numeric) lake surface elevation in meters above sea level.}
+#'   \item{Lake_area}{(numeric) lake surface area in square kilometers.}
+#'   \item{Depth_avg}{(numeric) mean lake depth in meters.}
 #'   ...
 #' }
 #' @source LakeTEMP; Korver et al. 2024. Remote Sensing of Environment. https://doi.org/10.1016/j.rse.2024.114164.
@@ -108,28 +108,28 @@
 #'
 #' @format A vector shapefile with an attribute table containing 513 rows and 5 columns:
 #' \describe{
-#'   \item{COMID}{(character) Common Identifier for NHD reaches}
-#'   \item{GNIS_NAME}{(character) Stream name from NHD after Geographic Names Information System}
-#'   \item{FCode}{(integer) Flowline type from NHD}
-#'   \item{TotDASqKM}{(numeric) Catchment area draining to the interconfluence stream reach in square kilometers}
-#'   \item{ElevCat}{(numeric) Median elevation of the interconfluence stream reach in meters above sea level}
+#'   \item{COMID}{(character) Common Identifier for NHD reaches.}
+#'   \item{GNIS_NAME}{(character) Stream name from NHD after Geographic Names Information System.}
+#'   \item{FCode}{(integer) Flowline type from NHD.}
+#'   \item{TotDASqKM}{(numeric) Catchment area draining to the interconfluence stream reach in square kilometers.}
+#'   \item{ElevCat}{(numeric) Median elevation of the interconfluence stream reach in meters above sea level.}
 #'   ...
 #' }
 #' @source Southeastern Climate Adaptation Science Center (CASC), National Hydrography Dataset (NHD), StreamCat
 #'
 "envir_casc"
 
-#' Temporally varying parameters
+#' Temporally-varying parameters
 #'
 #' This dataset contains bioenergetics parameters that potentially vary each day of a 365-day calendar year.
 #'
 #' @format A data frame with 365 rows and 5 columns:
 #' \describe{
-#'   \item{date}{(date) dates from 1 to 365}
-#'   \item{CP}{(numeric) Proportion of consumption; set to 1.0 assumes prey is unlimited}
-#'   \item{ACT}{(numeric) Activity multiplier; set to 1.0 assumes predator (i.e., focal fish) always is at rest}
-#'   \item{gsi_f}{(numeric) Gonadosomatic index for females; set to 0 assumes reproductive immaturity}
-#'   \item{gsi_m}{(numeric) Gonadosomatic index for males; set to 0 assumes reproductive immaturity}
+#'   \item{date}{(date) dates from 1 to 365.}
+#'   \item{CP}{(numeric) Proportion of consumption; set to 1.0 assumes prey is unlimited.}
+#'   \item{ACT}{(numeric) Activity multiplier; set to 1.0 assumes predator (i.e., focal fish) always is at rest.}
+#'   \item{gsi_f}{(numeric) Gonadosomatic index for females; set to 0 assumes reproductive immaturity.}
+#'   \item{gsi_m}{(numeric) Gonadosomatic index for males; set to 0 assumes reproductive immaturity.}
 #'   ...
 #' }
 #' @source n/a.
@@ -138,12 +138,12 @@
 
 #' Consumption equation 1
 #'
-#' @description consumption equation 1 from Hanson et al. 1997
-#' @param M mass (grams) of fish
-#' @param T temperature (degrees C) at which consumption is calculated
-#' @param CP proportion of maximum consumption (default is 1.0)
-#' @param parms.intrinsic A parms.intrinsic object
-#' @return specific consumption rate (grams of food consumed per gram of fish mass per day)
+#' @description consumption equation 1 from Hanson et al. 1997.
+#' @param M mass (grams) of fish.
+#' @param T temperature (degrees C) at which consumption is calculated.
+#' @param CP proportion of maximum consumption (default is 1.0).
+#' @param parms.intrinsic A parms.intrinsic object.
+#' @return specific consumption rate (grams of food consumed per gram of fish mass per day).
 #' @export
 consumption1 <- function(M, T, CP = 1.0, parms.intrinsic)
 {
@@ -155,12 +155,12 @@ consumption1 <- function(M, T, CP = 1.0, parms.intrinsic)
 
 #' Consumption equation 2
 #'
-#' @description consumption equation 2 from Hanson et al. 1997
-#' @param M mass (grams) of fish
-#' @param T temperature (degrees C) at which consumption is calculated
-#' @param CP proportion of maximum consumption (default is 1.0)
-#' @param parms.intrinsic A parms.intrinsic object
-#' @return specific consumption rate (grams of food consumed per gram of fish mass per day)
+#' @description consumption equation 2 from Hanson et al. 1997.
+#' @param M mass (grams) of fish.
+#' @param T temperature (degrees C) at which consumption is calculated.
+#' @param CP proportion of maximum consumption (default is 1.0).
+#' @param parms.intrinsic A parms.intrinsic object.
+#' @return specific consumption rate (grams of food consumed per gram of fish mass per day).
 #' @export
 consumption2 <- function(M, T, CP = 1.0, parms.intrinsic)
 {
@@ -176,12 +176,12 @@ consumption2 <- function(M, T, CP = 1.0, parms.intrinsic)
 
 #' Consumption equation 3
 #'
-#' @description Consumption equation 3 from Hanson et al. 1997
-#' @param M Mass (grams) of fish
-#' @param T Temperature (degrees C) at which consumption is calculated
-#' @param CP Proportion of maximum consumption (default is 1.0)
-#' @param parms.intrinsic A parms.intrinsic object
-#' @return Specific consumption rate (grams of food consumed per gram of fish mass per day)
+#' @description Consumption equation 3 from Hanson et al. 1997.
+#' @param M Mass (grams) of fish.
+#' @param T Temperature (degrees C) at which consumption is calculated.
+#' @param CP Proportion of maximum consumption (default is 1.0).
+#' @param parms.intrinsic A parms.intrinsic object.
+#' @return Specific consumption rate (grams of food consumed per gram of fish mass per day).
 #' @export
 consumption3 <- function(M, T, CP = 1.0, parms.intrinsic)
 {
@@ -199,13 +199,13 @@ consumption3 <- function(M, T, CP = 1.0, parms.intrinsic)
 
 #' Consumption equation 4
 #'
-#' @description Consumption equation 4; new equation for fishyenergy that simply matches Cmax for a given temperature
-#' @param M Mass (grams) of fish
-#' @param T Temperature (degrees C) at which consumption is calculated
-#' @param CP Proportion of maximum consumption (default is 1.0)
-#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed
-#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match
-#' @return Specific consumption rate (grams of food consumed per gram of fish mass per day)
+#' @description Consumption equation 4; new equation for fishyenergy that simply matches Cmax for a given temperature.
+#' @param M Mass (grams) of fish.
+#' @param T Temperature (degrees C) at which consumption is calculated.
+#' @param CP Proportion of maximum consumption (default is 1.0).
+#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed.
+#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match.
+#' @return Specific consumption rate (grams of food consumed per gram of fish mass per day).
 #' @export
 consumption4 <- function(M, T, CP = 1.0, parms.intrinsic, match.table)
 {
@@ -217,12 +217,12 @@ consumption4 <- function(M, T, CP = 1.0, parms.intrinsic, match.table)
 
 #' Respiration equation 1
 #'
-#' @description Respiration equation 1 from Hanson et al. 1997
-#' @param M Mass (grams) of fish
-#' @param T Temperature (degrees C) at which respiration is calculated
-#' @param ACT Activity multiplier (default is 1.0)
-#' @param parms.intrinsic A parms.intrinsic object
-#' @return Specific respiration rate (grams of oxygen per gram of fish mass per day)
+#' @description Respiration equation 1 from Hanson et al. 1997.
+#' @param M Mass (grams) of fish.
+#' @param T Temperature (degrees C) at which respiration is calculated.
+#' @param ACT Activity multiplier (default is 1.0).
+#' @param parms.intrinsic A parms.intrinsic object.
+#' @return Specific respiration rate (grams of oxygen per gram of fish mass per day).
 #' @export
 respiration1 <- function(M, T, ACT = 1.0, parms.intrinsic)
 {
@@ -234,12 +234,12 @@ respiration1 <- function(M, T, ACT = 1.0, parms.intrinsic)
 
 #' Respiration equation 2
 #'
-#' @description Respiration equation 2 from Hanson et al. 1997
-#' @param M Mass (grams) of fish
-#' @param T Temperature (degrees C) at which respiration is calculated
-#' @param ACT Activity multiplier (default is 1.0)
-#' @param parms.intrinsic A parms.intrinsic object
-#' @return Specific respiration rate (grams of oxygen per gram of fish mass per day)
+#' @description Respiration equation 2 from Hanson et al. 1997.
+#' @param M Mass (grams) of fish.
+#' @param T Temperature (degrees C) at which respiration is calculated.
+#' @param ACT Activity multiplier (default is 1.0).
+#' @param parms.intrinsic A parms.intrinsic object.
+#' @return Specific respiration rate (grams of oxygen per gram of fish mass per day).
 #' @export
 respiration2 <- function(M, T, ACT = 1.0, parms.intrinsic)
 {
@@ -255,13 +255,13 @@ respiration2 <- function(M, T, ACT = 1.0, parms.intrinsic)
 
 #' Respiration equation 4
 #'
-#' @description Respiration equation 4; new equation for fishyenergy that simply matches Rrest for a given temperature
-#' @param M Mass (grams) of fish
-#' @param T Temperature (degrees C) at which consumption is calculated
-#' @param ACT Activity multiplier (default is 1.0)
-#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed
-#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match
-#' @return Specific respiration rate (grams of oxygen per gram of fish mass per day)
+#' @description Respiration equation 4; new equation for fishyenergy that simply matches Rrest for a given temperature.
+#' @param M Mass (grams) of fish.
+#' @param T Temperature (degrees C) at which consumption is calculated.
+#' @param ACT Activity multiplier (default is 1.0).
+#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed.
+#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match.
+#' @return Specific respiration rate (grams of oxygen per gram of fish mass per day).
 #' @export
 respiration4 <- function(M, T, ACT = 1.0, parms.intrinsic, match.table)
 {
@@ -273,16 +273,16 @@ respiration4 <- function(M, T, ACT = 1.0, parms.intrinsic, match.table)
 
 #' Plot temperature dependent curves
 #'
-#' @description Plot the thermal reaction norms for consumption, respiration, and other intrinsic rates
-#' @param M Mass (grams) of fish
-#' @param T Vector of temperatures representing the temperature range to be plotted
-#' @param CP Proportion of maximum consumption (default is 1.0)
-#' @param ACT Activity multiplier (default is 1.0)
-#' @param prey_ED Prey energy density in joules per gram of wet mass (default is 4000)
-#' @param parms.intrinsic A parms.intrinsic object
-#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or new equation 4
-#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997 or new equation 4
-#' @return A plot of temperature dependent rates
+#' @description Plot the thermal reaction norms for consumption, respiration, and other intrinsic rates.
+#' @param M Mass (grams) of fish.
+#' @param T Vector of temperatures representing the temperature range to be plotted.
+#' @param CP Proportion of maximum consumption (default is 1.0).
+#' @param ACT Activity multiplier (default is 1.0).
+#' @param prey_ED Prey energy density in joules per gram of wet mass (default is 4000).
+#' @param parms.intrinsic A parms.intrinsic object.
+#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or new equation 4.
+#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997 or new equation 4.
+#' @return A plot of temperature dependent rates.
 #' @export
 bem_curve <- function(M, T, CP = 1.0, ACT = 1.0, prey_ED = 4000, parms.intrinsic, C_eq, R_eq, match.table)
 {
@@ -395,15 +395,15 @@ bem_curve <- function(M, T, CP = 1.0, ACT = 1.0, prey_ED = 4000, parms.intrinsic
 
 #' Solve daily energy budgets to simulate growth over a calendar year
 #'
-#' @description the Wisconsin bioenergetics model from Hanson et al. 1997
-#' @param start_M2 (default is 100 grams)
-#' @param temperature a dataframe populated with a time series of mean daily water temperature (degrees C x 10) of a habitat patch
-#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed if C_eq = 4 and/or R_eq = 4
-#' @param parms.temporal a dataframe populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters
-#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or equation 4
-#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997
-#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match; only applicable if C_eq = 4 and/or R_eq = 4
-#' @return dataframe populated with output parameters (columns) for time series of projected days (rows)
+#' @description the Wisconsin bioenergetics model from Hanson et al. 1997.
+#' @param start_M2 (default is 100 grams).
+#' @param temperature a dataframe populated with a time series of mean daily water temperature (degrees C x 10) of a habitat patch.
+#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed if C_eq = 4 and/or R_eq = 4.
+#' @param parms.temporal a dataframe populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters.
+#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or equation 4.
+#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997.
+#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match; only applicable if C_eq = 4 and/or R_eq = 4.
+#' @return dataframe populated with output parameters (columns) for time series of projected days (rows).
 #' @export
 bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temporal, C_eq, R_eq, match.table)
 {
@@ -1088,17 +1088,17 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
 
 #' Project growth to validate a bioenergetics model with empirical end-of-year mass
 #'
-#' @description simulate growth with resampled CP and ACT parameters to identify parameter sets that match empirical end-of-year mass
-#' @param start_L starting total length in cm
-#' @param end_L.empirical total length (cm) of fish at end of year based on empirically-derived field or lab size-at-age estimate
-#' @param temperature a dataframe populated with a time series of mean daily water temperature (degrees C x 10) of a habitat patch
-#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed if C_eq = 4 and/or R_eq = 4
-#' @param parms.temporal a dataframe populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters
-#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or equation 4
-#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997
-#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match; only applicable if C_eq = 4 and/or R_eq = 4
-#' @param resamp.n specify the number of CP-ACT parameter sets to draw from uniform distributions (default is 1000)
-#' @return a list of length 5; raw bem_grow output for each patch and year-end performance indices for each patch; also plotted validation output
+#' @description simulate growth with resampled CP and ACT parameters to identify parameter sets that match empirical end-of-year mass.
+#' @param start_L starting total length in cm.
+#' @param end_L.empirical total length (cm) of fish at end of year based on empirically-derived field or lab size-at-age estimate.
+#' @param temperature a dataframe populated with a time series of mean daily water temperature (degrees C x 10) of a habitat patch.
+#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed if C_eq = 4 and/or R_eq = 4.
+#' @param parms.temporal a dataframe populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters.
+#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or equation 4.
+#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997.
+#' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match; only applicable if C_eq = 4 and/or R_eq = 4.
+#' @param resamp.n specify the number of CP-ACT parameter sets to draw from uniform distributions (default is 1000).
+#' @return a list of length 5; raw bem_grow output for each patch and year-end performance indices for each patch; also plotted validation output.
 #' @export
 bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intrinsic, parms.temporal, C_eq, R_eq, match.table, resamp.n = 1000)
 {
@@ -1184,15 +1184,15 @@ bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intri
 
 #' Project performance indices across heterogeneous habitat patches
 #'
-#' @description solve daily energy budgets for n habitat patches
-#' @param start_M2 (default is 100 grams)
-#' @param temperature a dataframe with 365 rows; the first column is the date; subsequent columns are WT_mean (degrees C x 10) for n habitat patches OR a raster layer with x, y, and z values representing latitudes, longitudes, and 365 days of temperature
-#' @param parms.intrinsic A parms.intrinsic object
-#' @param parms.temporal a list of dataframes populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters; each list element is a different habitat patch
-#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or equation 4
-#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997
-#' @param is.raster FALSE if temperature data are in tabular format; TRUE if temperature data are in raster format. Default is FALSE
-#' @return a list of length 2; raw bem_grow output for each patch and year-end performance indices for each patch
+#' @description solve daily energy budgets for n habitat patches.
+#' @param start_M2 (default is 100 grams).
+#' @param temperature a dataframe with 365 rows; the first column is the date; subsequent columns are WT_mean (degrees C x 10) for n habitat patches OR a raster layer with x, y, and z values representing latitudes, longitudes, and 365 days of temperature.
+#' @param parms.intrinsic A parms.intrinsic object.
+#' @param parms.temporal a list of dataframes populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters; each list element is a different habitat patch.
+#' @param C_eq Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or equation 4.
+#' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997.
+#' @param is.raster FALSE if temperature data are in tabular format; TRUE if temperature data are in raster format. Default is FALSE.
+#' @return a list of length 2; raw bem_grow output for each patch and year-end performance indices for each patch.
 #' @export
 bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temporal, C_eq, R_eq, is.raster = FALSE)
 {
@@ -1216,59 +1216,80 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
     }
     names(list.sim_parms) <- names(temperature)
 
-    # extract year-end performance for n habitat patches
-    patchID <- names(temperature)
-    M2_end <- vector()
-    M2_dif <- vector()
-    M1_m01 <- vector()
-    M1_m02 <- vector()
-    M1_m03 <- vector()
-    M1_m04 <- vector()
-    M1_m05 <- vector()
-    M1_m06 <- vector()
-    M1_m07 <- vector()
-    M1_m08 <- vector()
-    M1_m09 <- vector()
-    M1_m10 <- vector()
-    M1_m11 <- vector()
-    M1_m12 <- vector()
-    M1_cold <- vector()
-    M1_warm <- vector()
-    def_days <- vector()
-    K_min <- vector()
-    K_yday <- vector()
+    if (nrow(temperature) == 365) {
+      # extract year-end performance for n habitat patches
+      patchID <- names(temperature)
+      M2_end <- vector()
+      M2_dif <- vector()
+      M1_m01 <- vector()
+      M1_m02 <- vector()
+      M1_m03 <- vector()
+      M1_m04 <- vector()
+      M1_m05 <- vector()
+      M1_m06 <- vector()
+      M1_m07 <- vector()
+      M1_m08 <- vector()
+      M1_m09 <- vector()
+      M1_m10 <- vector()
+      M1_m11 <- vector()
+      M1_m12 <- vector()
+      M1_cold <- vector()
+      M1_warm <- vector()
+      def_days <- vector()
+      K_min <- vector()
+      K_yday <- vector()
 
-    for(i in 1:length(temperature)){
-      M2_end[i] <- list.sim_parms[[i]][365,"M2_cum"]
-      M2_dif[i] <- ((list.sim_parms[[i]][365,"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
-      M1_m01[i] <- sum(list.sim_parms[[i]][001:031,"M1_ins"])
-      M1_m02[i] <- sum(list.sim_parms[[i]][032:059,"M1_ins"])
-      M1_m03[i] <- sum(list.sim_parms[[i]][060:090,"M1_ins"])
-      M1_m04[i] <- sum(list.sim_parms[[i]][091:120,"M1_ins"])
-      M1_m05[i] <- sum(list.sim_parms[[i]][121:151,"M1_ins"])
-      M1_m06[i] <- sum(list.sim_parms[[i]][152:181,"M1_ins"])
-      M1_m07[i] <- sum(list.sim_parms[[i]][182:212,"M1_ins"])
-      M1_m08[i] <- sum(list.sim_parms[[i]][213:243,"M1_ins"])
-      M1_m09[i] <- sum(list.sim_parms[[i]][244:273,"M1_ins"])
-      M1_m10[i] <- sum(list.sim_parms[[i]][274:304,"M1_ins"])
-      M1_m11[i] <- sum(list.sim_parms[[i]][305:334,"M1_ins"])
-      M1_m12[i] <- sum(list.sim_parms[[i]][335:365,"M1_ins"])
-      WT_month <- c(mean(list.sim_parms[[i]][001:031,"WT_mean"]), mean(list.sim_parms[[i]][032:059,"WT_mean"]), mean(list.sim_parms[[i]][060:090,"WT_mean"]), mean(list.sim_parms[[i]][091:120,"WT_mean"]), mean(list.sim_parms[[i]][121:151,"WT_mean"]), mean(list.sim_parms[[i]][152:181,"WT_mean"]), mean(list.sim_parms[[i]][182:212,"WT_mean"]), mean(list.sim_parms[[i]][213:243,"WT_mean"]), mean(list.sim_parms[[i]][244:273,"WT_mean"]), mean(list.sim_parms[[i]][274:304,"WT_mean"]), mean(list.sim_parms[[i]][305:334,"WT_mean"]), mean(list.sim_parms[[i]][335:365,"WT_mean"]))
-      m1_month <- c(sum(list.sim_parms[[i]][001:031,"M1_ins"]), sum(list.sim_parms[[i]][032:059,"M1_ins"]), sum(list.sim_parms[[i]][060:090,"M1_ins"]), sum(list.sim_parms[[i]][091:120,"M1_ins"]), sum(list.sim_parms[[i]][121:151,"M1_ins"]), sum(list.sim_parms[[i]][152:181,"M1_ins"]), sum(list.sim_parms[[i]][182:212,"M1_ins"]), sum(list.sim_parms[[i]][213:243,"M1_ins"]), sum(list.sim_parms[[i]][244:273,"M1_ins"]), sum(list.sim_parms[[i]][274:304,"M1_ins"]), sum(list.sim_parms[[i]][305:334,"M1_ins"]), sum(list.sim_parms[[i]][335:365,"M1_ins"]))
-      M1_cold[i] <- m1_month[WT_month == min(WT_month)][1]
-      M1_warm[i] <- m1_month[WT_month == max(WT_month)][1]
-      K_min[i]  <- min(list.sim_parms[[i]]$K, na.rm = TRUE)
-      K_yday[i]  <- as.numeric(gsub("julian", "", list.sim_parms[[i]][list.sim_parms[[i]]$K %in% min(list.sim_parms[[i]]$K, na.rm = TRUE),"date"][1]))
-      def_days[i] <- ifelse(min(list.sim_parms[[i]]$M1_ins) >= 0, 0, max(rle(list.sim_parms[[i]]$M1_ins < 0)$lengths[rle(list.sim_parms[[i]]$M1_ins < 0)$values]))
+      for(i in 1:length(temperature)){
+        M2_end[i] <- list.sim_parms[[i]][365,"M2_cum"]
+        M2_dif[i] <- ((list.sim_parms[[i]][365,"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
+        M1_m01[i] <- sum(list.sim_parms[[i]][001:031,"M1_ins"])
+        M1_m02[i] <- sum(list.sim_parms[[i]][032:059,"M1_ins"])
+        M1_m03[i] <- sum(list.sim_parms[[i]][060:090,"M1_ins"])
+        M1_m04[i] <- sum(list.sim_parms[[i]][091:120,"M1_ins"])
+        M1_m05[i] <- sum(list.sim_parms[[i]][121:151,"M1_ins"])
+        M1_m06[i] <- sum(list.sim_parms[[i]][152:181,"M1_ins"])
+        M1_m07[i] <- sum(list.sim_parms[[i]][182:212,"M1_ins"])
+        M1_m08[i] <- sum(list.sim_parms[[i]][213:243,"M1_ins"])
+        M1_m09[i] <- sum(list.sim_parms[[i]][244:273,"M1_ins"])
+        M1_m10[i] <- sum(list.sim_parms[[i]][274:304,"M1_ins"])
+        M1_m11[i] <- sum(list.sim_parms[[i]][305:334,"M1_ins"])
+        M1_m12[i] <- sum(list.sim_parms[[i]][335:365,"M1_ins"])
+        WT_month <- c(mean(list.sim_parms[[i]][001:031,"WT_mean"]), mean(list.sim_parms[[i]][032:059,"WT_mean"]), mean(list.sim_parms[[i]][060:090,"WT_mean"]), mean(list.sim_parms[[i]][091:120,"WT_mean"]), mean(list.sim_parms[[i]][121:151,"WT_mean"]), mean(list.sim_parms[[i]][152:181,"WT_mean"]), mean(list.sim_parms[[i]][182:212,"WT_mean"]), mean(list.sim_parms[[i]][213:243,"WT_mean"]), mean(list.sim_parms[[i]][244:273,"WT_mean"]), mean(list.sim_parms[[i]][274:304,"WT_mean"]), mean(list.sim_parms[[i]][305:334,"WT_mean"]), mean(list.sim_parms[[i]][335:365,"WT_mean"]))
+        m1_month <- c(sum(list.sim_parms[[i]][001:031,"M1_ins"]), sum(list.sim_parms[[i]][032:059,"M1_ins"]), sum(list.sim_parms[[i]][060:090,"M1_ins"]), sum(list.sim_parms[[i]][091:120,"M1_ins"]), sum(list.sim_parms[[i]][121:151,"M1_ins"]), sum(list.sim_parms[[i]][152:181,"M1_ins"]), sum(list.sim_parms[[i]][182:212,"M1_ins"]), sum(list.sim_parms[[i]][213:243,"M1_ins"]), sum(list.sim_parms[[i]][244:273,"M1_ins"]), sum(list.sim_parms[[i]][274:304,"M1_ins"]), sum(list.sim_parms[[i]][305:334,"M1_ins"]), sum(list.sim_parms[[i]][335:365,"M1_ins"]))
+        M1_cold[i] <- m1_month[WT_month == min(WT_month)][1]
+        M1_warm[i] <- m1_month[WT_month == max(WT_month)][1]
+        K_min[i]  <- min(list.sim_parms[[i]]$K, na.rm = TRUE)
+        K_yday[i]  <- as.numeric(gsub("julian", "", list.sim_parms[[i]][list.sim_parms[[i]]$K %in% min(list.sim_parms[[i]]$K, na.rm = TRUE),"date"][1]))
+        def_days[i] <- ifelse(min(list.sim_parms[[i]]$M1_ins) >= 0, 0, max(rle(list.sim_parms[[i]]$M1_ins < 0)$lengths[rle(list.sim_parms[[i]]$M1_ins < 0)$values]))
+      }
+
+      dframe.perform <- data.frame(patchID,
+                                   M2_end, M2_dif,
+                                   M1_m01, M1_m02, M1_m03, M1_m04, M1_m05, M1_m06, M1_m07, M1_m08, M1_m09, M1_m10, M1_m11, M1_m12,
+                                   M1_cold, M1_warm,
+                                   K_min, K_yday,
+                                   def_days)
     }
-    #rm(WT_month)
-    #rm(m1_month)
-    dframe.perform <- data.frame(patchID,
-                                 M2_end, M2_dif,
-                                 M1_m01, M1_m02, M1_m03, M1_m04, M1_m05, M1_m06, M1_m07, M1_m08, M1_m09, M1_m10, M1_m11, M1_m12,
-                                 M1_cold, M1_warm,
-                                 K_min, K_yday,
-                                 def_days)
+    else{
+      # extract year-end performance for n habitat patches
+      patchID <- names(temperature)
+      M2_end <- vector()
+      M2_dif <- vector()
+      def_days <- vector()
+      K_min <- vector()
+
+      for(i in 1:length(temperature)){
+        M2_end[i] <- list.sim_parms[[i]][365,"M2_cum"]
+        M2_dif[i] <- ((list.sim_parms[[i]][365,"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
+        K_min[i]  <- min(list.sim_parms[[i]]$K, na.rm = TRUE)
+        def_days[i] <- ifelse(min(list.sim_parms[[i]]$M1_ins) >= 0, 0, max(rle(list.sim_parms[[i]]$M1_ins < 0)$lengths[rle(list.sim_parms[[i]]$M1_ins < 0)$values]))
+      }
+
+      dframe.perform <- data.frame(patchID,
+                                   M2_end, M2_dif,
+                                   K_min,
+                                   def_days)
+    }
 
     time.stop <- Sys.time()
     run.time <- time.stop - time.start
@@ -1311,89 +1332,123 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
     }
     names(list.sim_parms) <- names(df.temperature)
 
-    # extract year-end performance for n habitat patches
-    patchID <- names(df.temperature)
-    M2_end <- vector()
-    M2_dif <- vector()
-    M1_m01 <- vector()
-    M1_m02 <- vector()
-    M1_m03 <- vector()
-    M1_m04 <- vector()
-    M1_m05 <- vector()
-    M1_m06 <- vector()
-    M1_m07 <- vector()
-    M1_m08 <- vector()
-    M1_m09 <- vector()
-    M1_m10 <- vector()
-    M1_m11 <- vector()
-    M1_m12 <- vector()
-    M1_cold <- vector()
-    M1_warm <- vector()
-    def_days <- vector()
-    K_min <- vector()
-    K_yday <- vector()
+    if (dim(temps_bayc)[3] == 365) {
+      # extract year-end performance for n habitat patches
+      patchID <- names(df.temperature)
+      M2_end <- vector()
+      M2_dif <- vector()
+      M1_m01 <- vector()
+      M1_m02 <- vector()
+      M1_m03 <- vector()
+      M1_m04 <- vector()
+      M1_m05 <- vector()
+      M1_m06 <- vector()
+      M1_m07 <- vector()
+      M1_m08 <- vector()
+      M1_m09 <- vector()
+      M1_m10 <- vector()
+      M1_m11 <- vector()
+      M1_m12 <- vector()
+      M1_cold <- vector()
+      M1_warm <- vector()
+      def_days <- vector()
+      K_min <- vector()
+      K_yday <- vector()
 
-    for(i in 1:length(list.sim_parms)){
-      M2_end[i] <- list.sim_parms[[i]][365,"M2_cum"]
-      M2_dif[i] <- ((list.sim_parms[[i]][365,"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
-      M1_m01[i] <- sum(list.sim_parms[[i]][001:031,"M1_ins"])
-      M1_m02[i] <- sum(list.sim_parms[[i]][032:059,"M1_ins"])
-      M1_m03[i] <- sum(list.sim_parms[[i]][060:090,"M1_ins"])
-      M1_m04[i] <- sum(list.sim_parms[[i]][091:120,"M1_ins"])
-      M1_m05[i] <- sum(list.sim_parms[[i]][121:151,"M1_ins"])
-      M1_m06[i] <- sum(list.sim_parms[[i]][152:181,"M1_ins"])
-      M1_m07[i] <- sum(list.sim_parms[[i]][182:212,"M1_ins"])
-      M1_m08[i] <- sum(list.sim_parms[[i]][213:243,"M1_ins"])
-      M1_m09[i] <- sum(list.sim_parms[[i]][244:273,"M1_ins"])
-      M1_m10[i] <- sum(list.sim_parms[[i]][274:304,"M1_ins"])
-      M1_m11[i] <- sum(list.sim_parms[[i]][305:334,"M1_ins"])
-      M1_m12[i] <- sum(list.sim_parms[[i]][335:365,"M1_ins"])
-      WT_month <- c(mean(list.sim_parms[[i]][001:031,"WT_mean"]), mean(list.sim_parms[[i]][032:059,"WT_mean"]), mean(list.sim_parms[[i]][060:090,"WT_mean"]), mean(list.sim_parms[[i]][091:120,"WT_mean"]), mean(list.sim_parms[[i]][121:151,"WT_mean"]), mean(list.sim_parms[[i]][152:181,"WT_mean"]), mean(list.sim_parms[[i]][182:212,"WT_mean"]), mean(list.sim_parms[[i]][213:243,"WT_mean"]), mean(list.sim_parms[[i]][244:273,"WT_mean"]), mean(list.sim_parms[[i]][274:304,"WT_mean"]), mean(list.sim_parms[[i]][305:334,"WT_mean"]), mean(list.sim_parms[[i]][335:365,"WT_mean"]))
-      m1_month <- c(sum(list.sim_parms[[i]][001:031,"M1_ins"]), sum(list.sim_parms[[i]][032:059,"M1_ins"]), sum(list.sim_parms[[i]][060:090,"M1_ins"]), sum(list.sim_parms[[i]][091:120,"M1_ins"]), sum(list.sim_parms[[i]][121:151,"M1_ins"]), sum(list.sim_parms[[i]][152:181,"M1_ins"]), sum(list.sim_parms[[i]][182:212,"M1_ins"]), sum(list.sim_parms[[i]][213:243,"M1_ins"]), sum(list.sim_parms[[i]][244:273,"M1_ins"]), sum(list.sim_parms[[i]][274:304,"M1_ins"]), sum(list.sim_parms[[i]][305:334,"M1_ins"]), sum(list.sim_parms[[i]][335:365,"M1_ins"]))
-      M1_cold[i] <- m1_month[WT_month == min(WT_month)][1]
-      M1_warm[i] <- m1_month[WT_month == max(WT_month)][1]
-      K_min[i]  <- min(list.sim_parms[[i]]$K, na.rm = TRUE)
-      K_yday[i]  <- as.numeric(gsub("julian", "", as.numeric(gsub("julian", "", list.sim_parms[[i]][list.sim_parms[[i]]$K %in% min(list.sim_parms[[i]]$K, na.rm = TRUE),"date"][1]))))
-      def_days[i] <- ifelse(min(list.sim_parms[[i]]$M1_ins) >= 0, 0, max(rle(list.sim_parms[[i]]$M1_ins < 0)$lengths[rle(list.sim_parms[[i]]$M1_ins < 0)$values]))
+      for(i in 1:length(list.sim_parms)){
+        M2_end[i] <- list.sim_parms[[i]][365,"M2_cum"]
+        M2_dif[i] <- ((list.sim_parms[[i]][365,"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
+        M1_m01[i] <- sum(list.sim_parms[[i]][001:031,"M1_ins"])
+        M1_m02[i] <- sum(list.sim_parms[[i]][032:059,"M1_ins"])
+        M1_m03[i] <- sum(list.sim_parms[[i]][060:090,"M1_ins"])
+        M1_m04[i] <- sum(list.sim_parms[[i]][091:120,"M1_ins"])
+        M1_m05[i] <- sum(list.sim_parms[[i]][121:151,"M1_ins"])
+        M1_m06[i] <- sum(list.sim_parms[[i]][152:181,"M1_ins"])
+        M1_m07[i] <- sum(list.sim_parms[[i]][182:212,"M1_ins"])
+        M1_m08[i] <- sum(list.sim_parms[[i]][213:243,"M1_ins"])
+        M1_m09[i] <- sum(list.sim_parms[[i]][244:273,"M1_ins"])
+        M1_m10[i] <- sum(list.sim_parms[[i]][274:304,"M1_ins"])
+        M1_m11[i] <- sum(list.sim_parms[[i]][305:334,"M1_ins"])
+        M1_m12[i] <- sum(list.sim_parms[[i]][335:365,"M1_ins"])
+        WT_month <- c(mean(list.sim_parms[[i]][001:031,"WT_mean"]), mean(list.sim_parms[[i]][032:059,"WT_mean"]), mean(list.sim_parms[[i]][060:090,"WT_mean"]), mean(list.sim_parms[[i]][091:120,"WT_mean"]), mean(list.sim_parms[[i]][121:151,"WT_mean"]), mean(list.sim_parms[[i]][152:181,"WT_mean"]), mean(list.sim_parms[[i]][182:212,"WT_mean"]), mean(list.sim_parms[[i]][213:243,"WT_mean"]), mean(list.sim_parms[[i]][244:273,"WT_mean"]), mean(list.sim_parms[[i]][274:304,"WT_mean"]), mean(list.sim_parms[[i]][305:334,"WT_mean"]), mean(list.sim_parms[[i]][335:365,"WT_mean"]))
+        m1_month <- c(sum(list.sim_parms[[i]][001:031,"M1_ins"]), sum(list.sim_parms[[i]][032:059,"M1_ins"]), sum(list.sim_parms[[i]][060:090,"M1_ins"]), sum(list.sim_parms[[i]][091:120,"M1_ins"]), sum(list.sim_parms[[i]][121:151,"M1_ins"]), sum(list.sim_parms[[i]][152:181,"M1_ins"]), sum(list.sim_parms[[i]][182:212,"M1_ins"]), sum(list.sim_parms[[i]][213:243,"M1_ins"]), sum(list.sim_parms[[i]][244:273,"M1_ins"]), sum(list.sim_parms[[i]][274:304,"M1_ins"]), sum(list.sim_parms[[i]][305:334,"M1_ins"]), sum(list.sim_parms[[i]][335:365,"M1_ins"]))
+        M1_cold[i] <- m1_month[WT_month == min(WT_month)][1]
+        M1_warm[i] <- m1_month[WT_month == max(WT_month)][1]
+        K_min[i]  <- min(list.sim_parms[[i]]$K, na.rm = TRUE)
+        K_yday[i]  <- as.numeric(gsub("julian", "", as.numeric(gsub("julian", "", list.sim_parms[[i]][list.sim_parms[[i]]$K %in% min(list.sim_parms[[i]]$K, na.rm = TRUE),"date"][1]))))
+        def_days[i] <- ifelse(min(list.sim_parms[[i]]$M1_ins) >= 0, 0, max(rle(list.sim_parms[[i]]$M1_ins < 0)$lengths[rle(list.sim_parms[[i]]$M1_ins < 0)$values]))
+      }
+
+      dframe.perform <- data.frame(patchID,
+                                   M2_end, M2_dif,
+                                   M1_m01, M1_m02, M1_m03, M1_m04, M1_m05, M1_m06, M1_m07, M1_m08, M1_m09, M1_m10, M1_m11, M1_m12,
+                                   M1_cold, M1_warm,
+                                   K_min, K_yday,
+                                   def_days)
+
+      tmp <- as.data.frame(terra::crds(temperature), xy = TRUE)[,c("x","y")]
+      dframe.perform <- cbind(dframe.perform, tmp)
+      colnames(dframe.perform) <- c("gridID",
+                                    "M2_end", "M2_dif",
+                                    "M1_m01", "M1_m02", "M1_m03", "M1_m04", "M1_m05", "M1_m06", "M1_m07", "M1_m08", "M1_m09", "M1_m10", "M1_m11", "M1_m12",
+                                    "M1_cold", "M1_warm",
+                                    "K_min", "K_yday",
+                                    "def_days",
+                                    "lon", "lat")
+
+      rast.perform <- c(terra::rast(dframe.perform[, c("lon", "lat", "M2_end")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M2_dif")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m01")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m02")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m03")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m04")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m05")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m06")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m07")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m08")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m09")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m10")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m11")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_m12")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_cold")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M1_warm")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "K_min")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "K_yday")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "def_days")], crs = "local"))
     }
-    #rm(WT_month)
-    #rm(m1_month)
-    dframe.perform <- data.frame(patchID,
-                                 M2_end, M2_dif,
-                                 M1_m01, M1_m02, M1_m03, M1_m04, M1_m05, M1_m06, M1_m07, M1_m08, M1_m09, M1_m10, M1_m11, M1_m12,
-                                 M1_cold, M1_warm,
-                                 K_min, K_yday,
-                                 def_days)
+    else{
+      # extract year-end performance for n habitat patches
+      patchID <- names(df.temperature)
+      M2_end <- vector()
+      M2_dif <- vector()
+      def_days <- vector()
+      K_min <- vector()
 
-    tmp <- as.data.frame(terra::crds(temperature), xy = TRUE)[,c("x","y")]
-    dframe.perform <- cbind(dframe.perform, tmp)
-    colnames(dframe.perform) <- c("gridID",
-                                  "M2_end", "M2_dif",
-                                  "M1_m01", "M1_m02", "M1_m03", "M1_m04", "M1_m05", "M1_m06", "M1_m07", "M1_m08", "M1_m09", "M1_m10", "M1_m11", "M1_m12",
-                                  "M1_cold", "M1_warm",
-                                  "K_min", "K_yday",
-                                  "def_days",
-                                  "lon", "lat")
+      for(i in 1:length(list.sim_parms)){
+        M2_end[i] <- list.sim_parms[[i]][365,"M2_cum"]
+        M2_dif[i] <- ((list.sim_parms[[i]][365,"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
+        K_min[i]  <- min(list.sim_parms[[i]]$K, na.rm = TRUE)
+        def_days[i] <- ifelse(min(list.sim_parms[[i]]$M1_ins) >= 0, 0, max(rle(list.sim_parms[[i]]$M1_ins < 0)$lengths[rle(list.sim_parms[[i]]$M1_ins < 0)$values]))
+      }
 
-    rast.perform <- c(terra::rast(dframe.perform[, c("lon", "lat", "M2_end")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M2_dif")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m01")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m02")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m03")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m04")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m05")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m06")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m07")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m08")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m09")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m10")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m11")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_m12")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_cold")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "M1_warm")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "K_min")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "K_yday")], crs = "local"),
-                      terra::rast(dframe.perform[, c("lon", "lat", "def_days")], crs = "local"))
+      dframe.perform <- data.frame(patchID,
+                                   M2_end, M2_dif,
+                                   K_min,
+                                   def_days)
+
+      tmp <- as.data.frame(terra::crds(temperature), xy = TRUE)[,c("x","y")]
+      dframe.perform <- cbind(dframe.perform, tmp)
+      colnames(dframe.perform) <- c("gridID",
+                                    "M2_end", "M2_dif",
+                                    "K_min",
+                                    "def_days",
+                                    "lon", "lat")
+
+      rast.perform <- c(terra::rast(dframe.perform[, c("lon", "lat", "M2_end")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "M2_dif")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "K_min")], crs = "local"),
+                        terra::rast(dframe.perform[, c("lon", "lat", "def_days")], crs = "local"))
+    }
 
     time.stop <- Sys.time()
     run.time <- time.stop - time.start

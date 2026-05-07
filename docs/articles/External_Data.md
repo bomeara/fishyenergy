@@ -22,7 +22,6 @@ use the `fb4_closest_species` function to find the closest species in
 the Fish Bioenergetics 4.0 database:
 
 ``` r
-
 library(fishyenergy)
 closest_species <- fb4_closest_species("Thymallus arcticus")
 #> [1] "Sources for Thymallus arcticus baicalensis are: Hartman and Jensen 2016"
@@ -34,7 +33,6 @@ We can then get information from the included dataset, `fb4_data`, to
 get the source for that species:
 
 ``` r
-
 print(fb4_data$Source[fb4_data$Sci_Name == closest_species])
 #> [1] "Hartman and Jensen 2016"
 ```
@@ -47,7 +45,6 @@ parameters. The values below are from Troia and Perkin (2022) for
 *Micropterus treculii* and are probably wrong for *Thymallus arcticus*.
 
 ``` r
-
 BEM <- bem_from_fb4(closest_species, CP=0.5, FA=0.1018428, UA=0.08743042, SDA=0.150819, ED=3983.646)
 ```
 
@@ -59,7 +56,6 @@ have water temperature data, using a wrapper for the `dataRetrieval`
 package:
 
 ``` r
-
 stations <- water_stations_find(state="TN")
 knitr::kable(head(stations[,1:6], 5), caption="First 5 stations in Tennessee with water temperature data")
 ```
@@ -72,12 +68,11 @@ knitr::kable(head(stations[,1:6], 5), caption="First 5 stations in Tennessee wit
 | USGS | 03604000 | BUFFALO RIVER NEAR FLAT WOODS, TN | ST | 35.49591 | -87.83280 |
 | USGS | 03604500 | BUFFALO RIVER NEAR LOBELVILLE, TN | ST | 35.81284 | -87.79752 |
 
-First 5 stations in Tennessee with water temperature data {.table}
+First 5 stations in Tennessee with water temperature data
 
 Let’s see how they’d do in the Little River:
 
 ``` r
-
 little_river_row <- stations[stations$station_nm == "LITTLE RIVER ABOVE TOWNSEND, TN",]
 little_river_id <- paste0("USGS-", little_river_row$site_no)
 ```
@@ -87,7 +82,6 @@ it for 2023, padding a bit on each side so we can get a full year of
 data:
 
 ``` r
-
 raw_temps <- daily_temperature_raw(little_river_id, start_date="2022-11-01", end_date="2024-02-01")
 ```
 
@@ -95,7 +89,6 @@ This was measured manually, so there are not a lot of data points. Let’s
 plot the data to see what it looks like:
 
 ``` r
-
 plot(raw_temps$ActivityStartDate, raw_temps$ResultMeasureValue, pch=19, xlab="Date", ylab="Temperature (C)", main="Little River Temperature Data", bty="n")
 ```
 
@@ -110,14 +103,12 @@ also focus on just 2023 by setting the `start_date` and `end_date`
 arguments:
 
 ``` r
-
 interpolated_temps <- daily_temperature_interpolate(raw_temps, minimum_fraction_missing=0.05, start_date="2023-01-01", end_date="2023-12-31")
 ```
 
 We can see these on the original plot:
 
 ``` r
-
 plot(raw_temps$ActivityStartDate, raw_temps$ResultMeasureValue, pch=19, xlab="Date", ylab="Temperature (C)", main="Little River Temperature Data", bty="n")
 points(interpolated_temps$date, interpolated_temps$temp, col="red", pch='.')
 ```
@@ -129,14 +120,12 @@ experienced, and just linearly interpolate between them. Now we can
 compute the weight gain for the fish at this site:
 
 ``` r
-
 station_result <- single_station_compute(T_vector=interpolated_temps$temp, BEM=BEM)
 ```
 
 We can plot the weight gain over the year:
 
 ``` r
-
 plot(interpolated_temps$date, station_result$W2_cum, xlab="Date", ylab="Mass (g)", type='l', bty="n", main="Weight Gain in Little River")
 ```
 
@@ -153,7 +142,6 @@ a freshwater temperate mountain stream – very unlikely for a species
 like a lionfish, but we will throw it in.
 
 ``` r
-
 all_organisms <- loop_species_across_station(interpolated_temps$temp)
 
 all_organisms$SpeciesStage <- all_organisms$common
@@ -199,7 +187,6 @@ mass) in the Little River in TN given our (bad) assumptions going into
 the analysis:
 
 ``` r
-
 dead_organisms <- sort(unique(somewhat_surviving_organisms$SpeciesStage[which(somewhat_surviving_organisms$W2_cum<0)]))
 ```
 

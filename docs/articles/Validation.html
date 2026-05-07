@@ -68,51 +68,46 @@
     
     
 <div class="section level3">
-<h3 id="in-this-vignette-you-will">In this vignette, you will:<a class="anchor" aria-label="anchor" href="#in-this-vignette-you-will"></a>
+<h3 id="vignette-objectives">Vignette objectives<a class="anchor" aria-label="anchor" href="#vignette-objectives"></a>
 </h3>
-<ol style="list-style-type: decimal">
-<li>Learn how to validate a bionenergetics model. That is, you will
+<ul>
+<li>Learn how to validate a bioenergetics model. That is, you will
 simulate 365 days of growth and then use empirical length-at-age
-estimates from a field study or lab growth experiment to identify
-consumption (CP) and activity (ACT) values that produce realistic
-growth.</li>
+estimates from a field study to identify consumption (CP) and activity
+(ACT) values that produce realistic growth.</li>
 <li>Visualize growth trajectories.</li>
 <li>Visualize validated combinations of CP and ACT.</li>
-</ol>
-<div class="section level5">
-<h5 id="section"></h5>
-<p>First, install the fishyenergy package and load the library.
-Dependencies include reshape2, stringr, terra, sf, lubridate, and
-ggplot2.</p>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="install-and-load-fishyenergy">Install and load fishyenergy<a class="anchor" aria-label="anchor" href="#install-and-load-fishyenergy"></a>
+</h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"bomeara/fishyenergy"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">FishyEnergy</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="section-1"></h5>
-</div>
-<div class="section level4">
-<h4 id="temperature-dependent-physiological-rates">Temperature-dependent physiological rates<a class="anchor" aria-label="anchor" href="#temperature-dependent-physiological-rates"></a>
-</h4>
-<p>Next, let’s look at temperature-dependent physiological rates of a
-few species. Start by loading the intrinsic bioenergetics parameters of
-five example species. These parameters have been published by various
-authors since the 1980s and are available from Fish Bioenergetics 4.0
-(FB4)</p>
+<div class="section level3">
+<h3 id="load-largemouth-bass-parameters">Load largemouth bass parameters<a class="anchor" aria-label="anchor" href="#load-largemouth-bass-parameters"></a>
+</h3>
+<p>Start by loading the intrinsic bioenergetics parameters of five
+example species. These parameters have been published by various authors
+since the 1980s and are available from <a href="http://fishbioenergetics.org/" class="external-link">Fish Bioenergetics 4.0</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">parms_fb4</span><span class="op">)</span></span></code></pre></div>
-<div class="section level5">
-<h5 id="section-2"></h5>
-<p>Let’s retain only one focal species, largemouth bass, and look at
-these data. The first column shows the Latin name in snake case. Other
-columns like lwA and lwB are the intercept and slope of the
-length-weight equation. Still other columns like CA and CB are the
-intercept and slope of the mass dependent consumption equation (a
-negative power law). There’s also specific dynamic action (i.e., the
-proportion of energy consumed allocated to the cost of digestion),
-predator energy density, and many other variables defined by Hanson et
-al. (1997).</p>
+<p>Retain only one focal species, largemouth bass <em>Micropterus
+salmoides</em>, and look at these data.</p>
+<ul>
+<li>The first column shows the Latin name in snake case.</li>
+<li>Other columns like lwA and lwB are the intercept and slope of the
+length-weight equation acquired from <a href="https://fishbase.org" class="external-link">FishBase</a>.</li>
+<li>Still other columns like CA and CB are the intercept and slope of
+the mass dependent consumption equation (a negative power law).</li>
+<li>There’s also specific dynamic action (<em>i.e.</em>, the proportion
+of energy consumed allocated to the cost of digestion), predator energy
+density, and many other variables defined by Hanson <em>et al.</em>
+(1997).</li>
+</ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="va">parms.micsal</span> <span class="op">&lt;-</span> <span class="va">parms_fb4</span><span class="op">[</span><span class="va">parms_fb4</span><span class="op">$</span><span class="va">genus_species</span> <span class="op">==</span> <span class="st">"micropterus_salmoides"</span>,<span class="op">]</span></span>
@@ -120,27 +115,12 @@ al. (1997).</p>
 <span><span class="co">#&gt;           genus_species LifeStage           Source    lwA   lwB CEQ   CA     CB   CQ  CTO CTM CTL CK1 CK4 REQ       RA     RB     RQ    RTO RTM RTL RK1 RK4     SDA    FA      UA pred_ED</span></span>
 <span><span class="co">#&gt; 2 micropterus_salmoides     adult Rice et al. 1983 0.0226 2.781   2 0.33 -0.325 2.65 27.5  37  NA  NA  NA   1 0.008352 -0.355 0.0313 0.0196   0   0   1   0 0.15848 0.104 0.08817    4184</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="section-3"></h5>
-<p>Next, we need to load some parameters that potentially vary
-temporally. The dataframe has 365 rows representing each day of the
-year. There are five noteworthy columns (i.e., variables):</p>
-<p>CP is the proportion of maximum consumption and decrease as prey
-quantity declines or as exploitative competition increases.</p>
-<p>ACT is the activity multiplier where a value of zero would indicate
-no metabolic costs beyond being at rest. Maintaining position in a
-flowing stream, avoiding predators, pursuing prey, and engaging in
-reproductive behavior increase ACT.</p>
-<p>The next two parameters (gsi_f and gsi_m) allow the user to model
-somatic growth of a reproductively mature fish that allocates some
-energy to gonadal tissue. Separate parameters are provided for females
-and males because the sexes invest different amounts of energy to their
-gonads–gsi_f and gsi_m, respectively. The default data assume a
-reproductively immature fish (i.e., gsi = 0).</p>
-<p>Modifying prey energy density (prey_ED) over the year can simulate
-ontogenetic diet shifts or changes in prey quality. There are numerous
-published estimates of prey energy density for common prey items like
-invertebrates, fish, and so on.</p>
+<div class="section level3">
+<h3 id="load-temporally-varying-parameters">Load temporally-varying parameters<a class="anchor" aria-label="anchor" href="#load-temporally-varying-parameters"></a>
+</h3>
+<p>We need to load some parameters that potentially vary temporally. The
+dataframe has 365 rows representing each day of the year. There are five
+noteworthy columns (<em>i.e.</em>, variables).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">parms_temporal_DEFAULT</span><span class="op">)</span></span>
@@ -154,24 +134,43 @@ invertebrates, fish, and so on.</p>
 <span><span class="co">#&gt; 4 1/4/2025  1   1     0     0    3698</span></span>
 <span><span class="co">#&gt; 5 1/5/2025  1   1     0     0    3698</span></span>
 <span><span class="co">#&gt; 6 1/6/2025  1   1     0     0    3698</span></span></code></pre></div>
+<ul>
+<li>CP is the proportion of maximum consumption and decrease as prey
+quantity declines or as exploitative competition increases.</li>
+<li>ACT is the activity multiplier where a value of zero would indicate
+no metabolic costs beyond being at rest. Maintaining position in a
+flowing stream, avoiding predators, pursuing prey, and engaging in
+reproductive behavior increase ACT.</li>
+<li>The next two parameters (gsi_f and gsi_m) allow the user to model
+somatic growth of a reproductively mature fish that allocates some
+energy to gonadal tissue. Separate parameters are provided for females
+and males because the sexes invest different amounts of energy to their
+gonads. The default data assume a reproductively immature fish
+(<em>i.e.</em>, gsi = 0).</li>
+<li>Modifying prey energy density (prey_ED) over the year can simulate
+ontogenetic diet shifts or changes in prey quality. There are numerous
+published estimates of prey energy density for common prey items like
+invertebrates, fish, and so on (see Appendix B from Hanson <em>et
+al.</em> 1997).</li>
+</ul>
 </div>
-<div class="section level5">
-<h5 id="section-4"></h5>
+<div class="section level3">
+<h3 id="load-lake-temperatures">Load lake temperatures<a class="anchor" aria-label="anchor" href="#load-lake-temperatures"></a>
+</h3>
 <p>Let’s explore some lake temperature data modified from the
-open-source LakeTEMP dataset (Korver et al. 2024). In brief, this
-dataset provides monthly lake surface temperatures for 1,427,688 lakes
-throughout the world as well as some geographic (e.g., elevation above
-sea level) and bathymetric (e.g., lake depth) covariates for these
-lakes. In fishyenergy, we have extracted these monthly temperatures for
-8,001 lakes in 15 southeastern US states plus Puerto Rico. We then used
-a generalized additive model fitted to monthly temperatures to
-interpolate temperatures to the daily resolution needed for
-bioenergetics modeling. Let’s load this dataset called temps_lake in
-fishyenergy.</p>
-<p>The dataset has 8,001 rows each representing a different lake and 366
-columns representing the unique lake ID (Hylak_id) followed by the 365
-julian days. We print only the first 90 days or three months of the
-year.</p>
+open-source LakeTEMP dataset (Korver <em>et al.</em> 2024). In brief,
+this dataset provides monthly lake surface temperatures for 1,427,688
+lakes throughout the world as well as some geographic (<em>e.g.</em>,
+elevation above sea level) and bathymetric (<em>e.g.</em>, lake depth)
+covariates for these lakes. In fishyenergy, we have extracted these
+monthly temperatures for 8,001 lakes in 15 southeastern US states plus
+Puerto Rico. We then used a generalized additive model fitted to monthly
+temperatures to interpolate temperatures to the daily resolution needed
+for bioenergetics modeling. Let’s load this dataset called
+<strong>temps_lake</strong> in fishyenergy. The dataset has 8,001 rows
+each representing a different lake and 366 columns representing the
+unique lake ID (Hylak_id) followed by the 365 julian days. We print only
+the first 90 days or three months of the year.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">temps_lake</span><span class="op">)</span></span>
@@ -186,8 +185,9 @@ year.</p>
 <span><span class="co">#&gt; 5 Hylak_id.0000805        75        74        73        72        71        70        69        68        67        66        65        64        64        63        62        61        61        60        59        59        58        58        58        57        57        57        56        56        56        56        56        56        56        56        56        56        56        56        56        57        57        57        58        58        59        59        60        61        61        62        63        63        64        65        66        67        68        69        70        71        72        73        74        76        77        78        79        81        82        83        85        86        88        89        90        92        94        95        97        98       100       101       103       105       106       108       110       112       113       115</span></span>
 <span><span class="co">#&gt; 6 Hylak_id.0000806        45        44        44        43        42        41        40        39        39        38        37        37        36        35        35        35        34        34        34        33        33        33        33        33        33        33        33        33        33        34        34        34        35        35        36        36        37        37        38        39        40        40        41        42        43        44        45        46        47        48        50        51        52        53        55        56        57        59        60        62        63        65        66        68        70        71        73        75        76        78        80        82        83        85        87        89        91        93        94        96        98       100       102       104       106       108       110       112       114       116</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="section-5"></h5>
+<div class="section level3">
+<h3 id="plot-histograms-of-winter-and-summer-temperatures">Plot histograms of winter and summer temperatures<a class="anchor" aria-label="anchor" href="#plot-histograms-of-winter-and-summer-temperatures"></a>
+</h3>
 <p>Let’s visualize the spatial variation in these temperature data.
 Surface water temperatures on January 1st range from approximately 0 to
 25°C across these 8,043 lakes. On August 1st, temperatures range from 25
@@ -209,11 +209,14 @@ to 35°C.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">julian213</span> <span class="op">/</span> <span class="fl">10</span><span class="op">)</span>, <span class="va">temps_lake</span>, fill <span class="op">=</span> <span class="st">"red"</span>, color <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Validation_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" alt="" width="576"></p>
 </div>
-<div class="section level5">
-<h5 id="section-6"></h5>
+<div class="section level3">
+<h3 id="compare-temperature-time-series-between-a-northern-and-southern-lake">Compare temperature time series between a northern and southern
+lake<a class="anchor" aria-label="anchor" href="#compare-temperature-time-series-between-a-northern-and-southern-lake"></a>
+</h3>
 <p>Let’s visualize the temporal variation in these temperature data for
-Watts Bar lake in East Tennessee and for Lake Okeechobee in South
-Florida.</p>
+<a href="https://www.google.com/maps/place/Watts+Bar+Lake/@35.7441763,-85.2117234,9z/data=!3m1!4b1!4m6!3m5!1s0x885dd607ba4ee5fd:0x9345845de4bcd0cb!8m2!3d35.6963849!4d-84.7263321!16zL20vMDY3bmsx?entry=ttu&amp;g_ep=EgoyMDI2MDUwMi4wIKXMDSoASAFQAw%3D%3D" class="external-link">Watts
+Bar lake</a> in East Tennessee and for <a href="https://www.google.com/maps?sca_esv=e43388f8423b2460&amp;rlz=1C1GCEA_enUS1209US1209&amp;output=search&amp;q=lake+okeechobee&amp;source=lnms&amp;fbs=ADc_l-aN0CWEZBOHjofHoaMMDiKpaEWjvZ2Py1XXV8d8KvlI3ppPEReeCOS7s1VbbZz2TLtLg-3tySDopuaXFPmErWGprNh7xplYbuAM26E83-634Tje944TsfmZQpQNhhGuNAE9iZKZtqtInQWOodZ2Cl3sdEvwbZykRhWtbQyheYQMZDZ5btbWCi0hM6KGDyAtxJ8TnNJv9mlrweos2-nVbBW5Dp0_pw&amp;entry=mc&amp;ved=1t:200715&amp;ictx=111" class="external-link">Lake
+Okeechobee</a> in South Florida.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">date</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">365</span></span>
@@ -230,9 +233,6 @@ Florida.</p>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">WT.FL</span> <span class="op">/</span> <span class="fl">10</span><span class="op">)</span>, <span class="va">temps_lake.subset</span>, color <span class="op">=</span> <span class="st">"#005030"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">WT.TN</span> <span class="op">/</span> <span class="fl">10</span><span class="op">)</span>, <span class="va">temps_lake.subset</span>, color <span class="op">=</span> <span class="st">"#FF8200"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Validation_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="576"></p>
-</div>
-<div class="section level5">
-<h5 id="section-7"></h5>
 <p>Do some data wrangling to get the Watts Bar temperature into the
 format needed to simulate fish growth. That is, a dataframe with 365
 rows representing each day of a calendar year and two columns
@@ -246,13 +246,15 @@ representing the date and the daily mean water temperature.</p>
 <span><span class="va">temps_WattsBar</span><span class="op">$</span><span class="va">date</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">365</span></span>
 <span><span class="va">temps_WattsBar</span> <span class="op">&lt;-</span> <span class="va">temps_WattsBar</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"date"</span>,<span class="st">"WT_mean"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="section-8"></h5>
-<p>Next, use the bem_grow function to simulate the daily bioenergetic
-budget of an age-1 largemouth bass in Watts Bar. A realistic largemouth
-bass living in an East Tennessee reservoir reaches 15 cm total length
-and has a mass of 42 grams at the end of its first year, so let’s
-simulate growth for that fish.</p>
+<div class="section level3">
+<h3 id="simulating-daily-bioenergetics">Simulating daily bioenergetics<a class="anchor" aria-label="anchor" href="#simulating-daily-bioenergetics"></a>
+</h3>
+<p>Use the <strong>bem_grow</strong> function to simulate the daily
+bioenergetic budget of an age-1 largemouth bass in Watts Bar. A
+realistic largemouth bass living in an East Tennessee reservoir reaches
+15 cm total length and has a mass of 42 grams at the end of its first
+year (Etnier &amp; Starnes 1993), so let’s simulate growth for that
+fish.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grow.micsal_WattsBar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bem_grow.html">bem_grow</a></span><span class="op">(</span>start_M2 <span class="op">=</span> <span class="fl">57</span>,</span>
 <span>                                 temperature <span class="op">=</span> <span class="va">temps_WattsBar</span>,</span>
@@ -261,8 +263,9 @@ simulate growth for that fish.</p>
 <span>                                 C_eq <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                                 R_eq <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level5">
-<h5 id="section-9"></h5>
+<div class="section level3">
+<h3 id="plotting-daily-energetics">Plotting daily energetics<a class="anchor" aria-label="anchor" href="#plotting-daily-energetics"></a>
+</h3>
 <p>Plot the time series of m2_cum. This predator fish starts the year at
 57 grams (2 ounces) and ends the year at a whopping 1831 grams (~4
 pounds), which is totally unrealistic. This is because we have assumed
@@ -276,39 +279,37 @@ and never moves (ACT = 1), and allocates no energy to reproduction (gsi_
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">M2_cum</span><span class="op">)</span>, <span class="va">grow.micsal_WattsBar</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Validation_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="576"></p>
 </div>
-<div class="section level5">
-<h5 id="section-10"></h5>
+<div class="section level3">
+<h3 id="validating-growth">Validating growth<a class="anchor" aria-label="anchor" href="#validating-growth"></a>
+</h3>
 <p>Obviously CP=1 and ACT=1 are unrealistic, but what are realistic
 values? Unclear! These parameters are difficult to estimate for wild
 fish, but there is some literature describing ways some approaches to do
-so</p>
-<p>We developed the bem_validate function to address this challenge
-using an alterantive approach. What the function does is identify pairs
-of CP and ACT values that produce realistic growth. Inputs of
-bem_validate include a subset of those you’re familiar with from
-bem_grow including temperature, parms.intrinsic, parms.temporal, C_eq,
-and R_eq.</p>
-<p>Three new inputs include:</p>
-<ol style="list-style-type: decimal">
-<li><p>Total length in cm at the start of the year (start_L). We use
-total length as the input instead of mass because lengths-at-age are
-more commonly presented in the literature than are masses-at-age. The
-function just uses the parms_fb4 to convert the inputted start_L to mass
-before running the bem_grow function. For the example below, we use 15.0
-cm TL reported for typical largemouth bass at the start of its second
-year of life (age-1) in Tennessee reservoirs by Etnier &amp; Starnes
-1993.</p></li>
-<li><p>The expected total length in cm at the end of the year based on
-empirically-derived growth (end_L.empirical). For the example below, we
-use 26.8 cm TL reported for typical largemouth bass at the end of its
-second year of life (age-1) in Tennessee reservoirs by Etnier &amp;
-Starnes 1993.</p></li>
-<li><p>The number of CP and ACT parameter sets to test in the growth
-validation. CP values are drawn from a uniform probability distribution
-(base::runif) with a minimum of 0.0 and a maximum of 1.0. ACT values are
-also drawn from a uniform distribution with a minimum and maximum of 1.0
-and 4.0, respectively.</p></li>
-</ol>
+so (Diana 1979, Metcalfe <em>et al.</em> 2016, Wahl &amp; Stein 1991,
+Wright <em>et al.</em> 2014).</p>
+<p>We developed the <strong>bem_validate</strong> function to address
+this challenge using an alternative approach. What the function does is
+identify pairs of CP and ACT values that produce realistic growth.
+Inputs of bem_validate include a subset of those you’re familiar with
+from the <strong>bem_grow</strong> function including temperature,
+parms.intrinsic, parms.temporal, C_eq, and R_eq.</p>
+<p>Three new inputs include: 1) Total length in cm at the start of the
+year (start_L). We use total length as the input instead of mass because
+lengths-at-age are more commonly presented in the literature than are
+masses-at-age. The function just uses the parms_fb4 to convert the
+inputted start_L to mass before running the bem_grow function. For the
+example below, we use 15.0 cm TL reported for typical largemouth bass at
+the start of its second year of life (age-1) in Tennessee reservoirs by
+Etnier &amp; Starnes 1993. 2) The expected total length in cm at the end
+of the year based on empirically-derived growth (end_L.empirical). For
+the example below, we use 26.8 cm TL reported for typical largemouth
+bass at the end of its second year of life (age-1) in Tennessee
+reservoirs by Etnier &amp; Starnes 1993. 3) The number of CP and ACT
+parameter sets to test in the growth validation. CP values are drawn
+from a uniform probability distribution (base::runif) with a minimum of
+0.0 and a maximum of 1.0. ACT values are also drawn from a uniform
+distribution with a minimum and maximum of 1.0 and 4.0,
+respectively.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vali.micsal_WattsBar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bem_validate.html">bem_validate</a></span><span class="op">(</span>start_L <span class="op">=</span> <span class="fl">15.0</span>,</span>
 <span>                                     end_L.empirical <span class="op">=</span> <span class="fl">26.8</span>,</span>
@@ -317,10 +318,7 @@ and 4.0, respectively.</p></li>
 <span>                                     parms.temporal <span class="op">=</span> <span class="va">parms_temporal_DEFAULT</span>,</span>
 <span>                                     C_eq <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                                     R_eq <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>                                     resamp.n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level5">
-<h5 id="section-11"></h5>
+<span>                                     resamp.n <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
 <p>Output from bem_validate is a list of length five:</p>
 <ol style="list-style-type: decimal">
 <li>The first list element is the run time. The bem_validate function,
@@ -329,7 +327,7 @@ increases with the number of parameter sets resampled.</li>
 </ol>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vali.micsal_WattsBar</span><span class="op">$</span><span class="va">run.time</span></span>
-<span><span class="co">#&gt; [1] "Run time is 17.7 seconds for 100 parameter sets"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "Run time is 8.2 seconds for 30 parameter sets"</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>The first graphical output is total length plotted as a function of
 julian day. A separate line is plotted for each resampled parameter set
@@ -376,20 +374,20 @@ FALSEs.</li>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">vali.micsal_WattsBar</span><span class="op">$</span><span class="va">year.end.perform</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   resampID   CP  ACT M2_cum L_cum end_L accurate</span></span>
-<span><span class="co">#&gt; 1        1 0.27 2.96     NA    NA  26.8    FALSE</span></span>
-<span><span class="co">#&gt; 2        2 0.37 2.06     NA    NA  26.8    FALSE</span></span>
-<span><span class="co">#&gt; 3        3 0.57 1.81   0.79  15.0  26.8    FALSE</span></span>
-<span><span class="co">#&gt; 4        4 0.91 3.98     NA    NA  26.8    FALSE</span></span>
-<span><span class="co">#&gt; 5        5 0.20 2.90     NA    NA  26.8    FALSE</span></span>
-<span><span class="co">#&gt; 6        6 0.90 1.64 365.58  33.9  26.8    FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1        1 0.27 2.45     NA    NA  26.8    FALSE</span></span>
+<span><span class="co">#&gt; 2        2 0.37 2.80     NA    NA  26.8    FALSE</span></span>
+<span><span class="co">#&gt; 3        3 0.57 2.48     NA    NA  26.8    FALSE</span></span>
+<span><span class="co">#&gt; 4        4 0.91 1.56 468.56  36.7  26.8    FALSE</span></span>
+<span><span class="co">#&gt; 5        5 0.20 3.48     NA    NA  26.8    FALSE</span></span>
+<span><span class="co">#&gt; 6        6 0.90 3.01     NA    NA  26.8    FALSE</span></span></code></pre></div>
 <p>Let’s look at the CP and ACT values for the 14 validated sets. You
 can use one or more of these when for projecting/mapping. See three
 mapping vignettes.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="va">vali.micsal_WattsBar</span><span class="op">$</span><span class="va">year.end.perform</span><span class="op">[</span><span class="va">vali.micsal_WattsBar</span><span class="op">$</span><span class="va">year.end.perform</span><span class="op">$</span><span class="va">accurate</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CP"</span>,<span class="st">"ACT"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt; [1] CP  ACT</span></span>
-<span><span class="co">#&gt; &lt;0 rows&gt; (or 0-length row.names)</span></span></code></pre></div>
+<span><span class="co">#&gt;     CP  ACT</span></span>
+<span><span class="co">#&gt; 8 0.66 1.32</span></span></code></pre></div>
 <ol start="5" style="list-style-type: decimal">
 <li>The other tabular output, daily.output, is a list with a number of
 elements equal to resamp.n each representing a resampled parameter set.
@@ -400,14 +398,55 @@ by the bem_grow function.</li>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">vali.micsal_WattsBar</span><span class="op">$</span><span class="va">daily.output</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   date WT_mean pred_ED gsi_m gsi_f  CP ACT prey_ED C1_ins  C2_ins R1_ins   R2_ins F1_ins F2_ins U1_ins U2_ins SDA1_ins SDA2_ins   MS1_ins MS2_ins MG1_ins MG2_ins    M1_ins M2_ins C1_cum   C2_cum R1_cum    R2_cum F1_cum  F2_cum U1_cum  U2_cum SDA1_cum SDA2_cum    MS1_cum MS2_cum MG1_cum MG2_cum     M1_cum M2_cum L_cum        K resampID julian</span></span>
-<span><span class="co">#&gt; 1    1     7.2    4184     0     0 0.3   3    3698  0.000   0.000  0.000    0.000  0.000  0.000  0.000  0.000    0.000    0.000     0.000   0.000       0       0     0.000  0.000  0.000    0.000  0.000     0.000  0.000   0.000  0.000   0.000    0.000    0.000      0.000  42.152       0       0      0.000 42.152    15 1.000000        1      1</span></span>
-<span><span class="co">#&gt; 2    2     7.1    4184     0     0 0.3   3    3698  0.135 498.556  0.345 4675.875  0.014 51.850  0.012 43.958    0.019   70.794 -4343.920  -1.038       0       0 -4343.920 -1.038  0.135  498.556  0.345  4675.875  0.014  51.850  0.012  43.958    0.019   70.794  -4343.920  41.114       0       0  -4343.920 41.114    15 1.218186        1      2</span></span>
-<span><span class="co">#&gt; 3    3     7.0    4184     0     0 0.3   3    3698  0.131 482.857  0.338 4586.883  0.014 50.217  0.012 42.574    0.019   68.565 -4265.382  -1.019       0       0 -4265.382 -1.019  0.265  981.413  0.683  9262.759  0.028 102.067  0.023  86.531    0.038  139.359  -8609.302  40.094       0       0  -8609.302 40.094    15 1.187980        1      3</span></span>
-<span><span class="co">#&gt; 4    4     6.9    4184     0     0 0.3   3    3698  0.126 467.588  0.332 4499.093  0.013 48.629  0.011 41.227    0.018   66.397 -4187.758  -1.001       0       0 -4187.758 -1.001  0.392 1449.001  1.015 13761.852  0.041 150.696  0.035 127.758    0.056  205.755 -12797.060  39.093       0       0 -12797.060 39.093    15 1.158324        1      4</span></span>
-<span><span class="co">#&gt; 5    5     6.8    4184     0     0 0.3   3    3698  0.122 452.738  0.325 4412.494  0.013 47.085  0.011 39.918    0.017   64.288 -4111.046  -0.983       0       0 -4111.046 -0.983  0.514 1901.740  1.340 18174.345  0.053 197.781  0.045 167.676    0.073  270.043 -16908.106  38.111       0       0 -16908.106 38.111    15 1.129211        1      5</span></span>
-<span><span class="co">#&gt; 6    6     6.7    4184     0     0 0.3   3    3698  0.119 438.299  0.319 4327.074  0.012 45.583  0.010 38.645    0.017   62.238 -4035.241  -0.964       0       0 -4035.241 -0.964  0.633 2340.038  1.659 22501.419  0.066 243.364  0.056 206.321    0.090  332.281 -20943.347  37.146       0       0 -20943.347 37.146    15 1.100635        1      6</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    1     7.2    4184     0     0 0.3 2.5    3698  0.000   0.000  0.000    0.000  0.000  0.000  0.000  0.000    0.000    0.000     0.000   0.000       0       0     0.000  0.000  0.000    0.000  0.000     0.000  0.000   0.000  0.000   0.000    0.000    0.000      0.000  42.152       0       0      0.000 42.152    15 1.000000        1      1</span></span>
+<span><span class="co">#&gt; 2    2     7.1    4184     0     0 0.3 2.5    3698  0.135 498.556  0.285 3870.235  0.014 51.850  0.012 43.958    0.019   70.794 -3538.280  -0.846       0       0 -3538.280 -0.846  0.135  498.556  0.285  3870.235  0.014  51.850  0.012  43.958    0.019   70.794  -3538.280  41.306       0       0  -3538.280 41.306    15 1.223891        1      2</span></span>
+<span><span class="co">#&gt; 3    3     7.0    4184     0     0 0.3 2.5    3698  0.131 484.382  0.281 3808.035  0.014 50.376  0.012 42.708    0.019   68.781 -3485.518  -0.833       0       0 -3485.518 -0.833  0.266  982.939  0.566  7678.269  0.028 102.226  0.023  86.666    0.038  139.575  -7023.798  40.473       0       0  -7023.798 40.473    15 1.199208        1      3</span></span>
+<span><span class="co">#&gt; 4    4     6.9    4184     0     0 0.3 2.5    3698  0.127 470.566  0.276 3746.575  0.013 48.939  0.011 41.490    0.018   66.820 -3433.257  -0.821       0       0 -3433.257 -0.821  0.393 1453.505  0.843 11424.845  0.041 151.165  0.035 128.156    0.056  206.395 -10457.054  39.653       0       0 -10457.054 39.653    15 1.174895        1      4</span></span>
+<span><span class="co">#&gt; 5    5     6.8    4184     0     0 0.3 2.5    3698  0.124 457.100  0.272 3685.849  0.013 47.538  0.011 40.303    0.018   64.907 -3381.497  -0.808       0       0 -3381.497 -0.808  0.517 1910.605  1.114 15110.693  0.054 198.703  0.046 168.458    0.073  271.302 -13838.551  38.845       0       0 -13838.551 38.845    15 1.150948        1      5</span></span>
+<span><span class="co">#&gt; 6    6     6.7    4184     0     0 0.3 2.5    3698  0.120 443.976  0.267 3625.850  0.012 46.174  0.011 39.145    0.017   63.044 -3330.236  -0.796       0       0 -3330.236 -0.796  0.637 2354.581  1.382 18736.543  0.066 244.876  0.056 207.603    0.090  334.346 -17168.787  38.049       0       0 -17168.787 38.049    15 1.127365        1      6</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+</h3>
+<p>Now that you have the power of validation established, try one, two,
+or all three of the <strong>Mapping</strong> vignettes. These vignettes
+use the bem_project function to simulate growth of a fish at not just
+one habitat patch, but hundreds to thousands of habitat patches that
+differ in temperature. These three vignettes are intentionally diverse
+in application, including: <a href="https://bomeara.github.io/fishyenergy/articles/Mapping_LargemouthBass.html">largemouth
+bass</a> across many lakes, <a href="https://bomeara.github.io/fishyenergy/articles/Mapping_BrookTrout.html">brook
+trout</a> across interconfluence stream reaches in a montane stream
+network, and <a href="https://bomeara.github.io/fishyenergy/articles/Mapping_SouthernFlounder.html">southern
+flounder</a> among raster cells of bays along the western coast of the
+Gulf of Mexico. Reach out to <a href="mailto:matthew.troia@utsa.edu">Matthew Troia</a> if you have
+questions about fishyenergy or suggestions to make it better!</p>
 </div>
+<div class="section level3">
+<h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
+<ul>
+<li>Diana, J. S. (1979). The feeding pattern and daily ration of a top
+carnivore, the northern pike (Esox lucius). Canadian Journal of Zoology,
+57(11), 2121-2127.</li>
+<li>Etnier, D. A., &amp; Starnes, W. C. (1993). The Fishes of Tennessee.
+The University of Tennessee Press, Knoxville, TN.</li>
+<li>Hanson, P. C., Johnson, T. B., Schindler, D. E., &amp; Kitchell, J.
+F. (1997). Fish bioenergetics 3.0 for Windows.</li>
+<li>Korver, M. C., Lehner, B., Cardille, J. A., &amp; Carrea, L. (2024).
+Surface water temperature observations and ice phenology estimations for
+1.4 million lakes globally. Remote Sensing of Environment, 308,
+114164.</li>
+<li>Metcalfe, J. D., Wright, S., Tudorache, C., &amp; Wilson, R. P.
+(2016). Recent advances in telemetry for estimating the energy
+metabolism of wild fishes. Journal of Fish Biology, 88(1), 284-297.</li>
+<li>Wahl, D. H., &amp; Stein, R. A. (1991). Food consumption and growth
+of three esocids: field tests of a bioenergetic model. Transactions of
+the American Fisheries Society, 120(2), 230-246.</li>
+<li>Wright, S., Metcalfe, J. D., Hetherington, S., &amp; Wilson, R.
+(2014). Estimating activity-specific energy expenditure in a teleost
+fish, using accelerometer loggers. Marine Ecology Progress Series, 496,
+19-32.</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
