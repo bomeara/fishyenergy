@@ -1216,7 +1216,7 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
     }
     names(list.sim_parms) <- names(temperature)
 
-    if (length(temperature) == 366) {
+    if (nrow(temperature[[1]]) == 365) {
       # extract year-end performance for n habitat patches
       patchID <- names(temperature)
       M2_end <- vector()
@@ -1278,8 +1278,8 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
       K_min <- vector()
 
       for(i in 1:length(temperature)){
-        M2_end[i] <- list.sim_parms[[i]][365,"M2_cum"]
-        M2_dif[i] <- ((list.sim_parms[[i]][365,"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
+        M2_end[i] <- list.sim_parms[[i]][nrow(temperature[[1]]),"M2_cum"]
+        M2_dif[i] <- ((list.sim_parms[[i]][nrow(temperature[[1]]),"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
         K_min[i]  <- min(list.sim_parms[[i]]$K, na.rm = TRUE)
         def_days[i] <- ifelse(min(list.sim_parms[[i]]$M1_ins) >= 0, 0, max(rle(list.sim_parms[[i]]$M1_ins < 0)$lengths[rle(list.sim_parms[[i]]$M1_ins < 0)$values]))
       }
@@ -1422,8 +1422,8 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
       K_min <- vector()
 
       for(i in 1:length(list.sim_parms)){
-        M2_end[i] <- list.sim_parms[[i]][365,"M2_cum"]
-        M2_dif[i] <- ((list.sim_parms[[i]][365,"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
+        M2_end[i] <- list.sim_parms[[i]][dim(temps_bayc)[3],"M2_cum"]
+        M2_dif[i] <- ((list.sim_parms[[i]][dim(temps_bayc)[3],"M2_cum"] - list.sim_parms[[i]][001,"M2_cum"]) / list.sim_parms[[i]][001,"M2_cum"]) * 100
         K_min[i]  <- min(list.sim_parms[[i]]$K, na.rm = TRUE)
         def_days[i] <- ifelse(min(list.sim_parms[[i]]$M1_ins) >= 0, 0, max(rle(list.sim_parms[[i]]$M1_ins < 0)$lengths[rle(list.sim_parms[[i]]$M1_ins < 0)$values]))
       }
