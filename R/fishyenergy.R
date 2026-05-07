@@ -1216,7 +1216,7 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
     }
     names(list.sim_parms) <- names(temperature)
 
-    if (ncol(temperature) == 366) {
+    if (length(temperature) == 366) {
       # extract year-end performance for n habitat patches
       patchID <- names(temperature)
       M2_end <- vector()
