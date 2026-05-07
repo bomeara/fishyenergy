@@ -1269,8 +1269,7 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
                                    M1_cold, M1_warm,
                                    K_min, K_yday,
                                    def_days)
-    }
-    else{
+    } else{
       # extract year-end performance for n habitat patches
       patchID <- names(temperature)
       M2_end <- vector()
@@ -1303,8 +1302,7 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
                          dframe.perform)
     names(list.results) <- c("run.time","daily.output","year.end.perform")
     return(list.results)
-  }
-  else{
+  } else{
     #################################################
     time.start <- Sys.time()
 
@@ -1415,8 +1413,7 @@ bem_project <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temp
                         terra::rast(dframe.perform[, c("lon", "lat", "K_min")], crs = "local"),
                         terra::rast(dframe.perform[, c("lon", "lat", "K_yday")], crs = "local"),
                         terra::rast(dframe.perform[, c("lon", "lat", "def_days")], crs = "local"))
-    }
-    else{
+    } else{
       # extract year-end performance for n habitat patches
       patchID <- names(df.temperature)
       M2_end <- vector()
