@@ -1182,6 +1182,82 @@ bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intri
   return(list.results)
 }
 
+#' Perform sensitivity analysis to determine relative effects of input parameters on simulated growth
+#'
+#' @description quantify effect of intrinsic parameter variation on simulated mass at the end of a growth interval from Bartell et al. (1986) CJFAS 43.1.
+#' @param start_M2 (default is 100 grams).
+#' @param temperature a dataframe populated with a time series of mean daily water temperature (degrees C x 10) of a habitat patch.
+#' @param parms.intrinsic A parms.intrinsic object; note that temperature dependent parameters are bypassed if C_eq = 4 and/or R_eq = 4.
+#' @param parms.temporal a dataframe populated with a time series of intrinsic (e.g., GSI) and extrinsic (e.g., prey energy density) biological parameters.
+#' @param parm_dev Specify specify the percent deviation for each intrinsic parameter.
+#' @return a list of length 2; table of parameter sensitivities; plotted parameter sensitivies.
+#' @export
+bem_sensitive <- function(start_M2 = 100, temperature, parms.intrinsic, parms.temporal, parm.dev)
+{
+  # set parm deviation
+  parm_dev <- parm.dev / 100
+  vec.parm_dev <- c(1.0, 1.0 - parm_dev, 1.0 + parm_dev)
+
+  # create parms dataframe with nrow equal to length vec.parm_dev
+  parms.micsal <- parms.micsal[,!names(parms.micsal) %in% c("genus_species","LifeStage","Source","CEQ","REQ")]
+  df.parms_sens <- parms.micsal[rep(1:nrow(parms.micsal), each = length(vec.parm_dev)), ]
+
+  # loop through each parm/column to create baseline, percent decrease, and percent increase values; store each dataframe as a list element
+  list.parms_sens <- list()
+  for(i in 1:ncol(parms.micsal)){
+    tmp <- df.parms_sens
+    tmp[,i] <- tmp[,i] * vec.parm_dev
+    list.parms_sens[[i]] <- tmp
+  }
+
+  # create empty output dataframe
+  df.output <- data.frame(matrix(nrow = length(vec.parm_dev), ncol = length(list.parms_sens)))
+  names(df.output) <- colnames(df.parms_sens)
+
+  # loop through i parms and j values of each parm
+  for(i in 1:length(list.parms_sens)){
+    for(j in 1:nrow(list.parms_sens[[i]])){
+      df.output[j,i] <- bem_grow(start_M2 = 454,
+                                 temperature = temps_fake,
+                                 parms.intrinsic = list.parms_sens[[i]][j,],
+                                 parms.temporal = parms_temporal_DEFAULT,
+                                 C_eq = 2,
+                                 R_eq = 1)[365,"M2_cum"]
+    }
+  }
+
+  # calculate sensitivity; loop through i parms; calculate % change in end M2_cum
+  neg <- vector()
+  pos <- vector()
+  for(i in 1:ncol(df.output)){
+    neg[i] <- round((df.output[2,i] - df.output[1,i]) / df.output[1,i], digits = 3) * 100
+    pos[i] <- round((df.output[3,i] - df.output[1,i]) / df.output[1,i], digits = 3) * 100
+  }
+  df.sensitivity <- data.frame(names(df.output), neg, pos)
+  colnames(df.sensitivity) <- c("parms", "neg", "pos")
+  df.sensitivity <- df.sensitivity[df.sensitivity$neg != 0,]
+
+  # plot sensitivity
+  plot1 <- ggplot2::ggplot(NULL) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(panel.grid.major.y = element_line(color = "gray80", linewidth = 0.5),
+                   axis.title.y = element_blank()) +
+    ggplot2::labs(title = paste("±", parm_dev*100, "% change in parameter value"),
+                  x = "Percent change in year-end mass") +
+    ggplot2::scale_x_continuous(limits = c(-100,100)) +
+    ggplot2::geom_vline(xintercept = 0, color = "gray", linewidth = 0.5) +
+    ggplot2::geom_segment(aes(x = neg, xend = 0, y = parms, yend = parms), df.sensitivity, linewidth = 0.5, color = "red") +
+    ggplot2::geom_segment(aes(x = 0, xend = pos, y = parms, yend = parms), df.sensitivity, linewidth = 0.5, color = "blue") +
+    ggplot2::geom_point(aes(x = neg, y = parms), df.sensitivity, shape = 16, color = "red") +
+    ggplot2::geom_point(aes(x = pos, y = parms), df.sensitivity, shape = 16, color = "blue")
+
+  # combine outputs into a list
+  list.results <- list(df.sensitivity,
+                       plot1)
+  names(list.results) <- c("sensitive.table","sensitive.plot")
+  return(list.results)
+}
+
 #' Project performance indices across heterogeneous habitat patches
 #'
 #' @description solve daily energy budgets for n habitat patches.
