@@ -1086,7 +1086,7 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
   return(dframe.sim_parms)
 }
 
-#' Project growth to validate a bioenergetics model with empirical end-of-year mass
+#' Project growth to corroborate a bioenergetics model with empirical end-of-year mass
 #'
 #' @description simulate growth with resampled CP and ACT parameters to identify parameter sets that match empirical end-of-year mass.
 #' @param start_L starting total length in cm.
@@ -1098,9 +1098,9 @@ bem_grow <- function(start_M2 = 100, temperature, parms.intrinsic, parms.tempora
 #' @param R_eq Specify respiration equation 1 or 2 from Hanson et al. 1997.
 #' @param match.table temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match; only applicable if C_eq = 4 and/or R_eq = 4.
 #' @param resamp.n specify the number of CP-ACT parameter sets to draw from uniform distributions (default is 1000).
-#' @return a list of length 5; raw bem_grow output for each patch and year-end performance indices for each patch; also plotted validation output.
+#' @return a list of length 5; raw bem_grow output for each patch and year-end performance indices for each patch; also plotted corroboration output.
 #' @export
-bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intrinsic, parms.temporal, C_eq, R_eq, match.table, resamp.n = 1000)
+bem_corroborate <- function(start_L = 10, end_L.empirical, temperature, parms.intrinsic, parms.temporal, C_eq, R_eq, match.table, resamp.n = 1000)
 {
   time.start <- Sys.time()
   # resample CP and ACT
@@ -1165,7 +1165,7 @@ bem_validate <- function(start_L = 10, end_L.empirical, temperature, parms.intri
   # make plot
   plot2 <- ggplot2::ggplot(NULL) +
     ggplot2::theme_classic() +
-    ggplot2::labs(title = paste(sum(!is.na(dframe.perform$M2_cum)), " sets completed, ", sum(dframe.perform$accurate == TRUE, na.rm = TRUE), " sets validated", sep = ""),
+    ggplot2::labs(title = paste(sum(!is.na(dframe.perform$M2_cum)), " sets completed, ", sum(dframe.perform$accurate == TRUE, na.rm = TRUE), " sets corroborated", sep = ""),
                   x = "Activity multiplier (ACT)", y = "Proportion of consumption (CP)") +
     ggplot2::scale_x_continuous(expand = c(0,0), limits = c(0.96,4.04), breaks = seq(1,4,1)) +
     ggplot2::scale_y_continuous(expand = c(0,0), limits = c(-0.01,1.01), breaks = seq(0,1,0.2)) +
