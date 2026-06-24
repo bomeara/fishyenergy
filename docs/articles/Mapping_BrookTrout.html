@@ -33,11 +33,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/Getting_Started.html">Getting Started</a></li>
+<li><a class="dropdown-item" href="../articles/Corroborate.html">Corroboration</a></li>
+    <li><a class="dropdown-item" href="../articles/Getting_Started.html">Getting Started</a></li>
     <li><a class="dropdown-item" href="../articles/Mapping_BrookTrout.html">Mapping Brook trout</a></li>
     <li><a class="dropdown-item" href="../articles/Mapping_LargemouthBass.html">Mapping Largemouth bass</a></li>
     <li><a class="dropdown-item" href="../articles/Mapping_SouthernFlounder.html">Mapping Southern flounder</a></li>
-    <li><a class="dropdown-item" href="../articles/Validation.html">Validation</a></li>
   </ul>
 </li>
       </ul>
@@ -158,8 +158,9 @@ invertebrates, fish, and so on (see Appendix B from Hanson <em>et
 al.</em> 1997).</li>
 </ul>
 <p>Let’s modify CP and ACT to more realistic values. Specifically, we
-will use CP = 0.50 and ACT = 1.60 These parameter values were validated
-behind the scenes using the bem_validate function. See the <a href="https://bomeara.github.io/fishyenergy/articles/Validation.html">Validation
+will use CP = 0.50 and ACT = 1.60 These parameter values were
+corroborated behind the scenes using the bem_corroborate function. See
+the <a href="https://bomeara.github.io/fishyenergy/articles/Corroboration.html">Corroboration
 vignette</a> for details.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
@@ -262,12 +263,12 @@ input is in tabular form and not raster.</p>
 <span>                           R_eq <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>                           is.raster <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>Output from bem_project is a list of length three. 1) The first list
-element is the run time. The bem_project function, like the bem_validate
-function, takes some time to run and that time increases with the number
-of habitat patches.</p>
+element is the run time. The bem_project function, like the
+bem_corroborate function, takes some time to run and that time increases
+with the number of habitat patches.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">output.casc</span><span class="op">$</span><span class="va">run.time</span></span>
-<span><span class="co">#&gt; [1] "Run time is 10.17 minutes for 513 habitat patches"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "Run time is 2.27 minutes for 513 habitat patches"</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>The last two outputs are tabular. The first, year.end.perform, has a
 number of rows equal to the number of habitat patches. There are two
@@ -350,7 +351,7 @@ interconfluence stream reach in the Little River watershed.</p>
 <p>If you haven’t yet, try the <a href="https://bomeara.github.io/fishyenergy/articles/Mapping_LargemouthBass.html">largemouth
 bass</a> and <a href="https://bomeara.github.io/fishyenergy/articles/Mapping_SouthernFlounder.html">flounder</a>
 mapping vignettes. If you have, try mapping bioenergetic performance for
-your focal species and region. Reach out to <a href="mailto:matthew.troia@utsa.edu">Matthew Troia</a> if you have
+your focal species and region. Reach out to package developer <a href="mailto:matthew.troia@utsa.edu">Matthew Troia</a> if you have
 questions about fishyenergy or suggestions to make it better!</p>
 </div>
 <div class="section level3">
