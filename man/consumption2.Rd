@@ -7,17 +7,17 @@
 consumption2(M, T, CP = 1, parms.intrinsic)
 }
 \arguments{
-\item{M}{mass (grams) of fish}
+\item{M}{mass (grams) of fish.}
 
-\item{T}{temperature (degrees C) at which consumption is calculated}
+\item{T}{temperature (degrees C) at which consumption is calculated.}
 
-\item{CP}{proportion of maximum consumption (default is 1.0)}
+\item{CP}{proportion of maximum consumption (default is 1.0).}
 
-\item{parms.intrinsic}{A parms.intrinsic object}
+\item{parms.intrinsic}{A parms.intrinsic object.}
 }
 \value{
-specific consumption rate (grams of food consumed per gram of fish mass per day)
+specific consumption rate (grams of food consumed per gram of fish mass per day).
 }
 \description{
-consumption equation 2 from Hanson et al. 1997
+consumption equation 2 from Hanson et al. 1997.
 }

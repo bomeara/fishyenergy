@@ -7,38 +7,38 @@
 \format{
 A data frame with 5 rows and 27 columns:
 \describe{
-  \item{genus_species}{(character) description}
-  \item{LifeStage}{(character) description}
-  \item{Source}{(character) description}
-  \item{lwA}{(numeric) y-intercept for length-weight relationship on log-log scale}
-  \item{lwB}{(numeric) slope for length-weight relationship on log-log scale}
-  \item{CEQ}{(integer) consumption equation 1, 2, 3, or 4}
-  \item{CA}{(numeric) intercept estimate for mass-dependent consumption}
-  \item{CB}{(numeric) slope estimate for mass-dependent consumption}
-  \item{CQ}{(numeric) Q10 for temperature-dependent consumption}
-  \item{CTO}{(numeric) thermal optimum for consumption}
-  \item{CTM}{(numeric) thermal maximum for consumption}
-  \item{CTL}{(numeric) temperature-dependent parameter for consumption}
-  \item{CK1}{(numeric) temperature-dependent parameter for consumption}
-  \item{CK4}{(numeric) temperature-dependent parameter for consumption}
-  \item{REQ}{(integer) respiration equation 1, 2, or 4}
-  \item{RA}{(numeric) intercept estimate for mass-dependent respiration}
-  \item{RB}{(numeric) slope estimate for mass-dependent respiration}
-  \item{RQ}{(numeric) Q10 for temperature-dependent respiration}
-  \item{RTO}{(numeric) thermal optimum for respiration}
-  \item{RTM}{(numeric) thermal maximum for respiration}
-  \item{RTL}{(numeric) temperature-dependent parameter for respiration}
-  \item{RK1}{(numeric) temperature-dependent parameter for respiration}
-  \item{RK4}{(numeric) temperature-dependent parameter for respiration}
-  \item{SDA}{(numeric) specific dynamic action}
-  \item{FA}{(numeric) egestion}
-  \item{UA}{(numeric) excretion}
-  \item{pred_ED}{(numeric) energy density of predator (i.e., focal species)}
+  \item{genus_species}{(character) Latin name in snake case.}
+  \item{LifeStage}{(character) Life stage reported by Deslauriers et al. 2017 after Hanson et al. (1997).}
+  \item{Source}{(character) Source reported by Deslauriers et al. 2017 after Hanson et al. (1997).}
+  \item{lwA}{(numeric) y-intercept for length-weight relationship on log-log scale.}
+  \item{lwB}{(numeric) slope for length-weight relationship on log-log scale.}
+  \item{CEQ}{(integer) consumption equation 1, 2, 3, or 4.}
+  \item{CA}{(numeric) intercept estimate for mass-dependent consumption.}
+  \item{CB}{(numeric) slope estimate for mass-dependent consumption.}
+  \item{CQ}{(numeric) Q10 for temperature-dependent consumption.}
+  \item{CTO}{(numeric) thermal optimum for consumption.}
+  \item{CTM}{(numeric) thermal maximum for consumption.}
+  \item{CTL}{(numeric) temperature-dependent parameter for consumption.}
+  \item{CK1}{(numeric) temperature-dependent parameter for consumption.}
+  \item{CK4}{(numeric) temperature-dependent parameter for consumption.}
+  \item{REQ}{(integer) respiration equation 1, 2, or 4.}
+  \item{RA}{(numeric) intercept estimate for mass-dependent respiration.}
+  \item{RB}{(numeric) slope estimate for mass-dependent respiration.}
+  \item{RQ}{(numeric) Q10 for temperature-dependent respiration.}
+  \item{RTO}{(numeric) thermal optimum for respiration.}
+  \item{RTM}{(numeric) thermal maximum for respiration.}
+  \item{RTL}{(numeric) temperature-dependent parameter for respiration.}
+  \item{RK1}{(numeric) temperature-dependent parameter for respiration.}
+  \item{RK4}{(numeric) temperature-dependent parameter for respiration.}
+  \item{SDA}{(numeric) specific dynamic action.}
+  \item{FA}{(numeric) egestion.}
+  \item{UA}{(numeric) excretion.}
+  \item{pred_ED}{(numeric) energy density of predator (i.e., focal species).}
   ...
 }
 }
 \source{
-Fish Bioenergetics 4 (Deslauriers et al. 2017).
+Fish Bioenergetics 4 (Deslauriers et al. 2017 after Hanson et al. 1997).
 }
 \usage{
 parms_fb4

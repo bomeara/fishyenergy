@@ -7,13 +7,13 @@
 \format{
 A data frame with 365 rows and 8,046 columns:
 \describe{
-  \item{date}{(date) dates from 1 January 2021 to 31 December 2021; note that temps are the mean from years 2013 to 2021}
-  \item{Hylak_id}{(numeric) mean daily water temperature in degrees C for all 8046 unique identifier of lake, from HydroLAKES (Messager et al., 2016)}
+  \item{date}{(date) dates from 1 January 2021 to 31 December 2021; note that temps are the mean from years 2013 to 2021.}
+  \item{Hylak_id}{(numeric) mean daily water temperature in degrees C for all 8,001 unique identifier of lake, from HydroLAKES (Messager et al. 2016).}
   ...
 }
 }
 \source{
-LakeTEMP; Korver et al. 2024. Remote Sensing of Environment. https://doi.org/10.1016/j.rse.2024.114164.
+LakeTEMP (Korver et al. 2024).
 }
 \usage{
 temps_lake

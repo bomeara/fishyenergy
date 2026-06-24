@@ -172,7 +172,7 @@ ggplot(NULL) + theme_classic() +
 
 Notice that our largemouth bass does most of its growing during the warm summer months which makes sense for this warmwater species. What doesn't make sense is that this fish starts the year at 454 grams (~1 pound) and ends the year at a whopping 3,592 grams (7.9 pounds)!  This is because we unrealistically have assumed the predator fish has limitless food (CP = 1), sets up shop in one place and never moves (ACT = 1), and allocates no energy to reproduction (gsi_ = 0).
 
-The **bem_validate** function provides a means of estimating difficult-to-measure parameters like CP and ACT using field- or lab-derived measurements of length-at-age to identify pairs of CP and ACT values that result in realistic end-of-year mass. See the [Validation vignette](https://bomeara.github.io/fishyenergy/articles/Validation.html) to learn this workflow.
+The **bem_corroborate** function provides a means of estimating difficult-to-measure parameters like CP and ACT using field- or lab-derived measurements of length-at-age to identify pairs of CP and ACT values that result in realistic end-of-year mass. See the [Corroboration vignette](https://bomeara.github.io/fishyenergy/articles/Corroboration.html) to learn this workflow.
 
 To better visualize this summer growth, plot m2_ins. The horizontal red line is at y = 0, meaning that the predator fish has an energy deficit below this line (winter) and an energy surplus above this line (summer).
 ```{r fig.height=4, fig.width=6}
@@ -224,7 +224,7 @@ ggplot(NULL) + theme_classic() +
 ```
 
 ### Next steps
-Now that you've had a crash course in the basics of bioenergetics and growing a fish, try the [Validation vignette](https://bomeara.github.io/fishyenergy/articles/Validation.html) where you will learn to grow fish that match the growth trajectories of real fish. Reach out to package developer [Matthew Troia](mailto:matthew.troia@utsa.edu) if you have questions about fishyenergy or suggestions to make it better!
+Now that you've had a crash course in the basics of bioenergetics and growing a fish, try the [Corroboration vignette](https://bomeara.github.io/fishyenergy/articles/Corroboration.html) where you will learn to grow fish that match the growth trajectories of real fish. Reach out to package developer [Matthew Troia](mailto:matthew.troia@utsa.edu) if you have questions about fishyenergy or suggestions to make it better!
 
 ### References
 - Hanson, P. C., Johnson, T. B., Schindler, D. E., & Kitchell, J. F. (1997). Fish bioenergetics 3.0 for Windows.

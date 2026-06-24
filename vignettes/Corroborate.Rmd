@@ -1,16 +1,16 @@
 ---
-title: "Validation"
+title: "Corroboration"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Validation}
+  %\VignetteIndexEntry{Corroboration}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ### Vignette objectives
-- Learn how to validate a bioenergetics model. That is, you will simulate 365 days of growth and then use empirical length-at-age estimates from a field study to identify consumption (CP) and activity (ACT) values that produce realistic growth.
+- Learn how to corroborate a bioenergetics model. That is, you will simulate 365 days of growth and then use empirical length-at-age estimates from a field study to identify consumption (CP) and activity (ACT) values that produce realistic growth.
 - Visualize growth trajectories.
-- Visualize validated combinations of CP and ACT.
+- Visualize corroborated combinations of CP and ACT.
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -139,14 +139,14 @@ ggplot(NULL) + theme_classic() +
 ### Validating growth
 Obviously CP=1 and ACT=1 are unrealistic, but what are realistic values? Unclear! These parameters are difficult to estimate for wild fish, but there is some literature describing ways some approaches to do so (Diana 1979, Metcalfe *et al.* 2016, Wahl & Stein 1991, Wright *et al.* 2014).
 
-We developed the **bem_validate** function to address this challenge using an alternative approach. What the function does is identify pairs of CP and ACT values that simulate realistic growth. Inputs of bem_validate include a subset of those you're familiar with from the **bem_grow** function including temperature, parms.intrinsic, parms.temporal, C_eq, and R_eq.
+We developed the **bem_corroborate** function to address this challenge using an alternative approach. What the function does is identify pairs of CP and ACT values that simulate realistic growth. Inputs of bem_corroborate include a subset of those you're familiar with from the **bem_grow** function including temperature, parms.intrinsic, parms.temporal, C_eq, and R_eq.
 
 Three new inputs include:
 1) Total length in cm at the start of the year (start_L). We use total length as the input instead of mass because lengths-at-age are more commonly presented in the literature than are masses-at-age. The function just uses the parms_fb4 to convert the inputted start_L to mass before running the bem_grow function. For the example below, we use 15.0 cm TL reported for typical largemouth bass at the start of its second year of life (age-1) in Tennessee reservoirs by Etnier & Starnes 1993.
 2) The expected total length in cm at the end of the year based on empirically-derived growth (end_L.empirical). For the example below, we use 26.8 cm TL reported for typical largemouth bass at the end of its second year of life (age-1) in Tennessee reservoirs by Etnier & Starnes 1993.
-3) The number of CP and ACT parameter sets to test in the growth validation. CP values are drawn from a uniform probability distribution with a minimum of 0.0 and a maximum of 1.0. ACT values are also drawn from a uniform distribution with a minimum and maximum of 1.0 and 4.0, respectively.
+3) The number of CP and ACT parameter sets to test in the growth corroboration. CP values are drawn from a uniform probability distribution with a minimum of 0.0 and a maximum of 1.0. ACT values are also drawn from a uniform distribution with a minimum and maximum of 1.0 and 4.0, respectively.
 ```{r}
-vali.micsal_WattsBar <- bem_validate(start_L = 15.0,
+vali.micsal_WattsBar <- bem_corroborate(start_L = 15.0,
                                      end_L.empirical = 26.8,
                                      temperature = temps_WattsBar,
                                      parms.intrinsic = parms.micsal,
@@ -156,9 +156,9 @@ vali.micsal_WattsBar <- bem_validate(start_L = 15.0,
                                      resamp.n = 1000)
 ```
 
-Output from bem_validate is a list of length five:
+Output from bem_corroborate is a list of length five:
 
-1) The first list element is the run time. The bem_validate function, like the bem_project function, takes some time to run and that time increases with the number of parameter sets resampled.
+1) The first list element is the run time. The bem_corroborate function, like the bem_project function, takes some time to run and that time increases with the number of parameter sets resampled.
 ```{r}
 vali.micsal_WattsBar$run.time
 ```
@@ -169,7 +169,7 @@ options(width = 500)
 vali.micsal_WattsBar$plot_growth
 ```
 
-3) The other graphical output shows the resampled CP and ACT parameter sets in two-dimensional space. Gray symbols represent parameter sets that finish the year (i.e., the fish does not die before the end of the year). Red symbols represent parameter sets that are within +/- 5% of empirical end-of-year total length. Low CP and high ACT plot in the lower right and represent low growth parameter sets. Alternatively, high CP and low ACT plot in the upper left and represent high growth parameter sets. Parameter sets with low CP and low ACT or high CP and high ACT represent intermediate growth that typically correspond with empirical growth (i.e., represent realistic/validated parameter sets).
+3) The other graphical output shows the resampled CP and ACT parameter sets in two-dimensional space. Gray symbols represent parameter sets that finish the year (i.e., the fish does not die before the end of the year). Red symbols represent parameter sets that are within +/- 5% of empirical end-of-year total length. Low CP and high ACT plot in the lower right and represent low growth parameter sets. Alternatively, high CP and low ACT plot in the upper left and represent high growth parameter sets. Parameter sets with low CP and low ACT or high CP and high ACT represent intermediate growth that typically correspond with empirical growth (i.e., represent realistic/corroborated parameter sets).
 ```{r fig.height=4, fig.width=4}
 options(width = 500)
 vali.micsal_WattsBar$plot_parms
@@ -181,7 +181,7 @@ options(width = 500)
 head(vali.micsal_WattsBar$year.end.perform)
 ```
 
-Let's look at the CP and ACT values for the 14 validated sets. You can use one or more of these when for projecting/mapping. See three mapping vignettes.
+Let's look at the CP and ACT values for the 14 corroborated sets. You can use one or more of these when for projecting/mapping. See three mapping vignettes.
 ```{r}
 options(width = 500)
 vali.micsal_WattsBar$year.end.perform[vali.micsal_WattsBar$year.end.perform$accurate,c("CP","ACT")]
@@ -194,7 +194,7 @@ head(vali.micsal_WattsBar$daily.output[[1]])
 ```
 
 ### Next steps
-Now that you have the power of validation established, try one, two, or all three of the **Mapping** vignettes. These vignettes use the bem_project function to simulate growth of a fish at not just one habitat patch, but hundreds to thousands of habitat patches that differ in temperature. These three vignettes are intentionally diverse in application, including: [largemouth bass](https://bomeara.github.io/fishyenergy/articles/Mapping_LargemouthBass.html) across many lakes, [brook trout](https://bomeara.github.io/fishyenergy/articles/Mapping_BrookTrout.html) across interconfluence stream reaches in a montane stream network, and [southern flounder](https://bomeara.github.io/fishyenergy/articles/Mapping_SouthernFlounder.html) among raster cells of bays along the western coast of the Gulf of Mexico. Reach out to package developer [Matthew Troia](mailto:matthew.troia@utsa.edu) if you have questions about fishyenergy or suggestions to make it better!
+Now that you have the power of corroboration established, try one, two, or all three of the **Mapping** vignettes. These vignettes use the bem_project function to simulate growth of a fish at not just one habitat patch, but hundreds to thousands of habitat patches that differ in temperature. These three vignettes are intentionally diverse in application, including: [largemouth bass](https://bomeara.github.io/fishyenergy/articles/Mapping_LargemouthBass.html) across many lakes, [brook trout](https://bomeara.github.io/fishyenergy/articles/Mapping_BrookTrout.html) across interconfluence stream reaches in a montane stream network, and [southern flounder](https://bomeara.github.io/fishyenergy/articles/Mapping_SouthernFlounder.html) among raster cells of bays along the western coast of the Gulf of Mexico. Reach out to package developer [Matthew Troia](mailto:matthew.troia@utsa.edu) if you have questions about fishyenergy or suggestions to make it better!
 
 ### References
 - Diana, J. S. (1979). The feeding pattern and daily ration of a top carnivore, the northern pike (Esox lucius). Canadian Journal of Zoology, 57(11), 2121-2127. 

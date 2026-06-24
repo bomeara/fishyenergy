@@ -17,25 +17,25 @@ bem_curve(
 )
 }
 \arguments{
-\item{M}{Mass (grams) of fish}
+\item{M}{Mass (grams) of fish.}
 
-\item{T}{Vector of temperatures representing the temperature range to be plotted}
+\item{T}{Vector of temperatures representing the temperature range to be plotted.}
 
-\item{CP}{Proportion of maximum consumption (default is 1.0)}
+\item{CP}{Proportion of maximum consumption (default is 1.0).}
 
-\item{ACT}{Activity multiplier (default is 1.0)}
+\item{ACT}{Activity multiplier (default is 1.0).}
 
-\item{prey_ED}{Prey energy density in joules per gram of wet mass (default is 4000)}
+\item{prey_ED}{Prey energy density in joules per gram of wet mass (default is 4000).}
 
-\item{parms.intrinsic}{A parms.intrinsic object}
+\item{parms.intrinsic}{A parms.intrinsic object.}
 
-\item{C_eq}{Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or new equation 4}
+\item{C_eq}{Specify consumption equation 1, 2, or 3 from Hanson et al. 1997 or new equation 4.}
 
-\item{R_eq}{Specify respiration equation 1 or 2 from Hanson et al. 1997 or new equation 4}
+\item{R_eq}{Specify respiration equation 1 or 2 from Hanson et al. 1997 or new equation 4.}
 }
 \value{
-A plot of temperature dependent rates
+A plot of temperature dependent rates.
 }
 \description{
-Plot the thermal reaction norms for consumption, respiration, and other intrinsic rates
+Plot the thermal reaction norms for consumption, respiration, and other intrinsic rates.
 }

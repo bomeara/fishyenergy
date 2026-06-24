@@ -72,7 +72,7 @@ head(parms_temporal_DEFAULT)
 - The next two parameters (gsi_f and gsi_m) allow the user to model somatic growth of a reproductively mature fish that allocates some energy to gonadal tissue. Separate parameters are provided for females and males because the sexes invest different amounts of energy to their gonads--gsi_f and gsi_m, respectively. The default data assume a reproductively immature fish (*i.e.*, gsi = 0).
 - Modifying prey energy density (prey_ED) over the year can simulate ontogenetic diet shifts or changes in prey quality. There are numerous published estimates of prey energy density for common prey items like invertebrates, fish, and so on (see Appendix B from Hanson *et al.* 1997).
 
-Let's modify CP and ACT to more realistic values. Specifically, we will use CP = 0.75 and ACT = 1.50 These parameter values were validated behind the scenes using the bem_validate function. See the [Validation vignette](https://bomeara.github.io/fishyenergy/articles/Validation.html) for details.
+Let's modify CP and ACT to more realistic values. Specifically, we will use CP = 0.75 and ACT = 1.50 These parameter values were corroborated behind the scenes using the bem_corroborate function. See the [Corroboration vignette](https://bomeara.github.io/fishyenergy/articles/Corroboration.html) for details.
 ```{r}
 options(width = 500)
 parms_temporal_DEFAULT$CP = 0.75
@@ -111,7 +111,7 @@ output.bayc <- bem_project(start_M2 = 454,
 ```
 
 Output from bem_project is a list of length three.
-1) The first list element is the run time. The bem_project function, like the bem_validate function, takes some time to run and that time increases with the number of habitat patches.
+1) The first list element is the run time. The bem_project function, like the bem_corroborate function, takes some time to run and that time increases with the number of habitat patches.
 ```{r}
 output.bayc$run.time
 ```

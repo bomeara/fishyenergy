@@ -7,11 +7,11 @@
 \format{
 A vector shapefile with an attribute table containing 513 rows and 5 columns:
 \describe{
-  \item{COMID}{(character) Common Identifier for NHD reaches}
-  \item{GNIS_NAME}{(character) Stream name from NHD after Geographic Names Information System}
-  \item{FCode}{(integer) Flowline type from NHD}
-  \item{TotDASqKM}{(numeric) Catchment area draining to the interconfluence stream reach in square kilometers}
-  \item{ElevCat}{(numeric) Median elevation of the interconfluence stream reach in meters above sea level}
+  \item{COMID}{(character) Common Identifier for NHD reaches.}
+  \item{GNIS_NAME}{(character) Stream name from NHD after Geographic Names Information System.}
+  \item{FCode}{(integer) Flowline type from NHD.}
+  \item{TotDASqKM}{(numeric) Catchment area draining to the interconfluence stream reach in square kilometers.}
+  \item{ElevCat}{(numeric) Median elevation of the interconfluence stream reach in meters above sea level.}
   ...
 }
 }

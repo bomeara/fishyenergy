@@ -7,8 +7,8 @@
 \format{
 A data frame with 365 rows and 515 columns:
 \describe{
-  \item{date}{(date) dates from 1 January 2022 to 31 December 2022}
-  \item{COMID}{(numeric) mean daily water temperature in degrees C for all 513 COMIDs}
+  \item{date}{(date) dates from 1 January 2022 to 31 December 2022.}
+  \item{COMID}{(numeric) mean daily water temperature in degrees C for all 513 COMIDs.}
   ...
 }
 }

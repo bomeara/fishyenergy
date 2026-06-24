@@ -7,19 +7,19 @@
 consumption4(M, T, CP = 1, parms.intrinsic, match.table)
 }
 \arguments{
-\item{M}{Mass (grams) of fish}
+\item{M}{Mass (grams) of fish.}
 
-\item{T}{Temperature (degrees C) at which consumption is calculated}
+\item{T}{Temperature (degrees C) at which consumption is calculated.}
 
-\item{CP}{Proportion of maximum consumption (default is 1.0)}
+\item{CP}{Proportion of maximum consumption (default is 1.0).}
 
-\item{parms.intrinsic}{A parms.intrinsic object; note that temperature dependent parameters are bypassed}
+\item{parms.intrinsic}{A parms.intrinsic object; note that temperature dependent parameters are bypassed.}
 
-\item{match.table}{temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match}
+\item{match.table}{temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match.}
 }
 \value{
-Specific consumption rate (grams of food consumed per gram of fish mass per day)
+Specific consumption rate (grams of food consumed per gram of fish mass per day).
 }
 \description{
-Consumption equation 4; new equation for fishyenergy that simply matches Cmax for a given temperature
+Consumption equation 4; new equation for fishyenergy that simply matches Cmax for a given temperature.
 }

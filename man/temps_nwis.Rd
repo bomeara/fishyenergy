@@ -7,8 +7,8 @@
 \format{
 A data frame with 365 rows and 2 columns:
 \describe{
-  \item{date}{(date) dates from 1 January 2025 to 31 December 2025}
-  \item{WT_mean}{(numeric) mean daily water temperature in degrees C}
+  \item{date}{(date) dates from 1 January 2025 to 31 December 2025.}
+  \item{WT_mean}{(numeric) mean daily water temperature in degrees Celsius.}
   ...
 }
 }

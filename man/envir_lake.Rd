@@ -5,18 +5,18 @@
 \alias{envir_lake}
 \title{Environmental covariates for many lakes}
 \format{
-A data frame with 8,046 rows and 10 columns:
+A data frame with 8,001 rows and 10 columns:
 \describe{
-  \item{Hylak_id}{(numeric) mean daily water temperature in degrees C for all 8046 unique identifier of lake, from HydroLAKES (Messager et al., 2016)}
-  \item{center_long}{(numeric) longitude of lake center in decimal degrees}
-  \item{center_lat}{(numeric) latitude of lake center in decimal degrees}
-  \item{stat_method}{(numeric) see Korver et al. 2024 for description}
-  \item{n_obs}{(numeric) see Korver et al. 2024 for description}
-  \item{intermittency}{(numeric) see Korver et al. 2024 for description}
-  \item{Lake_type}{(numeric) 1 = natural lake, 2 = reservoir, 3 = natural lake with regulation structure}
-  \item{Elevation}{(numeric) lake surface elevation in meters above sea level}
-  \item{Lake_area}{(numeric) lake surface area in square kilometers}
-  \item{Depth_avg}{(numeric) mean lake depth in meters}
+  \item{Hylak_id}{(numeric) mean daily water temperature in degrees C for all 8046 unique identifier of lake, from HydroLAKES (Messager et al., 2016).}
+  \item{center_long}{(numeric) longitude of lake center in decimal degrees.}
+  \item{center_lat}{(numeric) latitude of lake center in decimal degrees.}
+  \item{stat_method}{(numeric) see Korver et al. 2024 for description.}
+  \item{n_obs}{(numeric) see Korver et al. 2024 for description.}
+  \item{intermittency}{(numeric) see Korver et al. 2024 for description.}
+  \item{Lake_type}{(numeric) 1 = natural lake, 2 = reservoir, 3 = natural lake with regulation structure.}
+  \item{Elevation}{(numeric) lake surface elevation in meters above sea level.}
+  \item{Lake_area}{(numeric) lake surface area in square kilometers.}
+  \item{Depth_avg}{(numeric) mean lake depth in meters.}
   ...
 }
 }

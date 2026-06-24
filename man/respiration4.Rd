@@ -7,19 +7,19 @@
 respiration4(M, T, ACT = 1, parms.intrinsic, match.table)
 }
 \arguments{
-\item{M}{Mass (grams) of fish}
+\item{M}{Mass (grams) of fish.}
 
-\item{T}{Temperature (degrees C) at which consumption is calculated}
+\item{T}{Temperature (degrees C) at which consumption is calculated.}
 
-\item{ACT}{Activity multiplier (default is 1.0)}
+\item{ACT}{Activity multiplier (default is 1.0).}
 
-\item{parms.intrinsic}{A parms.intrinsic object; note that temperature dependent parameters are bypassed}
+\item{parms.intrinsic}{A parms.intrinsic object; note that temperature dependent parameters are bypassed.}
 
-\item{match.table}{temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match}
+\item{match.table}{temperature dependent parameters formatted as a table with three columns named WT_mean, C_match, and R_match.}
 }
 \value{
-Specific respiration rate (grams of oxygen per gram of fish mass per day)
+Specific respiration rate (grams of oxygen per gram of fish mass per day).
 }
 \description{
-Respiration equation 4; new equation for fishyenergy that simply matches Rrest for a given temperature
+Respiration equation 4; new equation for fishyenergy that simply matches Rrest for a given temperature.
 }

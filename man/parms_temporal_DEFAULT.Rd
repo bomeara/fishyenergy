@@ -3,15 +3,15 @@
 \docType{data}
 \name{parms_temporal_DEFAULT}
 \alias{parms_temporal_DEFAULT}
-\title{Temporally varying parameters}
+\title{Temporally-varying parameters}
 \format{
 A data frame with 365 rows and 5 columns:
 \describe{
-  \item{date}{(date) dates from 1 to 365}
-  \item{CP}{(numeric) Proportion of consumption; set to 1.0 assumes prey is unlimited}
-  \item{ACT}{(numeric) Activity multiplier; set to 1.0 assumes predator (i.e., focal fish) always is at rest}
-  \item{gsi_f}{(numeric) Gonadosomatic index for females; set to 0 assumes reproductive immaturity}
-  \item{gsi_m}{(numeric) Gonadosomatic index for males; set to 0 assumes reproductive immaturity}
+  \item{date}{(date) dates from 1 to 365.}
+  \item{CP}{(numeric) Proportion of consumption; set to 1.0 assumes prey is unlimited.}
+  \item{ACT}{(numeric) Activity multiplier; set to 1.0 assumes predator (i.e., focal fish) always is at rest.}
+  \item{gsi_f}{(numeric) Gonadosomatic index for females; set to 0 assumes reproductive immaturity.}
+  \item{gsi_m}{(numeric) Gonadosomatic index for males; set to 0 assumes reproductive immaturity.}
   ...
 }
 }

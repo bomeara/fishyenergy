@@ -7,17 +7,17 @@
 respiration1(M, T, ACT = 1, parms.intrinsic)
 }
 \arguments{
-\item{M}{Mass (grams) of fish}
+\item{M}{Mass (grams) of fish.}
 
-\item{T}{Temperature (degrees C) at which respiration is calculated}
+\item{T}{Temperature (degrees C) at which respiration is calculated.}
 
-\item{ACT}{Activity multiplier (default is 1.0)}
+\item{ACT}{Activity multiplier (default is 1.0).}
 
-\item{parms.intrinsic}{A parms.intrinsic object}
+\item{parms.intrinsic}{A parms.intrinsic object.}
 }
 \value{
-Specific respiration rate (grams of oxygen per gram of fish mass per day)
+Specific respiration rate (grams of oxygen per gram of fish mass per day).
 }
 \description{
-Respiration equation 1 from Hanson et al. 1997
+Respiration equation 1 from Hanson et al. 1997.
 }
