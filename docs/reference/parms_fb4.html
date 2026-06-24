@@ -18,11 +18,11 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Getting_Started.html">Getting Started</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/Corroborate.html">Corroboration</a></li>
+    <li><a class="dropdown-item" href="../articles/Getting_Started.html">Getting Started</a></li>
     <li><a class="dropdown-item" href="../articles/Mapping_BrookTrout.html">Mapping Brook trout</a></li>
     <li><a class="dropdown-item" href="../articles/Mapping_LargemouthBass.html">Mapping Largemouth bass</a></li>
     <li><a class="dropdown-item" href="../articles/Mapping_SouthernFlounder.html">Mapping Southern flounder</a></li>
-    <li><a class="dropdown-item" href="../articles/Validation.html">Validation</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -51,92 +51,92 @@
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
     <p>A data frame with 5 rows and 27 columns:</p><dl><dt>genus_species</dt>
-<dd><p>(character) description</p></dd>
+<dd><p>(character) Latin name in snake case.</p></dd>
 
   <dt>LifeStage</dt>
-<dd><p>(character) description</p></dd>
+<dd><p>(character) Life stage reported by Deslauriers et al. 2017 after Hanson et al. (1997).</p></dd>
 
   <dt>Source</dt>
-<dd><p>(character) description</p></dd>
+<dd><p>(character) Source reported by Deslauriers et al. 2017 after Hanson et al. (1997).</p></dd>
 
   <dt>lwA</dt>
-<dd><p>(numeric) y-intercept for length-weight relationship on log-log scale</p></dd>
+<dd><p>(numeric) y-intercept for length-weight relationship on log-log scale.</p></dd>
 
   <dt>lwB</dt>
-<dd><p>(numeric) slope for length-weight relationship on log-log scale</p></dd>
+<dd><p>(numeric) slope for length-weight relationship on log-log scale.</p></dd>
 
   <dt>CEQ</dt>
-<dd><p>(integer) consumption equation 1, 2, 3, or 4</p></dd>
+<dd><p>(integer) consumption equation 1, 2, 3, or 4.</p></dd>
 
   <dt>CA</dt>
-<dd><p>(numeric) intercept estimate for mass-dependent consumption</p></dd>
+<dd><p>(numeric) intercept estimate for mass-dependent consumption.</p></dd>
 
   <dt>CB</dt>
-<dd><p>(numeric) slope estimate for mass-dependent consumption</p></dd>
+<dd><p>(numeric) slope estimate for mass-dependent consumption.</p></dd>
 
   <dt>CQ</dt>
-<dd><p>(numeric) Q10 for temperature-dependent consumption</p></dd>
+<dd><p>(numeric) Q10 for temperature-dependent consumption.</p></dd>
 
   <dt>CTO</dt>
-<dd><p>(numeric) thermal optimum for consumption</p></dd>
+<dd><p>(numeric) thermal optimum for consumption.</p></dd>
 
   <dt>CTM</dt>
-<dd><p>(numeric) thermal maximum for consumption</p></dd>
+<dd><p>(numeric) thermal maximum for consumption.</p></dd>
 
   <dt>CTL</dt>
-<dd><p>(numeric) temperature-dependent parameter for consumption</p></dd>
+<dd><p>(numeric) temperature-dependent parameter for consumption.</p></dd>
 
   <dt>CK1</dt>
-<dd><p>(numeric) temperature-dependent parameter for consumption</p></dd>
+<dd><p>(numeric) temperature-dependent parameter for consumption.</p></dd>
 
   <dt>CK4</dt>
-<dd><p>(numeric) temperature-dependent parameter for consumption</p></dd>
+<dd><p>(numeric) temperature-dependent parameter for consumption.</p></dd>
 
   <dt>REQ</dt>
-<dd><p>(integer) respiration equation 1, 2, or 4</p></dd>
+<dd><p>(integer) respiration equation 1, 2, or 4.</p></dd>
 
   <dt>RA</dt>
-<dd><p>(numeric) intercept estimate for mass-dependent respiration</p></dd>
+<dd><p>(numeric) intercept estimate for mass-dependent respiration.</p></dd>
 
   <dt>RB</dt>
-<dd><p>(numeric) slope estimate for mass-dependent respiration</p></dd>
+<dd><p>(numeric) slope estimate for mass-dependent respiration.</p></dd>
 
   <dt>RQ</dt>
-<dd><p>(numeric) Q10 for temperature-dependent respiration</p></dd>
+<dd><p>(numeric) Q10 for temperature-dependent respiration.</p></dd>
 
   <dt>RTO</dt>
-<dd><p>(numeric) thermal optimum for respiration</p></dd>
+<dd><p>(numeric) thermal optimum for respiration.</p></dd>
 
   <dt>RTM</dt>
-<dd><p>(numeric) thermal maximum for respiration</p></dd>
+<dd><p>(numeric) thermal maximum for respiration.</p></dd>
 
   <dt>RTL</dt>
-<dd><p>(numeric) temperature-dependent parameter for respiration</p></dd>
+<dd><p>(numeric) temperature-dependent parameter for respiration.</p></dd>
 
   <dt>RK1</dt>
-<dd><p>(numeric) temperature-dependent parameter for respiration</p></dd>
+<dd><p>(numeric) temperature-dependent parameter for respiration.</p></dd>
 
   <dt>RK4</dt>
-<dd><p>(numeric) temperature-dependent parameter for respiration</p></dd>
+<dd><p>(numeric) temperature-dependent parameter for respiration.</p></dd>
 
   <dt>SDA</dt>
-<dd><p>(numeric) specific dynamic action</p></dd>
+<dd><p>(numeric) specific dynamic action.</p></dd>
 
   <dt>FA</dt>
-<dd><p>(numeric) egestion</p></dd>
+<dd><p>(numeric) egestion.</p></dd>
 
   <dt>UA</dt>
-<dd><p>(numeric) excretion</p></dd>
+<dd><p>(numeric) excretion.</p></dd>
 
   <dt>pred_ED</dt>
-<dd><p>(numeric) energy density of predator (i.e., focal species)</p></dd>
+<dd><p>(numeric) energy density of predator (i.e., focal species).</p></dd>
 
   ...
 
 </dl></div>
     <div class="section level2">
     <h2 id="source">Source<a class="anchor" aria-label="anchor" href="#source"></a></h2>
-    <p>Fish Bioenergetics 4 (Deslauriers et al. 2017).</p>
+    <p>Fish Bioenergetics 4 (Deslauriers et al. 2017 after Hanson et al. 1997).</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
